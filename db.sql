@@ -6,8 +6,9 @@ use pis_project;
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE IF NOT EXISTS `user` (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    login VARCHAR(30) NOT NULL UNIQUE,
-    email VARCHAR(50) NOT NULL UNIQUE,
+    username VARCHAR(30) NOT NULL UNIQUE,
+    email VARCHAR(60) NOT NULL UNIQUE,
+    `password` VARCHAR(255) NOT NULL,
     first_name VARCHAR(15) NOT NULL,
     last_name VARCHAR(15) NOT NULL
 );
@@ -97,6 +98,9 @@ CREATE TABLE IF NOT EXISTS recipe_ingredients(
 );
 
 -- Fixed Atributes
+INSERT INTO `user` (username, email, `password`, first_name, last_name)
+VALUES ('System', 'system@example.com', 'system_password', 'System', 'User');
+
 INSERT INTO difficulty (difficulty) values
 ('Beginner'), 
 ('Cook'), 
