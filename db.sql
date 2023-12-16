@@ -12,10 +12,10 @@ CREATE TABLE IF NOT EXISTS `user` (
     last_name VARCHAR(15) NOT NULL
 );
 
-DROP TABLE IF EXISTS autor;
-CREATE TABLE IF NOT EXISTS autor(
-	autor_id int primary key,
-	foreign key (autor_id) references `user`(id)
+DROP TABLE IF EXISTS author;
+CREATE TABLE IF NOT EXISTS author(
+	id int primary key,
+	foreign key (id) references `user`(id)
 );
 
 DROP TABLE IF EXISTS difficulty;
@@ -52,11 +52,11 @@ CREATE TABLE IF NOT EXISTS recipes(
 	preparationTime TIME not NULL,
     difficulty_id int not null,
     area_id int not null,
-	autor_id INT not null,
+	author_id INT not null,
     image varchar(120) not null,
 	description TEXT NOT NULL,
     FOREIGN KEY (area_id) references `area` (id),
-    FOREIGN KEY (autor_id) REFERENCES autor(autor_id),
+    FOREIGN KEY (author_id) REFERENCES author(author_id),
     FOREIGN KEY (difficulty_id) references difficulty(id)
 );
 
@@ -96,13 +96,12 @@ CREATE TABLE IF NOT EXISTS recipe_ingredients(
     FOREIGN KEY (ingredient_id) references ingredients(id)
 );
 
-
 -- Fixed Atributes
 INSERT INTO difficulty (difficulty) values
-('Easy'), 
-('Normal'), 
-('Hard'), 
-('Master');
+('Beginner'), 
+('Cook'), 
+('Culinarian'), 
+('Chef');
 
 INSERT INTO `area` (`area`) VALUES
 ('American'), 
@@ -133,3 +132,5 @@ INSERT INTO `area` (`area`) VALUES
 ('Turkish'), 
 ('Unknown'), 
 ('Vietnamese');
+
+-- More data after executing the SeedController
