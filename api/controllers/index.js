@@ -1,4 +1,4 @@
 /**
  * Filename: index.js
- * Purpose: Aggregates all controllers
+ * Purpose: Aggregates all controllers.
  */

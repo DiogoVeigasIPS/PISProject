@@ -1,4 +1,4 @@
 /**
  * Filename: index.js
- * Purpose: Aggregates all models
+ * Purpose: Aggregates all models.
  */
