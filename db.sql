@@ -252,7 +252,6 @@ SELECT * FROM recipe_view;
 
 -- JSON
 
-
 SELECT
     JSON_OBJECT(
         'recipes', JSON_ARRAYAGG(
