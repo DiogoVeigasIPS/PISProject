@@ -45,20 +45,25 @@ CREATE TABLE IF NOT EXISTS cost(
     cost varchar(20) 
 );
 
-DROP TABLE IF EXISTS recipes;
-CREATE TABLE IF NOT EXISTS recipes(
+DROP TABLE IF EXISTS preparationTime;
+CREATE TABLE IF NOT EXISTS preparationTime(
+	id INT PRIMARY KEY AUTO_INCREMENT,
+    preparationTime varchar(20)
+);
+
+DROP TABLE IF EXISTS recipe;
+CREATE TABLE IF NOT EXISTS recipe(
 	id INT PRIMARY KEY AUTO_INCREMENT,
     external_id int not null unique,
     `name` VARCHAR(50) NOT NULL UNIQUE,
-	preparationTime TIME not NULL,
-    difficulty_id int not null,
-    area_id int not null,
-	author_id INT not null,
     image varchar(120) not null,
 	description TEXT NOT NULL,
-    FOREIGN KEY (area_id) references `area` (id),
-    FOREIGN KEY (author_id) REFERENCES author(id),
-    FOREIGN KEY (difficulty_id) references difficulty(id)
+    area_id int not null,
+	author_id INT not null,
+	category_id INT not null,
+    FOREIGN KEY (category_id) references category(id),
+    FOREIGN KEY (area_id) references `area`(id),
+    FOREIGN KEY (author_id) REFERENCES author(id)
 );
 
 DROP TABLE IF EXISTS ingredients;
@@ -74,17 +79,8 @@ CREATE TABLE IF NOT EXISTS favorite_recipe (
     user_id INT,
     recipe_id INT,
     PRIMARY KEY (user_id, recipe_id),  
-    FOREIGN KEY (user_id) REFERENCES `user` (id),
-    FOREIGN KEY (recipe_id) REFERENCES recipes (id)
-);
-
-DROP TABLE IF EXISTS recipe_category;
-CREATE TABLE IF NOT EXISTS recipe_category (
-    recipe_id INT,
-    category_id INT,
-    PRIMARY KEY (recipe_id, category_id),
-    FOREIGN KEY (recipe_id) REFERENCES recipes(id),
-    FOREIGN KEY (category_id) REFERENCES category(id)
+    FOREIGN KEY (user_id) REFERENCES `user`(id),
+    FOREIGN KEY (recipe_id) REFERENCES recipe(id)
 );
 
 DROP TABLE IF EXISTS recipe_ingredients;
@@ -93,7 +89,7 @@ CREATE TABLE IF NOT EXISTS recipe_ingredients(
     ingredient_id int,
     quantity varchar(50),
     PRIMARY KEY (recipe_id, ingredient_id),
-    FOREIGN KEY (recipe_id) references recipes(id),
+    FOREIGN KEY (recipe_id) references recipe(id),
     FOREIGN KEY (ingredient_id) references ingredients(id)
 );
 
@@ -103,11 +99,19 @@ VALUES ('System', 'system@example.com', 'system_password', 'System', 'User');
 
 INSERT IGNORE INTO author (id) VALUES (1);  -- Assuming 1 is the ID of the user created above
 
+INSERT IGNORE INTO cost (cost) VALUES
+("Budget"),  
+('Medium'),
+('Premium');
+
+INSERT IGNORE INTO preparationTime (preparationTime) VALUES
+("Fast"),  
+('Moderate'),
+('Slow');
 
 INSERT IGNORE INTO difficulty (difficulty) values
 ('Beginner'), 
 ('Cook'), 
-('Culinarian'), 
 ('Chef');
 
 INSERT IGNORE INTO `area` (`area`) VALUES
@@ -141,12 +145,6 @@ INSERT IGNORE INTO `area` (`area`) VALUES
 ('Unknown'), 
 ('Vietnamese');
 
-INSERT IGNORE INTO recipes (external_id, `name`, preparationTime, difficulty_id, area_id, author_id, image, description)
-VALUES
-(101, 'Sushi Rolls', '00:30:00', 3, 15, 1, 'https://www.themealdb.com/images/media/meals/g046bb1663960946.jpg/preview', 'Steps:\n1. Prepare the rice vinegar-seasoned rice. \n2. Place a nori sheet on a bamboo rolling mat.\n3. Spread a thin layer of prepared rice on the nori sheet.\n4. Add sliced avocado along one edge of the rice.\n5. Roll the sushi tightly and cut into bite-sized pieces.'),
-(102, 'Mediterranean Salad', '00:15:00', 1, 18, 1, 'https://www.themealdb.com/images/media/meals/wvqpwt1468339226.jpg/preview', 'Steps:\n1. Cook the farfalle pasta according to package instructions.\n2. In a large bowl, combine cherry tomatoes, olives, mozzarella balls, tuna, and cooked farfalle.\n3. Drizzle olive oil over the salad and toss gently to combine.\n4. Garnish with fresh basil before serving.');
-
-
 INSERT IGNORE INTO category (`name`, `description`, image) 
 VALUES
     ('Beef', 'Beef is a culinary delight derived from cattle, known for its rich flavor and nutritional value.', 'beef_image.jpg'),
@@ -154,9 +152,10 @@ VALUES
     ('Fish', 'Fish is a diverse group of aquatic animals. It is a popular choice for a healthy and delicious meal.', 'fish_image.jpg'),
     ('Salad', 'Salads are refreshing and nutritious dishes typically consisting of a mixture of vegetables, fruits, and other ingredients.', 'salad_image.jpg');
 
-INSERT IGNORE INTO recipe_category(recipe_id, category_id) values 
-(1, 3),  
-(2, 4); 
+INSERT IGNORE INTO recipe (external_id, `name`, area_id, author_id, image, description, category_id)
+VALUES
+(101, 'Sushi Rolls', 15, 1, 'https://www.themealdb.com/images/media/meals/g046bb1663960946.jpg/preview', 'Steps:\n1. Prepare the rice vinegar-seasoned rice. \n2. Place a nori sheet on a bamboo rolling mat.\n3. Spread a thin layer of prepared rice on the nori sheet.\n4. Add sliced avocado along one edge of the rice.\n5. Roll the sushi tightly and cut into bite-sized pieces.', 3),
+(102, 'Mediterranean Salad', 18, 1, 'https://www.themealdb.com/images/media/meals/wvqpwt1468339226.jpg/preview', 'Steps:\n1. Cook the farfalle pasta according to package instructions.\n2. In a large bowl, combine cherry tomatoes, olives, mozzarella balls, tuna, and cooked farfalle.\n3. Drizzle olive oil over the salad and toss gently to combine.\n4. Garnish with fresh basil before serving.', 4);
 
 INSERT IGNORE INTO ingredients (`name`, `description`)
 VALUES
@@ -184,29 +183,52 @@ VALUES
 (2, 9, '1 bunch'), -- 1 bunch of basil
 (2, 10 , '350g'); -- 350g of farfalle
 
-INSERT IGNORE INTO cost (cost) VALUES
-('5.99'),  
-('10.99'),
-('15.99');
+-- Functions
+DROP FUNCTION IF EXISTS calculate_specification;
+DELIMITER //
+CREATE FUNCTION calculate_specification(recipe_id INT)
+RETURNS INT
+DETERMINISTIC
+BEGIN
+    DECLARE number_related INT;
 
+    SELECT COUNT(DISTINCT i.name)
+    INTO number_related
+    FROM recipe_ingredients ri
+    JOIN ingredients i ON ri.ingredient_id = i.id
+    WHERE ri.recipe_id = recipe_id;
+
+    IF number_related >= 1 AND number_related <= 4 THEN
+        SET number_related = 1;
+    ELSEIF number_related >= 5 AND number_related <= 6 THEN
+        SET number_related = 2;
+    ELSE
+        SET number_related = 3;
+    END IF;
+
+    RETURN number_related;
+END //
+DELIMITER ;
+
+
+-- Views
 DROP VIEW IF EXISTS recipe_view;
+
 CREATE VIEW recipe_view AS
 SELECT
     r.id AS `Recipe ID`,
     r.name AS `Name`,
-	GROUP_CONCAT(DISTINCT c.name) AS Categories,
-	r.description AS `Description`,
-	a.area as `Area`,
-	CONCAT(u.first_name, ' ', u.last_name) AS Author,
-	CONCAT_WS(', ', GROUP_CONCAT(DISTINCT i.name), GROUP_CONCAT(ri.quantity)) AS `Ingredients(Qty)`,
-	r.image AS image,
-    r.preparationTime as `Time`,
-    d.difficulty as `Difficulty`,
-    '10.99' AS Cost -- Use a constant cost value for demonstration
+    c.name AS Category,
+    r.description AS `Description`,
+    a.area AS `Area`,
+    CONCAT(u.first_name, ' ', u.last_name) AS Author,
+    CONCAT_WS(', ', GROUP_CONCAT(DISTINCT i.name), GROUP_CONCAT(ri.quantity)) AS `Ingredients(Qty)`,
+    r.image AS image,
+    (SELECT preparationTime FROM preparationTime WHERE id = calculate_specification(r.id)) AS `Time`,
+    (SELECT difficulty FROM difficulty WHERE id = calculate_specification(r.id)) AS Difficulty,
+    (SELECT cost FROM cost WHERE id = calculate_specification(r.id)) AS Cost
 FROM
-    recipes r
-JOIN
-    difficulty d ON r.difficulty_id = d.id
+    recipe r
 JOIN
     area a ON r.area_id = a.id
 JOIN
@@ -214,16 +236,13 @@ JOIN
 JOIN
     `user` u ON au.id = u.id
 LEFT JOIN
-    recipe_category rc ON r.id = rc.recipe_id
-LEFT JOIN
-    category c ON rc.category_id = c.id
+    category c ON r.category_id = c.id
 LEFT JOIN
     recipe_ingredients ri ON r.id = ri.recipe_id
 LEFT JOIN
     ingredients i ON ri.ingredient_id = i.id
 GROUP BY
     r.id, ri.quantity;
-
 
 
 
