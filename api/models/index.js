@@ -4,11 +4,13 @@
  */
 const Recipe = require('./recipe');
 const Ingredient = require('./ingredient');
+const User = require('./user');
 
 
 const models = {
     Recipe: Recipe,
-    Ingredient: Ingredient
+    Ingredient: Ingredient,
+    User: User
 }
 
-modules.exports = models;
+module.exports = models;

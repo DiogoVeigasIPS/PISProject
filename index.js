@@ -2,8 +2,13 @@
  * Filename: index.js
  * Purpose: Contains all the basic logic of the application.
  */
+const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
+const mustacheExpress = require('mustache-express');
+
+// Try without index
+const apiRouter = require('./api/routes/index');
 
 const app = express();
 
@@ -18,6 +23,7 @@ app.set('view engine', 'mustache');
 app.set('views', path.join(__dirname, '/views'));
 
 // Use api and web app routers.
+app.use('/', apiRouter);
 
 app.get('*', (req, res) => {
     res.status(404).send("Page not found.");
