@@ -216,6 +216,7 @@ DROP VIEW IF EXISTS recipe_view;
 
 CREATE VIEW recipe_view AS
 SELECT
+
     r.id AS `Recipe ID`,
     r.name AS `Name`,
     c.name AS Category,
@@ -247,5 +248,56 @@ GROUP BY
 
 
 SELECT * FROM recipe_view;
+
+
+-- JSON
+
+
+SELECT
+    JSON_OBJECT(
+        'recipes', JSON_ARRAYAGG(
+            JSON_OBJECT(
+                'id', r.id,
+                'name', r.name,
+                'category', c.name,
+                'description', r.description,
+                'area', a.area,
+                'author', CONCAT(u.first_name, ' ', u.last_name),
+                'ingredients', (
+                    SELECT JSON_ARRAYAGG(
+                        JSON_OBJECT('name', i.name, 'quantity', ri.quantity)
+                    )
+                    FROM recipe_ingredients ri
+                    JOIN ingredients i ON ri.ingredient_id = i.id
+                    WHERE ri.recipe_id = r.id
+                ),
+                'image', r.image,
+                'preparationTime', (
+                    SELECT preparationTime FROM preparationTime WHERE id = calculate_specification(r.id)
+                ),
+                'difficulty', (
+                    SELECT difficulty FROM difficulty WHERE id = calculate_specification(r.id)
+                ),
+                'cost', (
+                    SELECT cost FROM cost WHERE id = calculate_specification(r.id)
+                )
+            )
+        )
+    ) AS `recipes`
+FROM
+    recipe r
+JOIN
+    area a ON r.area_id = a.id
+JOIN
+    author au ON r.author_id = au.id
+JOIN
+    `user` u ON au.id = u.id
+LEFT JOIN
+    category c ON r.category_id = c.id
+GROUP BY
+    r.id;
+
+
+
 
 -- More data after executing the SeedController
