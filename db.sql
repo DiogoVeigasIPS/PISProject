@@ -7,8 +7,9 @@ DROP TABLE IF EXISTS `user`;
 CREATE TABLE IF NOT EXISTS `user` (
     id INT PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(30) NOT NULL UNIQUE,
+	`password` VARCHAR(255) NOT NULL,
+	token VARCHAR(255) NOT NULL UNIQUE,
     email VARCHAR(60) NOT NULL UNIQUE,
-    `password` VARCHAR(255) NOT NULL,
     first_name VARCHAR(15) NOT NULL,
     last_name VARCHAR(15) NOT NULL
 );
@@ -39,17 +40,6 @@ CREATE TABLE IF NOT EXISTS `area`(
     `area` varchar(60) not null unique
 );
 
-DROP TABLE IF EXISTS cost;
-CREATE TABLE IF NOT EXISTS cost(
-	id INT PRIMARY KEY AUTO_INCREMENT,
-    cost varchar(20) 
-);
-
-DROP TABLE IF EXISTS preparationTime;
-CREATE TABLE IF NOT EXISTS preparationTime(
-	id INT PRIMARY KEY AUTO_INCREMENT,
-    preparationTime varchar(20)
-);
 
 DROP TABLE IF EXISTS recipe;
 CREATE TABLE IF NOT EXISTS recipe(
@@ -61,9 +51,13 @@ CREATE TABLE IF NOT EXISTS recipe(
     area_id int not null,
 	author_id INT not null,
 	category_id INT not null,
+    difficulty_id INT,
+    preparationTime INT,
+    cost_id DECIMAL(5,2),
     FOREIGN KEY (category_id) references category(id),
     FOREIGN KEY (area_id) references `area`(id),
-    FOREIGN KEY (author_id) REFERENCES author(id)
+    FOREIGN KEY (author_id) REFERENCES author(id),
+    FOREIGN KEY (difficulty_id) REFERENCES difficulty(id)
 );
 
 DROP TABLE IF EXISTS ingredients;
@@ -98,16 +92,6 @@ INSERT IGNORE INTO `user` (username, email, `password`, first_name, last_name)
 VALUES ('System', 'system@example.com', 'system_password', 'System', 'User');
 
 INSERT IGNORE INTO author (id) VALUES (1);  -- Assuming 1 is the ID of the user created above
-
-INSERT IGNORE INTO cost (cost) VALUES
-("Budget"),  
-('Medium'),
-('Premium');
-
-INSERT IGNORE INTO preparationTime (preparationTime) VALUES
-("Fast"),  
-('Moderate'),
-('Slow');
 
 INSERT IGNORE INTO difficulty (difficulty) values
 ('Beginner'), 
@@ -183,34 +167,8 @@ VALUES
 (2, 9, '1 bunch'), -- 1 bunch of basil
 (2, 10 , '350g'); -- 350g of farfalle
 
--- Functions
-DROP FUNCTION IF EXISTS calculate_specification;
-DELIMITER //
-CREATE FUNCTION calculate_specification(recipe_id INT)
-RETURNS INT
-DETERMINISTIC
-BEGIN
-    DECLARE number_related INT;
 
-    SELECT COUNT(DISTINCT i.name)
-    INTO number_related
-    FROM recipe_ingredients ri
-    JOIN ingredients i ON ri.ingredient_id = i.id
-    WHERE ri.recipe_id = recipe_id;
-
-    IF number_related >= 1 AND number_related <= 4 THEN
-        SET number_related = 1;
-    ELSEIF number_related >= 5 AND number_related <= 6 THEN
-        SET number_related = 2;
-    ELSE
-        SET number_related = 3;
-    END IF;
-
-    RETURN number_related;
-END //
-DELIMITER ;
-
-
+-- Views
 -- Views
 DROP VIEW IF EXISTS recipe_view;
 
@@ -224,9 +182,9 @@ SELECT
     CONCAT(u.first_name, ' ', u.last_name) AS Author,
     CONCAT_WS(', ', GROUP_CONCAT(DISTINCT i.name), GROUP_CONCAT(ri.quantity)) AS `Ingredients(Qty)`,
     r.image AS image,
-    (SELECT preparationTime FROM preparationTime WHERE id = calculate_specification(r.id)) AS `Time`,
-    (SELECT difficulty FROM difficulty WHERE id = calculate_specification(r.id)) AS Difficulty,
-    (SELECT cost FROM cost WHERE id = calculate_specification(r.id)) AS Cost
+    r.preparationTime AS `Time`,
+    d.difficulty AS Difficulty,
+    r.cost_id AS Cost
 FROM
     recipe r
 JOIN
@@ -241,11 +199,55 @@ LEFT JOIN
     recipe_ingredients ri ON r.id = ri.recipe_id
 LEFT JOIN
     ingredients i ON ri.ingredient_id = i.id
+LEFT JOIN
+    difficulty d ON r.difficulty_id = d.id
 GROUP BY
     r.id, ri.quantity;
 
 
 
 SELECT * FROM recipe_view;
+
+-- JSON
+SELECT
+    JSON_OBJECT(
+        'recipes', JSON_ARRAYAGG(
+            JSON_OBJECT(
+                'id', r.id,
+                'name', r.name,
+                'category', c.name,
+                'description', r.description,
+                'area', a.area,
+                'author', CONCAT(u.first_name, ' ', u.last_name),
+                'ingredients', (
+                    SELECT JSON_ARRAYAGG(
+                        JSON_OBJECT('name', i.name, 'quantity', ri.quantity)
+                    )
+                    FROM recipe_ingredients ri
+                    JOIN ingredients i ON ri.ingredient_id = i.id
+                    WHERE ri.recipe_id = r.id
+                ),
+                'image', r.image,
+                'preparationTime', r.preparationTime,  
+                'difficulty', d.difficulty,
+                'cost', r.cost_id  
+            )
+        )
+    ) AS `recipes`
+FROM
+    recipe r
+JOIN
+    area a ON r.area_id = a.id
+JOIN
+    author au ON r.author_id = au.id
+JOIN
+    `user` u ON au.id = u.id
+LEFT JOIN
+    category c ON r.category_id = c.id
+LEFT JOIN
+    difficulty d ON r.difficulty_id = d.id
+GROUP BY
+    r.id;
+
 
 -- More data after executing the SeedController
