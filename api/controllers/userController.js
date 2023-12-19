@@ -5,6 +5,8 @@
 const { User } = require('../models');
 const users = require('../temporaryData');
 
+// Create User - functionalities that can work for the router and mustache routing
+
 const readUsers = (req, res) => {
     res.status(200).send(users);
 }

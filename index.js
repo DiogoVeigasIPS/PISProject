@@ -23,7 +23,7 @@ app.set('view engine', 'mustache');
 app.set('views', path.join(__dirname, '/views'));
 
 // Use api and web app routers.
-app.use('/', apiRouter);
+app.use('/api', apiRouter);
 
 app.get('*', (req, res) => {
     res.status(404).send("Page not found.");

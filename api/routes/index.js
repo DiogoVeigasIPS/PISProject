@@ -7,6 +7,6 @@ const userRoutes = require('./userRoutes');
 
 const router = express.Router();
 
-router.use('/api/user', userRoutes);
+router.use('/user', userRoutes);
 
 module.exports = router;
