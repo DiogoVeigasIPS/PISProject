@@ -15,14 +15,16 @@ class User {
      * @param {string} userData.password - The password of a user.
      * @param {string} userData.firstName - The first name of a user.
      * @param {string} userData.lastName - The last name of a user.
+     * @param {string} userData.token - The token of a user.
      */
-    constructor(userData) {
-        this.id = userData.id;
+    constructor(userData, id = userData.id) {
+        this.id = id;
         this.username = userData.username;
         this.email = userData.email;
         this.password = userData.password;
         this.firstName = userData.firstName;
         this.lastName = userData.lastName;
+        this.token = userData.token;
     }
 }
 
