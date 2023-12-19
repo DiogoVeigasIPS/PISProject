@@ -168,47 +168,9 @@ VALUES
 (2, 10 , '350g'); -- 350g of farfalle
 
 
--- Views
--- Views
-DROP VIEW IF EXISTS recipe_view;
-
-CREATE VIEW recipe_view AS
-SELECT
-    r.id AS `Recipe ID`,
-    r.name AS `Name`,
-    c.name AS Category,
-    r.description AS `Description`,
-    a.area AS `Area`,
-    CONCAT(u.first_name, ' ', u.last_name) AS Author,
-    CONCAT_WS(', ', GROUP_CONCAT(DISTINCT i.name), GROUP_CONCAT(ri.quantity)) AS `Ingredients(Qty)`,
-    r.image AS image,
-    r.preparationTime AS `Time`,
-    d.difficulty AS Difficulty,
-    r.cost_id AS Cost
-FROM
-    recipe r
-JOIN
-    area a ON r.area_id = a.id
-JOIN
-    author au ON r.author_id = au.id
-JOIN
-    `user` u ON au.id = u.id
-LEFT JOIN
-    category c ON r.category_id = c.id
-LEFT JOIN
-    recipe_ingredients ri ON r.id = ri.recipe_id
-LEFT JOIN
-    ingredients i ON ri.ingredient_id = i.id
-LEFT JOIN
-    difficulty d ON r.difficulty_id = d.id
-GROUP BY
-    r.id, ri.quantity;
-
-
-
-SELECT * FROM recipe_view;
-
--- JSON
+-- Views 
+DROP VIEW IF EXISTS search_recipes;
+CREATE VIEW search_recipes AS
 SELECT
     JSON_OBJECT(
         'recipes', JSON_ARRAYAGG(
@@ -245,9 +207,11 @@ JOIN
 LEFT JOIN
     category c ON r.category_id = c.id
 LEFT JOIN
-    difficulty d ON r.difficulty_id = d.id
+    difficulty d ON r.difficulty_id = d.id	
 GROUP BY
     r.id;
+
+SELECT * FROM search_recipes;
 
 
 -- More data after executing the SeedController
