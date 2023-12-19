@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS `user` (
     id INT PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(30) NOT NULL UNIQUE,
 	`password` VARCHAR(255) NOT NULL,
-	token VARCHAR(35) NOT NULL UNIQUE,
+	token VARCHAR(255) NOT NULL UNIQUE,
     email VARCHAR(60) NOT NULL UNIQUE,
     first_name VARCHAR(15) NOT NULL,
     last_name VARCHAR(15) NOT NULL
@@ -40,17 +40,6 @@ CREATE TABLE IF NOT EXISTS `area`(
     `area` varchar(60) not null unique
 );
 
-DROP TABLE IF EXISTS cost;
-CREATE TABLE IF NOT EXISTS cost(
-	id INT PRIMARY KEY AUTO_INCREMENT,
-    cost varchar(20) 
-);
-
-DROP TABLE IF EXISTS preparationTime;
-CREATE TABLE IF NOT EXISTS preparationTime(
-	id INT PRIMARY KEY AUTO_INCREMENT,
-    preparationTime INT -- vai ser o tempo em minutos
-);
 
 DROP TABLE IF EXISTS recipe;
 CREATE TABLE IF NOT EXISTS recipe(
@@ -63,14 +52,12 @@ CREATE TABLE IF NOT EXISTS recipe(
 	author_id INT not null,
 	category_id INT not null,
     difficulty_id INT,
-    preparationTime_id INT,
-    cost_id INT,
+    preparationTime INT,
+    cost_id DECIMAL(5,2),
     FOREIGN KEY (category_id) references category(id),
     FOREIGN KEY (area_id) references `area`(id),
     FOREIGN KEY (author_id) REFERENCES author(id),
-    FOREIGN KEY (difficulty_id) REFERENCES difficulty(id),
-    FOREIGN KEY (preparationTime_id) REFERENCES preparationTime(id),
-    FOREIGN KEY (cost_id) REFERENCES cost(id)
+    FOREIGN KEY (difficulty_id) REFERENCES difficulty(id)
 );
 
 DROP TABLE IF EXISTS ingredients;
@@ -105,16 +92,6 @@ INSERT IGNORE INTO `user` (username, email, `password`, first_name, last_name)
 VALUES ('System', 'system@example.com', 'system_password', 'System', 'User');
 
 INSERT IGNORE INTO author (id) VALUES (1);  -- Assuming 1 is the ID of the user created above
-
-INSERT IGNORE INTO cost (cost) VALUES
-("Budget"),  
-('Medium'),
-('Premium');
-
-INSERT IGNORE INTO preparationTime (preparationTime) VALUES
-("Fast"),  
-('Moderate'),
-('Slow');
 
 INSERT IGNORE INTO difficulty (difficulty) values
 ('Beginner'), 
@@ -192,6 +169,7 @@ VALUES
 
 
 -- Views
+-- Views
 DROP VIEW IF EXISTS recipe_view;
 
 CREATE VIEW recipe_view AS
@@ -204,9 +182,9 @@ SELECT
     CONCAT(u.first_name, ' ', u.last_name) AS Author,
     CONCAT_WS(', ', GROUP_CONCAT(DISTINCT i.name), GROUP_CONCAT(ri.quantity)) AS `Ingredients(Qty)`,
     r.image AS image,
-    CASE WHEN (SELECT preparationTime FROM preparationTime WHERE id = r.preparationTime_id) IS NOT NULL THEN (SELECT preparationTime FROM preparationTime WHERE id = r.preparationTime_id) ELSE NULL END AS `Time`,
-    CASE WHEN (SELECT difficulty FROM difficulty WHERE id = r.difficulty_id) IS NOT NULL THEN (SELECT difficulty FROM difficulty WHERE id = r.difficulty_id) ELSE NULL END AS Difficulty,
-    CASE WHEN (SELECT cost FROM cost WHERE id = r.cost_id) IS NOT NULL THEN (SELECT cost FROM cost WHERE id = r.cost_id) ELSE NULL END AS Cost
+    r.preparationTime AS `Time`,
+    d.difficulty AS Difficulty,
+    r.cost_id AS Cost
 FROM
     recipe r
 JOIN
@@ -221,6 +199,8 @@ LEFT JOIN
     recipe_ingredients ri ON r.id = ri.recipe_id
 LEFT JOIN
     ingredients i ON ri.ingredient_id = i.id
+LEFT JOIN
+    difficulty d ON r.difficulty_id = d.id
 GROUP BY
     r.id, ri.quantity;
 
@@ -248,9 +228,9 @@ SELECT
                     WHERE ri.recipe_id = r.id
                 ),
                 'image', r.image,
-                'preparationTime', pt.preparationTime,  
-                'difficulty', d.difficulty,  
-                'cost', co.cost  
+                'preparationTime', r.preparationTime,  
+                'difficulty', d.difficulty,
+                'cost', r.cost_id  
             )
         )
     ) AS `recipes`
@@ -265,11 +245,7 @@ JOIN
 LEFT JOIN
     category c ON r.category_id = c.id
 LEFT JOIN
-    preparationTime pt ON r.preparationTime_id = pt.id  
-LEFT JOIN
-    difficulty d ON r.difficulty_id = d.id 
-LEFT JOIN
-    cost co ON r.cost_id = co.id  
+    difficulty d ON r.difficulty_id = d.id
 GROUP BY
     r.id;
 
