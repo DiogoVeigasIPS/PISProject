@@ -7,4 +7,15 @@ const objectIsValid = (obj) => {
     return true;
 }
 
+const handlePromise = (promise, res) => {
+    promise
+        .then(({ code, msg }) => {
+            res.status(code).send(msg);
+        })
+        .catch(({ code, msg }) => {
+            res.status(code).send(msg);
+        });
+};
+
+module.exports.handlePromise = handlePromise;
 module.exports.objectIsValid = objectIsValid;
