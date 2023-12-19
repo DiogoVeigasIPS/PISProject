@@ -10,7 +10,8 @@ const users = [new User(
         email: "System@gmail.com",
         password: "System",
         firstName: "User",
-        lastName: "System"
+        lastName: "System",
+        token: "System"
     }
 )];
 

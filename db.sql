@@ -169,7 +169,6 @@ VALUES
 
 
 -- Views
--- Views
 DROP VIEW IF EXISTS recipe_view;
 
 CREATE VIEW recipe_view AS
