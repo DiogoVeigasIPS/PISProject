@@ -167,7 +167,6 @@ VALUES
 (2, 9, '1 bunch'), -- 1 bunch of basil
 (2, 10 , '350g'); -- 350g of farfalle
 
-
 -- Views 
 DROP VIEW IF EXISTS search_recipes;
 CREATE VIEW search_recipes AS
