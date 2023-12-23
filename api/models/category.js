@@ -17,7 +17,7 @@ class Category {
     constructor(categoryData) {
         this.id = categoryData.id;
         this.name = categoryData.name;
-        this.description = categoryData.category;
+        this.description = categoryData.description;
         this.image = categoryData.image;    
     }
 }
