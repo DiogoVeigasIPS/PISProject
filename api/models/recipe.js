@@ -15,15 +15,15 @@ class Recipe {
      * @param {Category} recipeData.category - The category of a recipe.
      * @param {string} recipeData.description - The description of a recipe.
      * @param {Area} recipeData.area - The area of origin of a recipe.
-     * @param {string} recipeData.author - The author of a recipe.
+     * @param {Author} recipeData.author - The author of a recipe.
      * @param {IngredientInRecipe[]} recipeData.ingredients - A collection of all ingredients.
      * @param {string} recipeData.image - The url of the image of a recipe.
      * @param {string} recipeData.preparationTime - The preparation time of a recipe.
      * @param {Difficulty} recipeData.difficulty - The difficulty to cook a recipe.
      * @param {number} recipeData.cost - The cost of a recipe.
      */
-    constructor(recipeData) {
-        this.id = recipeData.id;
+    constructor(recipeData, id = recipeData.id) {
+        this.id = id;
         this.idProvider = recipeData.idProvider;
         this.name = recipeData.name;
         this.category = recipeData.category;
