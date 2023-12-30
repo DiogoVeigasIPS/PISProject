@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS recipe(
 	category_id INT not null,
     difficulty_id INT,
     preparationTime INT,
-    cost_id DECIMAL(5,2),
+    cost DECIMAL(5,2),
     FOREIGN KEY (category_id) references category(id),
     FOREIGN KEY (area_id) references `area`(id),
     FOREIGN KEY (author_id) REFERENCES author(id),
@@ -176,13 +176,16 @@ SELECT
             JSON_OBJECT(
                 'id', r.id,
                 'name', r.name,
+                'category_id', c.id,
                 'category', c.name,
                 'description', r.description,
+                'area_id', a.id,
                 'area', a.area,
+                'author_id', u.id,
                 'author', CONCAT(u.first_name, ' ', u.last_name),
                 'ingredients', (
                     SELECT JSON_ARRAYAGG(
-                        JSON_OBJECT('name', i.name, 'quantity', ri.quantity)
+                        JSON_OBJECT('ingredient_id', i.id, 'name', i.name, 'quantity', ri.quantity)
                     )
                     FROM recipe_ingredients ri
                     JOIN ingredients i ON ri.ingredient_id = i.id
@@ -190,11 +193,12 @@ SELECT
                 ),
                 'image', r.image,
                 'preparationTime', r.preparationTime,  
+                'difficulty_id', d.id,
                 'difficulty', d.difficulty,
-                'cost', r.cost_id  
+                'cost', r.cost 
             )
         )
-    ) AS `recipes`
+    ) AS `recipe`
 FROM
     recipe r
 JOIN
@@ -209,6 +213,7 @@ LEFT JOIN
     difficulty d ON r.difficulty_id = d.id	
 GROUP BY
     r.id;
+
 
 SELECT * FROM search_recipes;
 

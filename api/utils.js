@@ -1,6 +1,6 @@
 const objectIsValid = (obj) => {
     for(const prop in obj){
-        if(obj[prop] == null)
+        if(obj[prop] === undefined)
             return false;
     }
 

@@ -18,5 +18,11 @@ npm install
 npm start
 ```
 
+### Quick Start
+For debuggin purposes, the following command might suit you best:
+```bash
+npm run dev
+```
+
 ## Project Status
 *Currently under active development.*

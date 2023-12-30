@@ -8,13 +8,15 @@ class Ingredient {
      * Creates an instance of Recipe.
      *
      * @constructor
-     * @param {Object} ingredientData - The id of a recipe in the provider's API.
-     * @param {string} ingredient.name - The id of a recipe in the provider's API.
-     * @param {string} ingredient.quantity - The name of a recipe.
+     * @param {Object} ingredientData - The data representing an ingridient.
+     * @param {string} ingredient.id - The id of an ingredient.
+     * @param {string} ingredient.name - The name of an ingredient.
+     * @param {string} ingredient.description - The description of an ingredient.
      */
-    constructor(ingredientData) {
+    constructor(ingredientData, id = ingredientData.id) {
+        this.id = id;
         this.name = ingredientData.name;
-        this.quantity = ingredientData.quantity;
+        this.description = ingredientData.description;
     }
 }
 
