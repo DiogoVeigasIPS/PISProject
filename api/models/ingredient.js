@@ -13,8 +13,8 @@ class Ingredient {
      * @param {string} ingredient.name - The name of an ingredient.
      * @param {string} ingredient.description - The description of an ingredient.
      */
-    constructor(ingredientData) {
-        this.id = ingredientData.id;
+    constructor(ingredientData, id = ingredientData.id) {
+        this.id = id;
         this.name = ingredientData.name;
         this.description = ingredientData.description;
     }
