@@ -68,7 +68,7 @@ const deleteArea = (id) => {
             return;
         }
 
-        areas.splice(areadIndex, 1);
+        areas.splice(areaIndex, 1);
 
         resolve({ code: 200, msg: 'Area deleted sucessfully.'});
     })
