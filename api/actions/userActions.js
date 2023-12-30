@@ -5,7 +5,7 @@
 const { User } = require('../models');
 const { objectIsValid } = require('../utils');
 
-const users = require('../temporaryData');
+const { users } = require('../temporaryData');
 
 const getUsers = () => {
     return new Promise((resolve, reject) => {

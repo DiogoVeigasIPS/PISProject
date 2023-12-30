@@ -2,10 +2,7 @@
  * Filename: temporaryData.js
  * Purpose: Creates a temporary array stored in memory for testing purposes.
  */
-const { User, Difficulty } = require('./models');
-const { Area } = require('./models');
-const { Category} = require('./models');
-
+const { User, Difficulty, Area, Category } = require('./models');
 
 const users = [new User(
     {
@@ -42,7 +39,7 @@ const difficulties = [new Difficulty(
     }
 )]
 
-module.exports = users;
-module.exports = areas;
-module.exports = categories;
-module.exports = difficulties;
+module.exports.users = users;
+module.exports.areas = areas;
+module.exports.categories = categories;
+module.exports.difficulties = difficulties;

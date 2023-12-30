@@ -5,7 +5,7 @@
 const { Area } = require('../models');
 const { objectIsValid } = require('../utils');
 
-const areas = require('../temporaryData');
+const { areas } = require('../temporaryData');
 
 const getAreas = () => {
     return new Promise((resolve, reject) => {
