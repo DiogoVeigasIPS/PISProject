@@ -2,7 +2,7 @@
  * Filename: temporaryData.js
  * Purpose: Creates a temporary array stored in memory for testing purposes.
  */
-const { User, Difficulty, Area, Category, Ingredient, Recipe } = require('./models');
+const { User, Difficulty, Area, Category, Ingredient, Recipe, IngredientInRecipe } = require('./models');
 
 const users = [
     new User({
@@ -57,7 +57,7 @@ const ingredients = [
     })
 ];
 
-const recipe = [
+const recipes = [
     new Recipe({
         id: 1,
         idProvider: 559,
@@ -66,7 +66,26 @@ const recipe = [
         description: "Protein and Protein",
         area: new Area(areas[0]),
         author: new User(users[0]),
-        ingredients: null,
+        ingredients: [
+            new IngredientInRecipe(
+                {
+                    ingredient: new Ingredient(ingredients[0]),
+                    quantity: "Pelo menos 3kg"
+                }
+            ),
+            new IngredientInRecipe(
+                {
+                    ingredient: new Ingredient(ingredients[1]),
+                    quantity: "Só para dar côr ao prato"
+                }
+            ),
+            new IngredientInRecipe(
+                {
+                    ingredient: new Ingredient(ingredients[2]),
+                    quantity: "Encher o prato, para dar energia"
+                }
+            )
+        ],
         image: "https://fotoDoMeuPeitinho.com",
         preparationTime: "15 minutes in the washing machine",
         difficulty: new Difficulty(difficulties[0]),
@@ -79,4 +98,4 @@ module.exports.areas = areas;
 module.exports.categories = categories;
 module.exports.difficulties = difficulties;
 module.exports.ingredients = ingredients;
-module.exports.recipe = recipe;
+module.exports.recipes = recipes;

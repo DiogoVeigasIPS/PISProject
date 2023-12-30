@@ -8,6 +8,7 @@ const areaRoutes = require('./areaRoutes');
 const categoryRoutes = require('./categoryRoutes');
 const difficultyRoutes = require('./difficultyRoutes');
 const ingredientRoutes = require('./ingredientRoutes');
+const recipeRoutes = require('./recipeRoutes');
 
 const router = express.Router();
 
@@ -16,6 +17,7 @@ router.use('/area', areaRoutes);
 router.use('/category', categoryRoutes);
 router.use('/difficulty', difficultyRoutes);
 router.use('/ingredient', ingredientRoutes);
+router.use('/recipe', recipeRoutes);
 
 
 module.exports = router;
