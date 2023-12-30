@@ -9,10 +9,10 @@ class Category {
      *
      * @constructor
      * @param {Object} categoryData - The data representing a category.
-     * @param {int} category.id - The id of a category.
-     * @param {string} category.name - The name of a category.
-     * @param {string} category.description - The description of a category.
-     * @param {string} category.image - The image of a category.
+     * @param {int} categoryData.id - The id of a category.
+     * @param {string} categoryData.name - The name of a category.
+     * @param {string} categoryData.description - The description of a category.
+     * @param {string} categoryData.image - The image of a category.
      */
     constructor(categoryData) {
         this.id = categoryData.id;

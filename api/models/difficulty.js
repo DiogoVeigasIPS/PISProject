@@ -8,9 +8,9 @@ class Difficulty {
      * Creates an instance of Difficulty.
      *
      * @constructor
-     * @param {Object} difficultyData - The data of a difficulty in the provider's API.
-     * @param {string} difficulty.id - The id of a difficulty in the provider's API.
-     * @param {string} difficulty.name - The name of a difficulty.
+     * @param {Object} difficultyData - The data representing a difficulty.
+     * @param {string} difficultyData.id - The id of a difficulty.
+     * @param {string} difficultyData.name - The name of a difficulty.
      */
     constructor(difficultyData) {
         this.id = difficultyData.id;
