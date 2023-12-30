@@ -176,16 +176,25 @@ SELECT
             JSON_OBJECT(
                 'id', r.id,
                 'name', r.name,
-                'category_id', c.id,
-                'category', c.name,
+				'category', JSON_OBJECT(
+					'id', c.id,
+					'name', c.name,
+					'description', c.description
+				),
                 'description', r.description,
-                'area_id', a.id,
-                'area', a.area,
-                'author_id', u.id,
-                'author', CONCAT(u.first_name, ' ', u.last_name),
+                'area', JSON_OBJECT(
+					'id', a.id,
+					'name', a.area
+                ),
+                'author', JSON_OBJECT(
+					'id', u.id,
+                    'username', u.username,
+					'firstName', u.first_name, 
+                    'lastName', u.last_name
+                ),
                 'ingredients', (
                     SELECT JSON_ARRAYAGG(
-                        JSON_OBJECT('ingredient_id', i.id, 'name', i.name, 'quantity', ri.quantity)
+                        JSON_OBJECT('id', i.id, 'name', i.name, 'quantity', ri.quantity)
                     )
                     FROM recipe_ingredients ri
                     JOIN ingredients i ON ri.ingredient_id = i.id
@@ -193,8 +202,10 @@ SELECT
                 ),
                 'image', r.image,
                 'preparationTime', r.preparationTime,  
-                'difficulty_id', d.id,
-                'difficulty', d.difficulty,
+                'difficulty', JSON_OBJECT(
+					'id', d.id,
+					'name', d.difficulty
+                ),
                 'cost', r.cost 
             )
         )
