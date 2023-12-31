@@ -27,139 +27,141 @@ const getRecipe = (id) => {
     });
 }
 
+const processRecipeData = (recipe) => {
+    // Check category 
+    const categoryId = recipe.category.id;
+    const foundCategory = categories.find(c => c.id == categoryId);
+
+    if (foundCategory == null) {
+        throw { code: 400, msg: 'Recipe category not found.' };
+    }
+
+    const category = new Category({
+        id: categoryId,
+        name: foundCategory.name,
+        description: foundCategory.description,
+        image: foundCategory.image
+    });
+
+    // Check area 
+    const areaId = recipe.area.id;
+    const foundArea = areas.find(a => a.id == areaId);
+    if (foundArea == null) {
+        throw { code: 400, msg: 'Recipe area not found.' };
+    }
+
+    const area = new Area({
+        id: areaId,
+        name: foundArea.name
+    });
+
+    // Check difficulty 
+    const difficultyId = recipe.difficulty.id;
+    const foundDifficulty = difficulties.find(d => d.id == difficultyId);
+    if (foundDifficulty == null) {
+        throw { code: 400, msg: 'Recipe difficulty not found.' };
+    }
+
+    const difficulty = new Difficulty({
+        id: difficultyId,
+        name: foundDifficulty.name
+    });
+
+    // Check author
+    const authorId = recipe.author.id;
+    const foundAuthor = users.find(c => c.id == authorId);
+
+    if (foundAuthor == null) {
+        throw { code: 400, msg: 'Recipe author not found.' };
+    }
+
+    const author = new Author({
+        id: authorId,
+        username: foundAuthor.username,
+        firstName: foundAuthor.firstName,
+        lastName: foundAuthor.lastName
+    });
+
+    // Check ingredients
+    const ingredientsIds = recipe.ingredients.map(i => {
+        if (i.quantity == undefined) {
+            throw { code: 400, msg: `Recipe ingredient with id=${i.ingredient.id} quantity not found.` };
+        }
+
+        return { id: i.ingredient.id, quantity: i.quantity };
+    });
+
+    const finalIngredients = [];
+    ingredientsIds.forEach(ingredient => {
+        const foundIngredient = ingredients.find(i => i && i.id == ingredient.id);
+        if (foundIngredient == null) {
+            throw { code: 400, msg: `Recipe ingredient with id=${ingredient.id} not found.` };
+        }
+
+        const finalIngredient = new IngredientInRecipe({
+            ingredient: new Ingredient({
+                id: ingredient.id,
+                name: foundIngredient.name,
+                description: foundIngredient.description
+            }),
+            quantity: ingredient.quantity
+        });
+        finalIngredients.push(finalIngredient);
+    });
+
+    // Assign calculated values
+    recipe.category = category;
+    recipe.area = area;
+    recipe.difficulty = difficulty;
+    recipe.author = author;
+    recipe.ingredients = finalIngredients;
+
+    return recipe;
+};
+
 const addRecipe = (recipe) => {
     return new Promise((resolve, reject) => {
         const id = (recipes.length == 0) ? 1 : recipes.at(-1).id + 1;
 
-        // Check category 
-        const categoryId = recipe.category.id;
-        const foundCategory = categories.find(c => c.id == categoryId);
+        try {
+            const processedRecipe = processRecipeData(recipe);
+            const newRecipe = new Recipe(processedRecipe, id);
 
-        if (foundCategory == null) {
-            console.error("cat not found");
-            reject({ code: 400, msg: 'Recipe category not found.' });
-            return;
-        }
-
-        const category = new Category({
-            id: categoryId,
-            name: foundCategory.name,
-            description: foundCategory.description,
-            image: foundCategory.image
-        });
-
-        // // Check area 
-        const areaId = recipe.area.id;
-        const foundArea = areas.find(a => a.id == areaId);
-        if (foundArea == null) {
-            reject({ code: 400, msg: 'Recipe area not found.' });
-            return;
-        }
-
-        const area = new Area({
-            id: areaId,
-            name: foundArea.name
-        });
-
-        // Check difficulty 
-        const difficultyId = recipe.difficulty.id;
-        const foundDifficulty = difficulties.find(d => d.id == difficultyId);
-        if (foundDifficulty == null) {
-            reject({ code: 400, msg: 'Recipe difficulty not found.' });
-            return;
-        }
-
-        const difficulty = new Difficulty({
-            id: difficultyId,
-            name: foundDifficulty.name
-        });
-
-        // Check author
-        const authorId = recipe.author.id;
-        const foundAuthor = users.find(c => c.id == authorId);
-
-        if (foundAuthor == null) {
-            reject({ code: 400, msg: 'Recipe author not found.' });
-            return;
-        }
-
-        const author = new Author({
-            id: authorId,
-            username: foundAuthor.username,
-            firstName: foundAuthor.firstName,
-            lastName: foundAuthor.lastName
-        });
-
-        // Check ingredients
-        const ingredientsIds = recipe.ingredients.map(i => {
-            if (i.quantity == undefined) {
-                reject({ code: 400, msg: `Recipe ingredient with id=${i.ingredient.id} quantity not found.` });
-                return;
+            if (objectIsValid(newRecipe)) {
+                recipes.push(newRecipe);
+                resolve({ code: 201, msg: newRecipe });
+            } else {
+                reject({ code: 400, msg: 'Invalid Body.' });
             }
-
-            return { id: i.ingredient.id, quantity: i.quantity };
-        });
-
-        const finalIngredients = [];
-        ingredientsIds.forEach(ingredient => {
-            const foundIngredient = ingredients.find(i => i && i.id == ingredient.id);
-            if (foundIngredient == null) {
-                reject({ code: 400, msg: `Recipe ingredient with id=${ingredient.id} not found.` });
-                return;
-            }
-
-            const finalIngredient = new IngredientInRecipe({
-                ingredient: new Ingredient({
-                    id: ingredient.id,
-                    name: foundIngredient.name,
-                    description: foundIngredient.description
-                }),
-                quantity: ingredient.quantity
-            });
-            finalIngredients.push(finalIngredient);
-
-        });
-
-        // // Assign calculated values
-        recipe.category = category;
-        recipe.area = area;
-        recipe.difficulty = difficulty;
-        recipe.author = author;
-        recipe.ingredients = finalIngredients;
-
-        const newRecipe = new Recipe(recipe, id);
-        if (objectIsValid(newRecipe)) {
-            recipes.push(newRecipe);
-            resolve({ code: 201, msg: newRecipe });
-            return;
+        } catch (error) {
+            reject(error);
         }
-
-        reject({ code: 400, msg: 'Invalid Body.' });
-    })
-}
+    });
+};
 
 const editRecipe = (id, recipe) => {
     return new Promise((resolve, reject) => {
-        const newRecipe = new Recipe(recipe, id);
-        const oldRecipe = recipes.find(a => a.id == id);
+        try {
+            const processedRecipe = processRecipeData(recipe);
+            processedRecipe.id = id;
+            
+            const oldRecipe = recipes.find(a => a.id == id);
 
-        if (!objectIsValid(newRecipe)) {
-            reject({ code: 400, msg: 'Invalid body.' });
-            return;
+            if (!objectIsValid(processedRecipe)) {
+                reject({ code: 400, msg: 'Invalid body.' });
+            } else if (oldRecipe == null) {
+                reject({ code: 404, msg: 'Recipe not found.' });
+            } else {
+                for (prop in processedRecipe) {
+                    oldRecipe[prop] = processedRecipe[prop];
+                }
+                resolve({ code: 200, msg: oldRecipe });
+            }
+        } catch (error) {
+            reject(error);
         }
-
-        if (oldRecipe == null) {
-            reject({ code: 404, msg: 'Recipe not found.' });
-            return;
-        }
-
-        for (prop in newRecipe) {
-            oldRecipe[prop] = newRecipe[prop];
-        }
-
-        resolve({ code: 200, msg: oldRecipe });
-    })
-}
+    });
+};
 
 const deleteRecipe = (id) => {
     return new Promise((resolve, reject) => {
