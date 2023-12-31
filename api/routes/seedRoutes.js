@@ -9,5 +9,7 @@ const { seedController } = require('../controllers');
 const router = express.Router();
 
 router.get('/categories', seedController.seedCategories);
+router.get('/areas', seedController.seedAreas);
+router.get('/ingredients', seedController.seedIngredients);
 
 module.exports = router;

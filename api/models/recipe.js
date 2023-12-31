@@ -14,6 +14,7 @@ class Recipe {
      * @param {string} recipeData.name - The name of a recipe.
      * @param {Category} recipeData.category - The category of a recipe.
      * @param {string} recipeData.description - The description of a recipe.
+     * @param {string} recipeData.preparationDescription - The description of the preparation of a recipe.
      * @param {Area} recipeData.area - The area of origin of a recipe.
      * @param {Author} recipeData.author - The author of a recipe.
      * @param {IngredientInRecipe[]} recipeData.ingredients - A collection of all ingredients.
@@ -28,6 +29,7 @@ class Recipe {
         this.name = recipeData.name;
         this.category = recipeData.category;
         this.description = recipeData.description;
+        this.preparationDescription = recipeData.preparationDescription;
         this.area = recipeData.area;
         this.author = recipeData.author;
         this.ingredients = recipeData.ingredients;
