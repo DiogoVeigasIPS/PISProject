@@ -27,6 +27,20 @@ const getRecipe = (id) => {
     });
 }
 
+const ingredientsAreDuplicate = (ingredientsIds) => {
+    const set = new Set();
+
+    for (const ingredient of ingredientsIds) {
+        const id = ingredient.id;
+
+        if (set.has(id)) return true;
+
+        set.add(id);
+    }
+
+    return false;
+};
+
 const processRecipeData = (recipe) => {
     // Check category 
     const categoryId = recipe.category.id;
@@ -91,6 +105,10 @@ const processRecipeData = (recipe) => {
         return { id: i.ingredient.id, quantity: i.quantity };
     });
 
+    if (ingredientsAreDuplicate(ingredientsIds)) {
+        throw { code: 400, msg: `Recipe ingredient can't have duplicates.` };
+    }
+
     const finalIngredients = [];
     ingredientsIds.forEach(ingredient => {
         const foundIngredient = ingredients.find(i => i && i.id == ingredient.id);
@@ -144,7 +162,7 @@ const editRecipe = (id, recipe) => {
         try {
             const processedRecipe = processRecipeData(recipe);
             processedRecipe.id = id;
-            
+
             const oldRecipe = recipes.find(a => a.id == id);
 
             if (!objectIsValid(processedRecipe)) {
