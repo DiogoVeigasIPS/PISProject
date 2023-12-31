@@ -8,6 +8,7 @@ const categoryController = require('./categoryController');
 const difficultyController = require('./difficultyController');
 const ingredientController = require('./ingredientController');
 const recipeController = require('./recipeController');
+const seedController = require('./seedController');
 
 const controllers = {
     userController: userController,
@@ -15,7 +16,8 @@ const controllers = {
     categoryController: categoryController,
     difficultyController: difficultyController,
     ingredientController: ingredientController,
-    recipeController: recipeController
+    recipeController: recipeController,
+    seedController: seedController
 }
 
 module.exports = controllers;

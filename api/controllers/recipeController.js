@@ -2,7 +2,6 @@
  * Filename: recipeController.js
  * Purpose: Aggregates all controllers for the Recipe entity.
  */
-
 const { recipeActions } = require('../actions');
 const { handlePromise } = require('../utils');
 

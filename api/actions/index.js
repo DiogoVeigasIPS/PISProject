@@ -8,6 +8,7 @@ const categoryActions = require('./categoryActions');
 const difficultyActions = require('./difficultyActions');
 const ingredientActions = require('./ingredientActions');
 const recipeActions = require('./recipeActions');
+const seedActions = require('./seedActions');
 
 const actions = {
     userActions: userActions,
@@ -15,7 +16,8 @@ const actions = {
     categoryActions: categoryActions,
     difficultyActions: difficultyActions,
     ingredientActions: ingredientActions,
-    recipeActions: recipeActions
+    recipeActions: recipeActions,
+    seedActions: seedActions
 }
 
 module.exports = actions;

@@ -1,3 +1,7 @@
+/**
+ * Filename: utils.js
+ * Purpose: Hosts some functions that are used in multiple places.
+ */
 const objectIsValid = (obj) => {
     for(const prop in obj){
         if(obj[prop] === undefined)

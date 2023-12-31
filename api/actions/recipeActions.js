@@ -27,6 +27,77 @@ const getRecipe = (id) => {
     });
 }
 
+const addRecipe = (recipe) => {
+    return new Promise((resolve, reject) => {
+        const id = (recipes.length == 0) ? 1 : recipes.at(-1).id + 1;
+
+        try {
+            const processedRecipe = processRecipeData(recipe);
+            const newRecipe = new Recipe(processedRecipe, id);
+
+            if (objectIsValid(newRecipe)) {
+                recipes.push(newRecipe);
+                resolve({ code: 201, msg: newRecipe });
+            } else {
+                reject({ code: 400, msg: 'Invalid Body.' });
+            }
+        } catch (error) {
+            reject(error);
+        }
+    });
+};
+
+const editRecipe = (id, recipe) => {
+    return new Promise((resolve, reject) => {
+        try {
+            const processedRecipe = processRecipeData(recipe);
+            processedRecipe.id = id;
+
+            const oldRecipe = recipes.find(a => a.id == id);
+
+            if (!objectIsValid(processedRecipe)) {
+                reject({ code: 400, msg: 'Invalid body.' });
+            } else if (oldRecipe == null) {
+                reject({ code: 404, msg: 'Recipe not found.' });
+            } else {
+                for (prop in processedRecipe) {
+                    oldRecipe[prop] = processedRecipe[prop];
+                }
+                resolve({ code: 200, msg: oldRecipe });
+            }
+        } catch (error) {
+            reject(error);
+        }
+    });
+};
+
+const deleteRecipe = (id) => {
+    return new Promise((resolve, reject) => {
+        const recipeIndex = recipes.findIndex(a => a.id == id);
+
+        if (recipeIndex == -1) {
+            reject({ code: 404, msg: 'Recipe not found.' })
+            return;
+        }
+
+        recipes.splice(recipeIndex, 1);
+
+        resolve({ code: 200, msg: 'Recipe deleted sucessfully.' });
+    })
+}
+
+module.exports.getRecipes = getRecipes;
+module.exports.getRecipe = getRecipe;
+module.exports.addRecipe = addRecipe;
+module.exports.editRecipe = editRecipe;
+module.exports.deleteRecipe = deleteRecipe;
+
+/**
+ * [ingredientsAreDuplicate] - Checks for duplicated.
+ *
+ * @param {Object} ingredientsIds - ids and quantities of a recipe.
+ * @returns {boolean} - There are either duplicates or not.
+ */
 const ingredientsAreDuplicate = (ingredientsIds) => {
     const set = new Set();
 
@@ -41,6 +112,13 @@ const ingredientsAreDuplicate = (ingredientsIds) => {
     return false;
 };
 
+/**
+ * [processRecipeData] - Processes a recipe in order to validate it and insert it.
+ *
+ * @param {Recipe} recipe - Recipe before being processed.
+ * @returns {Recipe} - The processed recipe.
+ * @throws {Object} - An error object with a status code and descriptive message.
+ */
 const processRecipeData = (recipe) => {
     // Check category 
     const categoryId = recipe.category.id;
@@ -136,68 +214,3 @@ const processRecipeData = (recipe) => {
 
     return recipe;
 };
-
-const addRecipe = (recipe) => {
-    return new Promise((resolve, reject) => {
-        const id = (recipes.length == 0) ? 1 : recipes.at(-1).id + 1;
-
-        try {
-            const processedRecipe = processRecipeData(recipe);
-            const newRecipe = new Recipe(processedRecipe, id);
-
-            if (objectIsValid(newRecipe)) {
-                recipes.push(newRecipe);
-                resolve({ code: 201, msg: newRecipe });
-            } else {
-                reject({ code: 400, msg: 'Invalid Body.' });
-            }
-        } catch (error) {
-            reject(error);
-        }
-    });
-};
-
-const editRecipe = (id, recipe) => {
-    return new Promise((resolve, reject) => {
-        try {
-            const processedRecipe = processRecipeData(recipe);
-            processedRecipe.id = id;
-
-            const oldRecipe = recipes.find(a => a.id == id);
-
-            if (!objectIsValid(processedRecipe)) {
-                reject({ code: 400, msg: 'Invalid body.' });
-            } else if (oldRecipe == null) {
-                reject({ code: 404, msg: 'Recipe not found.' });
-            } else {
-                for (prop in processedRecipe) {
-                    oldRecipe[prop] = processedRecipe[prop];
-                }
-                resolve({ code: 200, msg: oldRecipe });
-            }
-        } catch (error) {
-            reject(error);
-        }
-    });
-};
-
-const deleteRecipe = (id) => {
-    return new Promise((resolve, reject) => {
-        const recipeIndex = recipes.findIndex(a => a.id == id);
-
-        if (recipeIndex == -1) {
-            reject({ code: 404, msg: 'Recipe not found.' })
-            return;
-        }
-
-        recipes.splice(recipeIndex, 1);
-
-        resolve({ code: 200, msg: 'Recipe deleted sucessfully.' });
-    })
-}
-
-module.exports.getRecipes = getRecipes;
-module.exports.getRecipe = getRecipe;
-module.exports.addRecipe = addRecipe;
-module.exports.editRecipe = editRecipe;
-module.exports.deleteRecipe = deleteRecipe;
