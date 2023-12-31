@@ -33,18 +33,28 @@ const addRecipe = (recipe) => {
 
         // Check category 
         const categoryId = recipe.category.id;
-        const foundCategory = categories.find(c => c.id = categoryId);
+        const foundCategory = categories.find(c => c.id == categoryId);
+
+        if (foundCategory == null) {
+            console.error("cat not found");
+            reject({ code: 400, msg: 'Recipe category not found.' });
+            return;
+        }
 
         const category = new Category({
             id: categoryId,
-            category: foundCategory.category,
+            name: foundCategory.name,
             description: foundCategory.description,
             image: foundCategory.image
         });
 
         // // Check area 
         const areaId = recipe.area.id;
-        const foundArea = areas.find(a => a.id = areaId);
+        const foundArea = areas.find(a => a.id == areaId);
+        if (foundArea == null) {
+            reject({ code: 400, msg: 'Recipe area not found.' });
+            return;
+        }
 
         const area = new Area({
             id: areaId,
@@ -53,7 +63,11 @@ const addRecipe = (recipe) => {
 
         // Check difficulty 
         const difficultyId = recipe.difficulty.id;
-        const foundDifficulty = difficulties.find(d => d.id = difficultyId);
+        const foundDifficulty = difficulties.find(d => d.id == difficultyId);
+        if (foundDifficulty == null) {
+            reject({ code: 400, msg: 'Recipe difficulty not found.' });
+            return;
+        }
 
         const difficulty = new Difficulty({
             id: difficultyId,
@@ -61,8 +75,13 @@ const addRecipe = (recipe) => {
         });
 
         // Check author
-        const authorId = recipe.difficulty.id;
-        const foundAuthor = users.find(c => c.id = authorId);
+        const authorId = recipe.author.id;
+        const foundAuthor = users.find(c => c.id == authorId);
+
+        if (foundAuthor == null) {
+            reject({ code: 400, msg: 'Recipe author not found.' });
+            return;
+        }
 
         const author = new Author({
             id: authorId,
@@ -73,26 +92,32 @@ const addRecipe = (recipe) => {
 
         // Check ingredients
         const ingredientsIds = recipe.ingredients.map(i => {
-            return { id: i.ingredient.id, quantity: i.ingredient.quantity };
+            if (i.quantity == undefined) {
+                reject({ code: 400, msg: `Recipe ingredient with id=${i.ingredient.id} quantity not found.` });
+                return;
+            }
+
+            return { id: i.ingredient.id, quantity: i.quantity };
         });
-        
+
         const finalIngredients = [];
         ingredientsIds.forEach(ingredient => {
-            const foundIngredient = ingredients.find(i => i && i.id === ingredient.id);
-
-            if (foundIngredient) {
-                const finalIngredient = new IngredientInRecipe({
-                    ingredient: new Ingredient({
-                        id: ingredient.id,
-                        name: foundIngredient.name,
-                        description: foundIngredient.description
-                    }),
-                    quantity: ingredient.quantity
-                });
-                finalIngredients.push(finalIngredient);
-            } else {
-                console.error(`Ingredient with ID ${ingredient.id} not found.`);
+            const foundIngredient = ingredients.find(i => i && i.id == ingredient.id);
+            if (foundIngredient == null) {
+                reject({ code: 400, msg: `Recipe ingredient with id=${ingredient.id} not found.` });
+                return;
             }
+
+            const finalIngredient = new IngredientInRecipe({
+                ingredient: new Ingredient({
+                    id: ingredient.id,
+                    name: foundIngredient.name,
+                    description: foundIngredient.description
+                }),
+                quantity: ingredient.quantity
+            });
+            finalIngredients.push(finalIngredient);
+
         });
 
         // // Assign calculated values
@@ -108,7 +133,7 @@ const addRecipe = (recipe) => {
             resolve({ code: 201, msg: newRecipe });
             return;
         }
-        
+
         reject({ code: 400, msg: 'Invalid Body.' });
     })
 }

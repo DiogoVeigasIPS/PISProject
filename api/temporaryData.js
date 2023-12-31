@@ -42,7 +42,7 @@ const difficulties = [
 const ingredients = [
     new Ingredient({
         id: 1,
-        name: "Peito de frango",
+        name: "Chicken breast",
         description: "Good for the protein and budget."
     }),
     new Ingredient({
@@ -61,7 +61,7 @@ const recipes = [
     new Recipe({
         id: 1,
         idProvider: 559,
-        name: "Peitinho de frango",
+        name: "Chicken breast",
         category: new Category(categories[0]),
         description: "Protein and Protein",
         area: new Area(areas[0]),
@@ -70,23 +70,23 @@ const recipes = [
             new IngredientInRecipe(
                 {
                     ingredient: new Ingredient(ingredients[0]),
-                    quantity: "Pelo menos 3kg"
+                    quantity: "At least 3kg"
                 }
             ),
             new IngredientInRecipe(
                 {
                     ingredient: new Ingredient(ingredients[1]),
-                    quantity: "Só para dar côr ao prato"
+                    quantity: "Just to color the plate up"
                 }
             ),
             new IngredientInRecipe(
                 {
                     ingredient: new Ingredient(ingredients[2]),
-                    quantity: "Encher o prato, para dar energia"
+                    quantity: "Fill up the plate, for the energy of course"
                 }
             )
         ],
-        image: "https://fotoDoMeuPeitinho.com",
+        image: "https://mybreastpictures.com",
         preparationTime: "15 minutes in the washing machine",
         difficulty: new Difficulty(difficulties[0]),
         cost: 10.00
