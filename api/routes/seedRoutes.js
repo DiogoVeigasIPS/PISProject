@@ -11,5 +11,7 @@ const router = express.Router();
 router.get('/categories', seedController.seedCategories);
 router.get('/areas', seedController.seedAreas);
 router.get('/ingredients', seedController.seedIngredients);
+router.get('/recipes', seedController.seedRecipes);
+router.get('/all', seedController.seedAll);
 
 module.exports = router;

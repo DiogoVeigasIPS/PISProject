@@ -3,8 +3,8 @@
  * Purpose: Hosts some functions that are used in multiple places.
  */
 const objectIsValid = (obj) => {
-    for(const prop in obj){
-        if(obj[prop] === undefined)
+    for (const prop in obj) {
+        if (obj[prop] === undefined)
             return false;
     }
 
@@ -21,5 +21,15 @@ const handlePromise = (promise, res) => {
         });
 };
 
+function capitalizeWords(inputString) {
+    const words = inputString.split(' ');
+
+    const capitalizedWords = words.map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase());
+    const resultString = capitalizedWords.join(' ');
+
+    return resultString;
+}
+
 module.exports.handlePromise = handlePromise;
 module.exports.objectIsValid = objectIsValid;
+module.exports.capitalizeWords = capitalizeWords;

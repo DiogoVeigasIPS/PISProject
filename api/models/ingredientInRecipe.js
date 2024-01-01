@@ -12,8 +12,7 @@ class IngredientInRecipe {
      * @param {Ingredient} ingredientInRecipeData.ingredient - The id of an ingredient.
      * @param {string} ingredientInRecipeData.quantity - The name of an ingredient.
      */
-    constructor(ingredientInRecipeData, id = ingredientInRecipeData.id) {
-        this.id = id;
+    constructor(ingredientInRecipeData) {
         this.ingredient = ingredientInRecipeData.ingredient;
         this.quantity = ingredientInRecipeData.quantity;
     }

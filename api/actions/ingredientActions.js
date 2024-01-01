@@ -30,7 +30,7 @@ const addIngredient = (ingredient) => {
         if (objectIsValid(newIngredient)){
             ingredients.push(newIngredient);
             resolve({ code: 201, msg: newIngredient});
-            return;
+            return ingredient;
         }
         reject({ code: 400, msg: 'Invalid Body.' });
     })
