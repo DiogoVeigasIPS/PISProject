@@ -21,7 +21,7 @@ const handlePromise = (promise, res) => {
         });
 };
 
-function capitalizeWords(inputString) {
+const capitalizeWords = (inputString) => {
     const words = inputString.split(' ');
 
     const capitalizedWords = words.map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase());
@@ -30,6 +30,16 @@ function capitalizeWords(inputString) {
     return resultString;
 }
 
+const shuffleArray = (array) => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+}
+
 module.exports.handlePromise = handlePromise;
 module.exports.objectIsValid = objectIsValid;
 module.exports.capitalizeWords = capitalizeWords;
+module.exports.shuffleArray = shuffleArray;

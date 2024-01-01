@@ -3,7 +3,7 @@
  * Purpose: Aggregates all actions for the Recipe entity.
  */
 const { Recipe, Category, Author, Area, Difficulty, Ingredient, IngredientInRecipe } = require('../models');
-const { objectIsValid } = require('../utils');
+const { objectIsValid, shuffleArray } = require('../utils');
 
 const { recipes, categories, users, areas, difficulties, ingredients } = require('../temporaryData');
 
@@ -11,11 +11,19 @@ const { recipes, categories, users, areas, difficulties, ingredients } = require
 // Get and gets change user to Author
 // Fix Add
 
-const getRecipes = () => {
+const getRecipes = (queryOptions = null) => {
     return new Promise((resolve, reject) => {
-        resolve({ code: 200, msg: recipes });
+        if (!queryOptions) {
+            resolve({ code: 200, msg: recipes });
+            return;
+        }
+
+        const shuffledRecipes = queryOptions.isRandom ? shuffleArray(recipes) : recipes;
+        const filteredRecipes = queryOptions.max ? shuffledRecipes.slice(0, queryOptions.max) : shuffledRecipes;
+
+        resolve({ code: 200, msg: filteredRecipes });
     });
-}
+};
 
 const getRecipe = (id) => {
     return new Promise((resolve, reject) => {

@@ -148,10 +148,25 @@ const seedRecipes = (force) => {
     });
 };
 
+const seedAll = async (force) => {
+    try {
+        await seedCategories(force);
+        await seedAreas(force);
+        await seedIngredients(force);
+        await seedRecipes(force);
+
+        return { code: 200, msg: 'All seeding operations completed successfully.' };
+    } catch (error) {
+        console.error(error);
+        throw { code: 500, msg: 'Error during seeding operations.' };
+    }
+};
+
 module.exports.seedCategories = seedCategories;
 module.exports.seedAreas = seedAreas;
 module.exports.seedIngredients = seedIngredients;
 module.exports.seedRecipes = seedRecipes;
+module.exports.seedAll = seedAll;
 
 /**
  * [addIngredients] - Receives a recipe in json from the provider's API and returns an array of valid ingredients.
