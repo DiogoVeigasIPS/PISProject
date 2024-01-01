@@ -9,7 +9,7 @@ const { difficulties } = require('../temporaryData');
 
 const getDifficulties = () => {
     return new Promise((resolve, reject) => {
-        resolve({ code: 200, msg: difficulties});
+        resolve({ statusCode: 200, responseMessage: difficulties});
     });
 }
 
@@ -17,9 +17,9 @@ const getDifficulty = (id) => {
     return new Promise((resolve, reject) => {
         const difficulty = difficulties.find(d => d.id == id)
         if (difficulty == null) {
-            reject({ code: 404, msg: 'Difficulty not found.' });
+            reject({ statusCode: 404, responseMessage: 'Difficulty not found.' });
         }
-        resolve({ code: 201, msg: difficulty})
+        resolve({ statusCode: 201, responseMessage: difficulty})
     });
 }
 
@@ -29,10 +29,10 @@ const addDifficulty = (difficulty) => {
         const newDifficulty = new Difficulty(difficulty, id);
         if (objectIsValid(newDifficulty)){
             difficulties.push(newDifficulty);
-            resolve({ code: 201, msg: newDifficulty});
+            resolve({ statusCode: 201, responseMessage: newDifficulty});
             return;
         }
-        reject({ code: 400, msg: 'Invalid Body.' });
+        reject({ statusCode: 400, responseMessage: 'Invalid Body.' });
     })
 }
 
@@ -42,12 +42,12 @@ const editDifficulty = (id, difficulty) => {
         const oldDifficulty = difficulties.find(c => c.id == id);
 
         if (!objectIsValid(newDifficulty)) {
-            reject({ code: 400, msg: 'Invalid body.' });
+            reject({ statusCode: 400, responseMessage: 'Invalid body.' });
             return;
         }
 
         if (oldDifficulty == null) {
-            reject({ code: 404, msg: 'Difficulty not found.' });
+            reject({ statusCode: 404, responseMessage: 'Difficulty not found.' });
             return;
         }
 
@@ -55,7 +55,7 @@ const editDifficulty = (id, difficulty) => {
             oldDifficulty[prop] = newDifficulty[prop];
         }
 
-        resolve({ code: 200, msg: oldDifficulty });
+        resolve({ statusCode: 200, responseMessage: oldDifficulty });
     })
 }
 
@@ -64,13 +64,13 @@ const deleteDifficulty = (id) => {
         const difficultyIndex = difficulties.findIndex(c => c.id == id);
 
         if (difficultyIndex == -1){
-            reject({ code: 404, msg: 'Difficulty not found.'})
+            reject({ statusCode: 404, responseMessage: 'Difficulty not found.'})
             return;
         }
 
         difficulties.splice(difficultyIndex, 1);
 
-        resolve({ code: 200, msg: 'Difficulty deleted sucessfully.'});
+        resolve({ statusCode: 200, responseMessage: 'Difficulty deleted sucessfully.'});
     })
 }
 

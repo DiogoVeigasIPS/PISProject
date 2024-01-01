@@ -9,6 +9,7 @@ const mustacheExpress = require('mustache-express');
 
 // Try without index
 const apiRouter = require('./api/routes/index');
+const appRouter = require('./routes');
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.set('views', path.join(__dirname, '/views'));
 
 // Use api and web app routers.
 app.use('/api', apiRouter);
+app.use('/', appRouter);
 
 app.get('*', (req, res) => {
     res.status(404).send("Page not found.");

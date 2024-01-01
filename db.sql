@@ -48,6 +48,7 @@ CREATE TABLE IF NOT EXISTS recipe(
     `name` VARCHAR(50) NOT NULL UNIQUE,
     image varchar(120) not null,
 	description TEXT NOT NULL,
+	preparation_description TEXT NOT NULL,
     area_id int not null,
 	author_id INT not null,
 	category_id INT not null,

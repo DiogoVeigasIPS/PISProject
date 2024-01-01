@@ -9,7 +9,7 @@ const { categories } = require('../temporaryData');
 
 const getCategories = () => {
     return new Promise((resolve, reject) => {
-        resolve({ code: 200, msg: categories});
+        resolve({ statusCode: 200, responseMessage: categories});
     });
 }
 
@@ -17,9 +17,9 @@ const getCategory = (id) => {
     return new Promise((resolve, reject) => {
         const category = categories.find(c => c.id == id)
         if (category == null) {
-            reject({ code: 404, msg: 'Category not found.' });
+            reject({ statusCode: 404, responseMessage: 'Category not found.' });
         }
-        resolve({ code: 201, msg: category})
+        resolve({ statusCode: 201, responseMessage: category})
     });
 }
 
@@ -29,10 +29,10 @@ const addCategory = (category) => {
         const newCategory = new Category(category, id);
         if (objectIsValid(newCategory)){
             categories.push(newCategory);
-            resolve({ code: 201, msg: newCategory});
+            resolve({ statusCode: 201, responseMessage: newCategory});
             return;
         }
-        reject({ code: 400, msg: 'Invalid Body.' });
+        reject({ statusCode: 400, responseMessage: 'Invalid Body.' });
     })
 }
 
@@ -42,12 +42,12 @@ const editCategory = (id, category) => {
         const oldCategory = categories.find(c => c.id == id);
 
         if (!objectIsValid(newCategory)) {
-            reject({ code: 400, msg: 'Invalid body.' });
+            reject({ statusCode: 400, responseMessage: 'Invalid body.' });
             return;
         }
 
         if (oldCategory == null) {
-            reject({ code: 404, msg: 'Category not found.' });
+            reject({ statusCode: 404, responseMessage: 'Category not found.' });
             return;
         }
 
@@ -55,7 +55,7 @@ const editCategory = (id, category) => {
             oldCategory[prop] = newCategory[prop];
         }
 
-        resolve({ code: 200, msg: oldCategory });
+        resolve({ statusCode: 200, responseMessage: oldCategory });
     })
 }
 
@@ -64,13 +64,13 @@ const deleteCategory = (id) => {
         const categoryIndex = categories.findIndex(c => c.id == id);
 
         if (categoryIndex == -1){
-            reject({ code: 404, msg: 'Category not found.'})
+            reject({ statusCode: 404, responseMessage: 'Category not found.'})
             return;
         }
 
         categories.splice(categoryIndex, 1);
 
-        resolve({ code: 200, msg: 'Category deleted sucessfully.'});
+        resolve({ statusCode: 200, responseMessage: 'Category deleted sucessfully.'});
     })
 }
 

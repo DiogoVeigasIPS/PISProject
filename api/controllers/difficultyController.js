@@ -2,7 +2,6 @@
  * Filename: difficultyConroller.js
  * Purpose: Aggregates all controllers for the Difficulty entity.
  */
-
 const { difficultyActions } = require('../actions');
 const { handlePromise } = require('../utils');
 
