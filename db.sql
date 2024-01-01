@@ -98,7 +98,6 @@ CREATE TABLE IF NOT EXISTS recipe_list (
     FOREIGN KEY (recipe_id) REFERENCES recipe(id)
 );
 
-
 -- Fixed Atributes
 INSERT IGNORE INTO `user` (username, email, `password`, first_name, last_name)
 VALUES ('System', 'system@example.com', 'system_password', 'System', 'User');
@@ -183,45 +182,33 @@ VALUES
 DROP VIEW IF EXISTS search_recipes;
 CREATE VIEW search_recipes AS
 SELECT
-    JSON_OBJECT(
-        'recipes', JSON_ARRAYAGG(
-            JSON_OBJECT(
-                'id', r.id,
-                'name', r.name,
-				'category', JSON_OBJECT(
-					'id', c.id,
-					'name', c.name,
-					'description', c.description
-				),
-                'description', r.description,
-                'area', JSON_OBJECT(
-					'id', a.id,
-					'name', a.area
-                ),
-                'author', JSON_OBJECT(
-					'id', u.id,
-                    'username', u.username,
-					'firstName', u.first_name, 
-                    'lastName', u.last_name
-                ),
-                'ingredients', (
-                    SELECT JSON_ARRAYAGG(
-                        JSON_OBJECT('id', i.id, 'name', i.name, 'quantity', ri.quantity)
-                    )
-                    FROM recipe_ingredients ri
-                    JOIN ingredients i ON ri.ingredient_id = i.id
-                    WHERE ri.recipe_id = r.id
-                ),
-                'image', r.image,
-                'preparationTime', r.preparationTime,  
-                'difficulty', JSON_OBJECT(
-					'id', d.id,
-					'name', d.difficulty
-                ),
-                'cost', r.cost 
-            )
+    'recipes', JSON_ARRAYAGG(
+        JSON_OBJECT(
+            'id', r.id,
+            'name', r.name,
+            'category_id', c.id,
+            'category', c.name,
+            'description', r.description,
+            'preparationDescription', r.preparation_description,
+            'area_id', a.id,
+            'area', a.area,
+            'author_id', u.id,
+            'author', CONCAT(u.first_name, ' ', u.last_name),
+            'ingredients', (
+                SELECT JSON_ARRAYAGG(
+                    JSON_OBJECT('ingredient_id', i.id, 'name', i.name, 'quantity', ri.quantity)
+                )
+                FROM recipe_ingredients ri
+                JOIN ingredients i ON ri.ingredient_id = i.id
+                WHERE ri.recipe_id = r.id
+            ),
+            'image', r.image,
+            'preparationTime', r.preparationTime,  
+            'difficulty_id', d.id,
+            'difficulty', d.difficulty,
+            'cost', r.cost 
         )
-    ) AS `recipe`
+    )
 FROM
     recipe r
 JOIN
