@@ -9,7 +9,7 @@ const { areas } = require('../temporaryData');
 
 const getAreas = () => {
     return new Promise((resolve, reject) => {
-        resolve({ code: 200, msg: areas});
+        resolve({ statusCode: 200, responseMessage: areas});
     });
 }
 
@@ -17,9 +17,9 @@ const getArea = (id) => {
     return new Promise((resolve, reject) => {
         const area = areas.find(a => a.id == id)
         if (area == null) {
-            reject({ code: 404, msg: 'Area not found.' });
+            reject({ statusCode: 404, responseMessage: 'Area not found.' });
         }
-        resolve({ code: 201, msg: area})
+        resolve({ statusCode: 201, responseMessage: area})
     });
 }
 
@@ -29,10 +29,10 @@ const addArea = (area) => {
         const newArea = new Area(area, id);
         if (objectIsValid(newArea)){
             areas.push(newArea);
-            resolve({ code: 201, msg: newArea});
+            resolve({ statusCode: 201, responseMessage: newArea});
             return;
         }
-        reject({ code: 400, msg: 'Invalid Body.' });
+        reject({ statusCode: 400, responseMessage: 'Invalid Body.' });
     })
 }
 
@@ -42,12 +42,12 @@ const editArea = (id, area) => {
         const oldArea = areas.find(a => a.id == id);
 
         if (!objectIsValid(newArea)) {
-            reject({ code: 400, msg: 'Invalid body.' });
+            reject({ statusCode: 400, responseMessage: 'Invalid body.' });
             return;
         }
 
         if (oldArea == null) {
-            reject({ code: 404, msg: 'Area not found.' });
+            reject({ statusCode: 404, responseMessage: 'Area not found.' });
             return;
         }
 
@@ -55,7 +55,7 @@ const editArea = (id, area) => {
             oldArea[prop] = newArea[prop];
         }
 
-        resolve({ code: 200, msg: oldArea });
+        resolve({ statusCode: 200, responseMessage: oldArea });
     })
 }
 
@@ -64,13 +64,13 @@ const deleteArea = (id) => {
         const areaIndex = areas.findIndex(a => a.id == id);
 
         if (areaIndex == -1){
-            reject({ code: 404, msg: 'Area not found.'})
+            reject({ statusCode: 404, responseMessage: 'Area not found.'})
             return;
         }
 
         areas.splice(areaIndex, 1);
 
-        resolve({ code: 200, msg: 'Area deleted sucessfully.'});
+        resolve({ statusCode: 200, responseMessage: 'Area deleted sucessfully.'});
     })
 }
 

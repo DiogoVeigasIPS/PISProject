@@ -2,7 +2,6 @@
  * Filename: areaController.js
  * Purpose: Aggregates all controllers for the Area entity.
  */
-
 const { areaActions } = require('../actions');
 const { handlePromise } = require('../utils');
 

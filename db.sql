@@ -48,6 +48,7 @@ CREATE TABLE IF NOT EXISTS recipe(
     `name` VARCHAR(50) NOT NULL UNIQUE,
     image varchar(120) not null,
 	description TEXT NOT NULL,
+	preparation_description TEXT NOT NULL,
     area_id int not null,
 	author_id INT not null,
 	category_id INT not null,
@@ -171,34 +172,33 @@ VALUES
 DROP VIEW IF EXISTS search_recipes;
 CREATE VIEW search_recipes AS
 SELECT
-    JSON_OBJECT(
-        'recipes', JSON_ARRAYAGG(
-            JSON_OBJECT(
-                'id', r.id,
-                'name', r.name,
-                'category_id', c.id,
-                'category', c.name,
-                'description', r.description,
-                'area_id', a.id,
-                'area', a.area,
-                'author_id', u.id,
-                'author', CONCAT(u.first_name, ' ', u.last_name),
-                'ingredients', (
-                    SELECT JSON_ARRAYAGG(
-                        JSON_OBJECT('ingredient_id', i.id, 'name', i.name, 'quantity', ri.quantity)
-                    )
-                    FROM recipe_ingredients ri
-                    JOIN ingredients i ON ri.ingredient_id = i.id
-                    WHERE ri.recipe_id = r.id
-                ),
-                'image', r.image,
-                'preparationTime', r.preparationTime,  
-                'difficulty_id', d.id,
-                'difficulty', d.difficulty,
-                'cost', r.cost 
-            )
+    'recipes', JSON_ARRAYAGG(
+        JSON_OBJECT(
+            'id', r.id,
+            'name', r.name,
+            'category_id', c.id,
+            'category', c.name,
+            'description', r.description,
+            'preparationDescription', r.preparation_description,
+            'area_id', a.id,
+            'area', a.area,
+            'author_id', u.id,
+            'author', CONCAT(u.first_name, ' ', u.last_name),
+            'ingredients', (
+                SELECT JSON_ARRAYAGG(
+                    JSON_OBJECT('ingredient_id', i.id, 'name', i.name, 'quantity', ri.quantity)
+                )
+                FROM recipe_ingredients ri
+                JOIN ingredients i ON ri.ingredient_id = i.id
+                WHERE ri.recipe_id = r.id
+            ),
+            'image', r.image,
+            'preparationTime', r.preparationTime,  
+            'difficulty_id', d.id,
+            'difficulty', d.difficulty,
+            'cost', r.cost 
         )
-    ) AS `recipe`
+    )
 FROM
     recipe r
 JOIN

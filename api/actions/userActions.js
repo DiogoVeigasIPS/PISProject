@@ -9,7 +9,7 @@ const { users } = require('../temporaryData');
 
 const getUsers = () => {
     return new Promise((resolve, reject) => {
-        resolve({ code: 200, msg: users });
+        resolve({ statusCode: 200, responseMessage: users });
     });
 }
 
@@ -17,10 +17,10 @@ const getUser = (id) => {
     return new Promise((resolve, reject) => {
         const user = users.find(u => u.id == id);
         if (user == null) {
-            reject({ code: 404, msg: 'User not found.' });
+            reject({ statusCode: 404, responseMessage: 'User not found.' });
             return;
         }
-        resolve({ code: 201, msg: user })
+        resolve({ statusCode: 201, responseMessage: user })
     });
 }
 
@@ -30,10 +30,10 @@ const addUser = (user) => {
         const newUser = new User(user, id);
         if (objectIsValid(newUser)) {
             users.push(newUser);
-            resolve({ code: 201, msg: newUser });
+            resolve({ statusCode: 201, responseMessage: newUser });
             return;
         }
-        reject({ code: 400, msg: 'Invalid body.' });
+        reject({ statusCode: 400, responseMessage: 'Invalid body.' });
     })
 }
 
@@ -43,12 +43,12 @@ const editUser = (id, user) => {
         const oldUser = users.find(u => u.id == id);
 
         if (!objectIsValid(newUser)) {
-            reject({ code: 400, msg: 'Invalid body.' });
+            reject({ statusCode: 400, responseMessage: 'Invalid body.' });
             return;
         }
 
         if (oldUser == null) {
-            reject({ code: 404, msg: 'User not found.' });
+            reject({ statusCode: 404, responseMessage: 'User not found.' });
             return;
         }
 
@@ -56,7 +56,7 @@ const editUser = (id, user) => {
             oldUser[prop] = newUser[prop];
         }
 
-        resolve({ code: 200, msg: oldUser });
+        resolve({ statusCode: 200, responseMessage: oldUser });
     })
 }
 
@@ -65,13 +65,13 @@ const deleteUser = (id) => {
         const userIndex = users.findIndex(u => u.id == id);
 
         if (userIndex == -1) {
-            reject({ code: 404, msg: 'User not found.' })
+            reject({ statusCode: 404, responseMessage: 'User not found.' })
             return;
         }
 
         users.splice(userIndex, 1);
 
-        resolve({ code: 200, msg: 'User deleted successfully' });
+        resolve({ statusCode: 200, responseMessage: 'User deleted successfully' });
     })
 }
 
