@@ -17,7 +17,7 @@ router.use('/', async (req, res) => {
         recipes = await recipeActions.getRecipes({ isRandom: true, maxResults: 8, stringSearch: stringSearch });
     }
 
-    res.render('index', { recipes: recipes.msg });
+    res.render('index', { recipes: recipes.responseMessage });
 });
 
 module.exports = router;
