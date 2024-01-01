@@ -88,6 +88,17 @@ CREATE TABLE IF NOT EXISTS recipe_ingredients(
     FOREIGN KEY (ingredient_id) references ingredients(id)
 );
 
+DROP TABLE IF EXISTS recipe_list;
+CREATE TABLE IF NOT EXISTS recipe_list (
+	list_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT,
+    recipe_id INT,
+    `name` varchar(155) not null ,
+    PRIMARY KEY (list_id),  
+    FOREIGN KEY (user_id) REFERENCES `user`(id),
+    FOREIGN KEY (recipe_id) REFERENCES recipe(id)
+);
+
 -- Fixed Atributes
 INSERT IGNORE INTO `user` (username, email, `password`, first_name, last_name)
 VALUES ('System', 'system@example.com', 'system_password', 'System', 'User');
