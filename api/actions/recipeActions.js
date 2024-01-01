@@ -19,11 +19,18 @@ const getRecipes = (queryOptions = null) => {
         }
 
         const shuffledRecipes = queryOptions.isRandom ? shuffleArray(recipes) : recipes;
-        const filteredRecipes = queryOptions.max ? shuffledRecipes.slice(0, queryOptions.max) : shuffledRecipes;
+
+        // Filter by stringSearch
+        const filteredByStringSearch = queryOptions.stringSearch
+            ? shuffledRecipes.filter(recipe => recipe.name.toLowerCase().includes(queryOptions.stringSearch.toLowerCase()))
+            : shuffledRecipes;
+
+        const filteredRecipes = queryOptions.maxResults ? filteredByStringSearch.slice(0, queryOptions.maxResults) : filteredByStringSearch;
 
         resolve({ code: 200, msg: filteredRecipes });
     });
 };
+
 
 const getRecipe = (id) => {
     return new Promise((resolve, reject) => {

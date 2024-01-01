@@ -8,12 +8,14 @@ const { handlePromise } = require('../utils');
 const readRecipes = (req, res) => {
     const query = req.query;
 
-    const max = query.max && !isNaN(query.max) ? parseInt(query.max) : undefined;
+    const maxResults = query.max && !isNaN(query.max) ? parseInt(query.max) : undefined;
     const isRandom = query.random && query.random.toLowerCase() === 'true';
+    const stringSearch = query.name ? query.name : null;
 
     const queryOptions = {
-        max: max,
-        isRandom: isRandom
+        maxResults: maxResults,
+        isRandom: isRandom,
+        stringSearch: stringSearch
     }
 
     handlePromise(recipeActions.getRecipes(queryOptions), res);
