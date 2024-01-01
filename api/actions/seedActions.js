@@ -25,7 +25,7 @@ const seedCategories = (force) => {
                 });
 
                 if (categories.length != 0 && !force) {
-                    reject({ code: 400, msg: 'Categories must be empty.' });
+                    reject({ statusCode: 400, responseMessage: 'Categories must be empty.' });
                     return;
                 }
 
@@ -33,11 +33,11 @@ const seedCategories = (force) => {
                 categories.length = 0;
 
                 categories.push(...processedCategories);
-                resolve({ code: 200, msg: processedCategories });
+                resolve({ statusCode: 200, responseMessage: processedCategories });
             })
             .catch((error) => {
                 console.error(error);
-                reject({ code: 500, msg: commonErrorMessage });
+                reject({ statusCode: 500, responseMessage: commonErrorMessage });
             });
     });
 }
@@ -56,7 +56,7 @@ const seedAreas = (force) => {
                 });
 
                 if (areas.length != 0 && !force) {
-                    reject({ code: 400, msg: 'Areas must be empty.' });
+                    reject({ statusCode: 400, responseMessage: 'Areas must be empty.' });
                     return;
                 }
 
@@ -64,11 +64,11 @@ const seedAreas = (force) => {
                 areas.length = 0;
 
                 areas.push(...processedAreas);
-                resolve({ code: 200, msg: processedAreas });
+                resolve({ statusCode: 200, responseMessage: processedAreas });
             })
             .catch((error) => {
                 console.error(error);
-                reject({ code: 500, msg: commonErrorMessage });
+                reject({ statusCode: 500, responseMessage: commonErrorMessage });
             });
     });
 }
@@ -87,7 +87,7 @@ const seedIngredients = (force) => {
                 });
 
                 if (ingredients.length != 0 && !force) {
-                    reject({ code: 400, msg: 'Ingredients must be empty.' });
+                    reject({ statusCode: 400, responseMessage: 'Ingredients must be empty.' });
                     return;
                 }
 
@@ -95,11 +95,11 @@ const seedIngredients = (force) => {
                 ingredients.length = 0;
 
                 ingredients.push(...processedIngredients);
-                resolve({ code: 200, msg: processedIngredients });
+                resolve({ statusCode: 200, responseMessage: processedIngredients });
             })
             .catch((error) => {
                 console.error(error);
-                reject({ code: 500, msg: commonErrorMessage });
+                reject({ statusCode: 500, responseMessage: commonErrorMessage });
             });
     });
 }
@@ -130,7 +130,7 @@ const seedRecipes = (force) => {
             });
 
             if (recipes.length !== 0 && !force) {
-                reject({ code: 400, msg: 'Recipes must be empty.' });
+                reject({ statusCode: 400, responseMessage: 'Recipes must be empty.' });
                 return;
             }
 
@@ -140,10 +140,10 @@ const seedRecipes = (force) => {
             // 'await Promise.all' to wait for all promises to resolve
             recipes.push(...(await Promise.all(processedRecipes)));
 
-            resolve({ code: 200, msg: recipes });
+            resolve({ statusCode: 200, responseMessage: recipes });
         } catch (error) {
             console.error(error);
-            reject({ code: 500, msg: commonErrorMessage });
+            reject({ statusCode: 500, responseMessage: commonErrorMessage });
         }
     });
 };
@@ -155,10 +155,10 @@ const seedAll = async (force) => {
         await seedIngredients(force);
         await seedRecipes(force);
 
-        return { code: 200, msg: 'All seeding operations completed successfully.' };
+        return { statusCode: 200, responseMessage: 'All seeding operations completed successfully.' };
     } catch (error) {
         console.error(error);
-        throw { code: 500, msg: 'Error during seeding operations.' };
+        throw { statusCode: 500, responseMessage: 'Error during seeding operations.' };
     }
 };
 

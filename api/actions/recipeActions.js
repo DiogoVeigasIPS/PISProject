@@ -14,7 +14,7 @@ const { recipes, categories, users, areas, difficulties, ingredients } = require
 const getRecipes = (queryOptions = null) => {
     return new Promise((resolve, reject) => {
         if (!queryOptions) {
-            resolve({ code: 200, msg: recipes });
+            resolve({ statusCode: 200, responseMessage: recipes });
             return;
         }
 
@@ -27,7 +27,7 @@ const getRecipes = (queryOptions = null) => {
 
         const filteredRecipes = queryOptions.maxResults ? filteredByStringSearch.slice(0, queryOptions.maxResults) : filteredByStringSearch;
 
-        resolve({ code: 200, msg: filteredRecipes });
+        resolve({ statusCode: 200, responseMessage: filteredRecipes });
     });
 };
 
@@ -36,9 +36,9 @@ const getRecipe = (id) => {
     return new Promise((resolve, reject) => {
         const recipe = recipes.find(a => a.id == id)
         if (recipe == null) {
-            reject({ code: 404, msg: 'Recipe not found.' });
+            reject({ statusCode: 404, responseMessage: 'Recipe not found.' });
         }
-        resolve({ code: 201, msg: recipe })
+        resolve({ statusCode: 201, responseMessage: recipe })
     });
 }
 
@@ -52,9 +52,9 @@ const addRecipe = (recipe) => {
 
             if (objectIsValid(newRecipe)) {
                 recipes.push(newRecipe);
-                resolve({ code: 201, msg: newRecipe });
+                resolve({ statusCode: 201, responseMessage: newRecipe });
             } else {
-                reject({ code: 400, msg: 'Invalid Body.' });
+                reject({ statusCode: 400, responseMessage: 'Invalid Body.' });
             }
         } catch (error) {
             reject(error);
@@ -71,14 +71,14 @@ const editRecipe = (id, recipe) => {
             const oldRecipe = recipes.find(a => a.id == id);
 
             if (!objectIsValid(processedRecipe)) {
-                reject({ code: 400, msg: 'Invalid body.' });
+                reject({ statusCode: 400, responseMessage: 'Invalid body.' });
             } else if (oldRecipe == null) {
-                reject({ code: 404, msg: 'Recipe not found.' });
+                reject({ statusCode: 404, responseMessage: 'Recipe not found.' });
             } else {
                 for (prop in processedRecipe) {
                     oldRecipe[prop] = processedRecipe[prop];
                 }
-                resolve({ code: 200, msg: oldRecipe });
+                resolve({ statusCode: 200, responseMessage: oldRecipe });
             }
         } catch (error) {
             reject(error);
@@ -91,13 +91,13 @@ const deleteRecipe = (id) => {
         const recipeIndex = recipes.findIndex(a => a.id == id);
 
         if (recipeIndex == -1) {
-            reject({ code: 404, msg: 'Recipe not found.' })
+            reject({ statusCode: 404, responseMessage: 'Recipe not found.' })
             return;
         }
 
         recipes.splice(recipeIndex, 1);
 
-        resolve({ code: 200, msg: 'Recipe deleted sucessfully.' });
+        resolve({ statusCode: 200, responseMessage: 'Recipe deleted sucessfully.' });
     })
 }
 
@@ -132,7 +132,7 @@ const ingredientsAreDuplicate = (ingredientsIds) => {
  *
  * @param {Recipe} recipe - Recipe before being processed.
  * @returns {Recipe} - The processed recipe.
- * @throws {Object} - An error object with a status code and descriptive message.
+ * @throws {Object} - An error object with a status statusCode and descriptive message.
  */
 const processRecipeData = (recipe) => {
     // Check category 
@@ -140,7 +140,7 @@ const processRecipeData = (recipe) => {
     const foundCategory = categories.find(c => c.id == categoryId);
 
     if (foundCategory == null) {
-        throw { code: 400, msg: 'Recipe category not found.' };
+        throw { statusCode: 400, responseMessage: 'Recipe category not found.' };
     }
 
     const category = new Category({
@@ -154,7 +154,7 @@ const processRecipeData = (recipe) => {
     const areaId = recipe.area.id;
     const foundArea = areas.find(a => a.id == areaId);
     if (foundArea == null) {
-        throw { code: 400, msg: 'Recipe area not found.' };
+        throw { statusCode: 400, responseMessage: 'Recipe area not found.' };
     }
 
     const area = new Area({
@@ -166,7 +166,7 @@ const processRecipeData = (recipe) => {
     const difficultyId = recipe.difficulty.id;
     const foundDifficulty = difficulties.find(d => d.id == difficultyId);
     if (foundDifficulty == null) {
-        throw { code: 400, msg: 'Recipe difficulty not found.' };
+        throw { statusCode: 400, responseMessage: 'Recipe difficulty not found.' };
     }
 
     const difficulty = new Difficulty({
@@ -179,7 +179,7 @@ const processRecipeData = (recipe) => {
     const foundAuthor = users.find(c => c.id == authorId);
 
     if (foundAuthor == null) {
-        throw { code: 400, msg: 'Recipe author not found.' };
+        throw { statusCode: 400, responseMessage: 'Recipe author not found.' };
     }
 
     const author = new Author({
@@ -192,21 +192,21 @@ const processRecipeData = (recipe) => {
     // Check ingredients
     const ingredientsIds = recipe.ingredients.map(i => {
         if (i.quantity == undefined) {
-            throw { code: 400, msg: `Recipe ingredient with id=${i.ingredient.id} quantity not found.` };
+            throw { statusCode: 400, responseMessage: `Recipe ingredient with id=${i.ingredient.id} quantity not found.` };
         }
 
         return { id: i.ingredient.id, quantity: i.quantity };
     });
 
     if (ingredientsAreDuplicate(ingredientsIds)) {
-        throw { code: 400, msg: `Recipe ingredient can't have duplicates.` };
+        throw { statusCode: 400, responseMessage: `Recipe ingredient can't have duplicates.` };
     }
 
     const finalIngredients = [];
     ingredientsIds.forEach(ingredient => {
         const foundIngredient = ingredients.find(i => i && i.id == ingredient.id);
         if (foundIngredient == null) {
-            throw { code: 400, msg: `Recipe ingredient with id=${ingredient.id} not found.` };
+            throw { statusCode: 400, responseMessage: `Recipe ingredient with id=${ingredient.id} not found.` };
         }
 
         const finalIngredient = new IngredientInRecipe({

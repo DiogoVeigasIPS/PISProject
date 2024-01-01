@@ -9,7 +9,7 @@ const { ingredients } = require('../temporaryData');
 
 const getIngredients = () => {
     return new Promise((resolve, reject) => {
-        resolve({ code: 200, msg: ingredients});
+        resolve({ statusCode: 200, responseMessage: ingredients});
     });
 }
 
@@ -17,9 +17,9 @@ const getIngredient = (id) => {
     return new Promise((resolve, reject) => {
         const ingredient = ingredients.find(d => d.id == id)
         if (ingredient == null) {
-            reject({ code: 404, msg: 'Ingredient not found.' });
+            reject({ statusCode: 404, responseMessage: 'Ingredient not found.' });
         }
-        resolve({ code: 201, msg: ingredient})
+        resolve({ statusCode: 201, responseMessage: ingredient})
     });
 }
 
@@ -29,10 +29,10 @@ const addIngredient = (ingredient) => {
         const newIngredient = new Ingredient(ingredient, id);
         if (objectIsValid(newIngredient)){
             ingredients.push(newIngredient);
-            resolve({ code: 201, msg: newIngredient});
+            resolve({ statusCode: 201, responseMessage: newIngredient});
             return ingredient;
         }
-        reject({ code: 400, msg: 'Invalid Body.' });
+        reject({ statusCode: 400, responseMessage: 'Invalid Body.' });
     })
 }
 
@@ -42,12 +42,12 @@ const editIngredient = (id, ingredient) => {
         const oldIngredient = ingredients.find(c => c.id == id);
 
         if (!objectIsValid(newIngredient)) {
-            reject({ code: 400, msg: 'Invalid body.' });
+            reject({ statusCode: 400, responseMessage: 'Invalid body.' });
             return;
         }
 
         if (oldIngredient == null) {
-            reject({ code: 404, msg: 'Ingredient not found.' });
+            reject({ statusCode: 404, responseMessage: 'Ingredient not found.' });
             return;
         }
 
@@ -55,7 +55,7 @@ const editIngredient = (id, ingredient) => {
             oldIngredient[prop] = newIngredient[prop];
         }
 
-        resolve({ code: 200, msg: oldIngredient });
+        resolve({ statusCode: 200, responseMessage: oldIngredient });
     })
 }
 
@@ -64,13 +64,13 @@ const deleteIngredient = (id) => {
         const ingredientIndex = ingredients.findIndex(c => c.id == id);
 
         if (ingredientIndex == -1){
-            reject({ code: 404, msg: 'Ingredient not found.'})
+            reject({ statusCode: 404, responseMessage: 'Ingredient not found.'})
             return;
         }
 
         ingredients.splice(ingredientIndex, 1);
 
-        resolve({ code: 200, msg: 'Ingredient deleted sucessfully.'});
+        resolve({ statusCode: 200, responseMessage: 'Ingredient deleted sucessfully.'});
     })
 }
 

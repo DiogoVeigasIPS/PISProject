@@ -13,13 +13,14 @@ const objectIsValid = (obj) => {
 
 const handlePromise = (promise, res) => {
     promise
-        .then(({ code, msg }) => {
-            res.status(code).send(msg);
+        .then(({ statusCode, responseMessage }) => {
+            res.status(statusCode).send(responseMessage);
         })
-        .catch(({ code, msg }) => {
-            res.status(code).send(msg);
+        .catch(({ statusCode, responseMessage }) => {
+            res.status(statusCode).send(responseMessage);
         });
 };
+
 
 const capitalizeWords = (inputString) => {
     const words = inputString.split(' ');
