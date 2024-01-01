@@ -90,10 +90,11 @@ CREATE TABLE IF NOT EXISTS recipe_ingredients(
 
 DROP TABLE IF EXISTS recipe_list;
 CREATE TABLE IF NOT EXISTS recipe_list (
+	list_id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT,
     recipe_id INT,
     `name` varchar(155) not null ,
-    PRIMARY KEY (user_id, recipe_id, `name`),  
+    PRIMARY KEY (list_id),  
     FOREIGN KEY (user_id) REFERENCES `user`(id),
     FOREIGN KEY (recipe_id) REFERENCES recipe(id)
 );
