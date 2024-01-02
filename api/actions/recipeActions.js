@@ -38,6 +38,7 @@ const getRecipe = (id) => {
         const recipe = recipes.find(a => a.id == id)
         if (recipe == null) {
             reject({ statusCode: 404, responseMessage: 'Recipe not found.' });
+            return;
         }
         resolve({ statusCode: 201, responseMessage: recipe })
     });

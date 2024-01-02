@@ -18,6 +18,7 @@ const getDifficulty = (id) => {
         const difficulty = difficulties.find(d => d.id == id)
         if (difficulty == null) {
             reject({ statusCode: 404, responseMessage: 'Difficulty not found.' });
+            return;
         }
         resolve({ statusCode: 201, responseMessage: difficulty})
     });
