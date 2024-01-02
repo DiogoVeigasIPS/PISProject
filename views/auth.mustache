@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en_US">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{{title}}</title>
+</head>
+<body>
+    {{>navbar}}
+
+    <section class="py-4 content d-flex justify-content-center align-items-center">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <!-- Card for Login Form -->
+                    <div class="card" id="loginCard">
+                        <div class="card-body">
+                            <form action="/login" method="post" class="needs-validation" novalidate>
+                                <div class="mb-3">
+                                    <label for="username" class="form-label">Username</label>
+                                    <input type="text" class="form-control" id="username" name="username" placeholder="Enter your username" required>
+                                    <div class="invalid-feedback">
+                                        Please enter your username.
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">Password</label>
+                                    <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
+                                    <div class="invalid-feedback">
+                                        Please enter your password.
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Login</button>
+                                <p class="mt-3">Don't have an account? <a href="#" onclick="showRegistrationForm()">Create one</a>.</p>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Card for Registration Form (Initially Hidden) -->
+                    <div class="card d-none" id="registrationCard">
+                        <div class="card-body">
+                            <form action="/register" method="post" class="needs-validation" novalidate>
+                                <div class="row">
+                                    <div class="mb-3 col-md-6">
+                                        <label for="newEmail" class="form-label">Email</label>
+                                        <input type="email" class="form-control" id="newEmail" name="newEmail" placeholder="Enter your email" required>
+                                        <div class="invalid-feedback">
+                                            Please enter a valid email address.
+                                        </div>
+                                    </div>
+                                    <div class="mb-3 col-md-6">
+                                        <label for="newUsername" class="form-label">Username</label>
+                                        <input type="text" class="form-control" id="newUsername" name="newUsername" placeholder="Enter your username" required>
+                                        <div class="invalid-feedback">
+                                            Please enter a username.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="mb-3 col-md-6">
+                                        <label for="firstName" class="form-label">First Name</label>
+                                        <input type="text" class="form-control" id="firstName" name="firstName" placeholder="Enter your first name" required>
+                                        <div class="invalid-feedback">
+                                            Please enter your first name.
+                                        </div>
+                                    </div>
+                                    <div class="mb-3 col-md-6">
+                                        <label for="lastName" class="form-label">Last Name</label>
+                                        <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Enter your last name" required>
+                                        <div class="invalid-feedback">
+                                            Please enter your last name.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="mb-3 col-md-6">
+                                        <label for="newPassword" class="form-label">Password</label>
+                                        <input type="password" class="form-control" id="newPassword" name="newPassword" placeholder="Enter your password" required>
+                                        <div class="invalid-feedback">
+                                            Please enter a password.
+                                        </div>
+                                    </div>
+                                    <div class="mb-3 col-md-6">
+                                        <label for="repeatPassword" class="form-label">Repeat Password</label>
+                                        <input type="password" class="form-control" id="repeatPassword" name="repeatPassword" placeholder="Repeat your password" required>
+                                        <div class="invalid-feedback">
+                                            Please enter your password again.
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-success">Create Account</button>
+                                <p class="mt-3">Already have an account? <a href="#" onclick="showLoginForm()">Login</a>.</p>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{>footer}}
+
+    <script src="/js/auth.js"></script>
+</body>
+</html>
