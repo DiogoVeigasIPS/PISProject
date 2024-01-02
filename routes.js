@@ -3,7 +3,7 @@
  * Purpose: Manages the application's workflow.
  */
 const express = require('express');
-const { recipeActions } = require('./api/actions');
+const { recipeActions, areaActions } = require('./api/actions');
 
 const router = express.Router();
 
@@ -15,7 +15,7 @@ router.get('/recipe', async (req, res) => {
     if (id !== null) {
         try {
             var recipe = await recipeActions.getRecipe(id);
-
+            
             res.render('recipe', { recipe: prepareRecipe(recipe.responseMessage), title: "My Cuisine Pal" });
         } catch (error) {
             console.error(error);
@@ -34,19 +34,36 @@ router.get('/auth', async (req, res) => {
 // Home Page
 router.get('/', async (req, res) => {
     const stringSearch = req.query.q ? req.query.q : null;
+    const area = req.query.area ? req.query.area : null;
 
     const queryOptions = { maxResults: 8, isPartial: true };
 
     var recipes;
     if (stringSearch == null) {
         queryOptions.isRandom = true;
+        queryOptions.area = area;
         recipes = await recipeActions.getRecipes(queryOptions);
     } else {
         queryOptions.stringSearch = stringSearch
         recipes = await recipeActions.getRecipes(queryOptions);
     }
 
-    res.render('index', { recipes: recipes.responseMessage, title: "My Cuisine Pal" });
+    const areas = await areaActions.getAreas();
+    const filteresAreas = areas.responseMessage.filter(a => a.name != 'Unknown');
+
+    const renderOptions = {
+        title: "My Cuisine Pal",
+        recipes: recipes.responseMessage,
+        areas: filteresAreas
+    }
+
+    if(recipes.responseMessage.length > 0){
+        res.render('index', renderOptions);
+    }else{
+        renderOptions.recipes = null;
+        res.render('index', renderOptions);
+    }
+
 });
 
 

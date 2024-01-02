@@ -20,7 +20,7 @@
         </div>
     </section>
 
-    <hr class="container">
+    <hr class="container my-4">
 
     <!-- Search Bar Section -->
     <section class="py-4">
@@ -38,7 +38,7 @@
         </div>
     </section>
 
-    <hr class="container">
+    <hr class="container my-4">
 
     <div class="container content">
         <div class="row row-cols-1 row-cols-md-4 g-4" id="recipe-container">
@@ -54,7 +54,14 @@
                 </div>
             </div>
             {{/recipes}}
+            {{^recipes}}
+                <p>No recipes available at the moment.</p>
+            {{/recipes}}
         </div>
+
+        <hr class="my-4">
+
+        {{>areas}}
     </div>
 
     {{>footer}}
