@@ -8,7 +8,7 @@
 <body>
     {{>navbar}}
 
-    <div class="container content">
+    <div class="container content border">
         <div class="row">
             <div class="col-md-6">
                 <img src="{{recipe.image}}" class="img-fluid mb-4" alt="{{recipe.name}} Image">
@@ -39,7 +39,7 @@
                     {{#recipe.ingredients}}
                     <div class="col-md-4 mb-3">
                         <div class="list-group-item">
-                            <div class="row align-items-center">
+                            <div class="row align-items-center border">
                                 <div class="col-md-4">
                                     <img src="https://www.themealdb.com/images/ingredients/{{ingredient.name}}.png" class="img-fluid" alt="{{ingredient.name}} Image">
                                 </div>
