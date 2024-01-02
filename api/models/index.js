@@ -10,6 +10,7 @@ const IngredientInRecipe = require('./ingredientInRecipe');
 const Category = require('./category');
 const Area = require('./area');
 const Author = require('./author');
+const PartialRecipe = require('./partialRecipe');
 
 
 const models = {
@@ -20,7 +21,8 @@ const models = {
     IngredientInRecipe: IngredientInRecipe,
     Category: Category,
     Area: Area,
-    Author: Author
+    Author: Author,
+    PartialRecipe: PartialRecipe
 }
 
 module.exports = models;

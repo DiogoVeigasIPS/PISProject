@@ -11,11 +11,13 @@ const readRecipes = (req, res) => {
     const maxResults = query.max && !isNaN(query.max) ? parseInt(query.max) : undefined;
     const isRandom = query.random && query.random.toLowerCase() === 'true';
     const stringSearch = query.name ? query.name : null;
+    const isPartial = query.partial && query.partial.toLowerCase() === 'true';
 
     const queryOptions = {
         maxResults: maxResults,
         isRandom: isRandom,
-        stringSearch: stringSearch
+        stringSearch: stringSearch,
+        isPartial: isPartial
     }
 
     handlePromise(recipeActions.getRecipes(queryOptions), res);
