@@ -18,6 +18,7 @@ const getCategory = (id) => {
         const category = categories.find(c => c.id == id)
         if (category == null) {
             reject({ statusCode: 404, responseMessage: 'Category not found.' });
+            return;
         }
         resolve({ statusCode: 201, responseMessage: category})
     });

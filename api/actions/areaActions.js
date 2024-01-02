@@ -18,6 +18,7 @@ const getArea = (id) => {
         const area = areas.find(a => a.id == id)
         if (area == null) {
             reject({ statusCode: 404, responseMessage: 'Area not found.' });
+            return;
         }
         resolve({ statusCode: 201, responseMessage: area})
     });

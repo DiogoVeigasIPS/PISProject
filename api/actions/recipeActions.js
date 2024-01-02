@@ -2,7 +2,7 @@
  * Filename: recipeActions.js
  * Purpose: Aggregates all actions for the Recipe entity.
  */
-const { Recipe, Category, Author, Area, Difficulty, Ingredient, IngredientInRecipe } = require('../models');
+const { Recipe, Category, Author, Area, Difficulty, Ingredient, IngredientInRecipe, PartialRecipe } = require('../models');
 const { objectIsValid, shuffleArray } = require('../utils');
 
 const { recipes, categories, users, areas, difficulties, ingredients } = require('../temporaryData');
@@ -18,9 +18,12 @@ const getRecipes = (queryOptions = null) => {
             return;
         }
 
-        const shuffledRecipes = queryOptions.isRandom ? shuffleArray(recipes) : recipes;
+        const areaRecipes = queryOptions.area ? recipes.filter(r => r.area.id == queryOptions.area) : recipes;
 
-        // Filter by stringSearch
+        const partialRecipes = queryOptions.isPartial ? areaRecipes.map(r => new PartialRecipe(r)) : areaRecipes;
+
+        const shuffledRecipes = queryOptions.isRandom ? shuffleArray(partialRecipes) : partialRecipes;
+
         const filteredByStringSearch = queryOptions.stringSearch
             ? shuffledRecipes.filter(recipe => recipe.name.toLowerCase().includes(queryOptions.stringSearch.toLowerCase()))
             : shuffledRecipes;
@@ -37,6 +40,7 @@ const getRecipe = (id) => {
         const recipe = recipes.find(a => a.id == id)
         if (recipe == null) {
             reject({ statusCode: 404, responseMessage: 'Recipe not found.' });
+            return;
         }
         resolve({ statusCode: 201, responseMessage: recipe })
     });

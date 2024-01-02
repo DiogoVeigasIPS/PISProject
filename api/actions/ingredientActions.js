@@ -18,6 +18,7 @@ const getIngredient = (id) => {
         const ingredient = ingredients.find(d => d.id == id)
         if (ingredient == null) {
             reject({ statusCode: 404, responseMessage: 'Ingredient not found.' });
+            return;
         }
         resolve({ statusCode: 201, responseMessage: ingredient})
     });
