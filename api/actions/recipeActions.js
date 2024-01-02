@@ -18,7 +18,9 @@ const getRecipes = (queryOptions = null) => {
             return;
         }
 
-        const partialRecipes = queryOptions.isPartial ? recipes.map(r => new PartialRecipe(r)) : recipes;
+        const areaRecipes = queryOptions.area ? recipes.filter(r => r.area.id == queryOptions.area) : recipes;
+
+        const partialRecipes = queryOptions.isPartial ? areaRecipes.map(r => new PartialRecipe(r)) : areaRecipes;
 
         const shuffledRecipes = queryOptions.isRandom ? shuffleArray(partialRecipes) : partialRecipes;
 

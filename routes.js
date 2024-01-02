@@ -26,6 +26,11 @@ router.get('/recipe', async (req, res) => {
     }
 });
 
+// Auth Page
+router.get('/auth', async (req, res) => {
+    res.render('auth', { title: "Auth" });
+});
+
 // Home Page
 router.get('/', async (req, res) => {
     const stringSearch = req.query.q ? req.query.q : null;
@@ -44,10 +49,6 @@ router.get('/', async (req, res) => {
     res.render('index', { recipes: recipes.responseMessage, title: "My Cuisine Pal" });
 });
 
-// Auth Page
-router.get('/auth', async (req, res) => {
-    res.render('auth', { title: "Auth" });
-});
 
 router.get('*', (req, res) => {
     res.status(404).render('notFound', { title: 'Page Not Found' });
