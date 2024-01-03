@@ -3,7 +3,7 @@
  * Purpose: Manages the application's workflow.
  */
 const express = require('express');
-const { recipeActions, areaActions } = require('./api/actions');
+const { recipeActions, areaActions, categoryActions } = require('./api/actions');
 
 const router = express.Router();
 
@@ -27,8 +27,14 @@ router.get('/recipe', async (req, res) => {
 });
 
 // Auth Page
-router.get('/auth', async (req, res) => {
+router.get('/auth', (req, res) => {
     res.render('auth', { title: "Auth" });
+});
+
+router.get('/categories', async (req, res) => {
+    const categories = await categoryActions.getCategories();
+
+    res.render('categories', { categories: categories.responseMessage, title: "Auth" });
 });
 
 // Home Page
