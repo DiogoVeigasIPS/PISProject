@@ -15,7 +15,7 @@ router.get('/recipe', async (req, res) => {
     if (id !== null) {
         try {
             var recipe = await recipeActions.getRecipe(id);
-            
+
             res.render('recipe', { recipe: prepareRecipe(recipe.responseMessage), title: "My Cuisine Pal" });
         } catch (error) {
             console.error(error);
@@ -41,13 +41,19 @@ router.get('/categories', async (req, res) => {
 router.get('/', async (req, res) => {
     const stringSearch = req.query.q ? req.query.q : null;
     const area = req.query.area ? req.query.area : null;
+    const category = req.query.category ? req.query.category : null;
 
-    const queryOptions = { maxResults: 8, isPartial: true };
+    const queryOptions = {
+        maxResults: 8,
+        isPartial: true,
+        area: area,
+        category: category
+    };
 
     var recipes;
     if (stringSearch == null) {
         queryOptions.isRandom = true;
-        queryOptions.area = area;
+        //queryOptions.area = area;
         recipes = await recipeActions.getRecipes(queryOptions);
     } else {
         queryOptions.stringSearch = stringSearch
@@ -57,15 +63,22 @@ router.get('/', async (req, res) => {
     const areas = await areaActions.getAreas();
     const filteresAreas = areas.responseMessage.filter(a => a.name != 'Unknown');
 
+    const categoryQueryOptions = {
+        isRandom: true,
+        maxResults: 4
+    };
+    const categories = await categoryActions.getCategories(categoryQueryOptions);
+
     const renderOptions = {
         title: "My Cuisine Pal",
         recipes: recipes.responseMessage,
-        areas: filteresAreas
+        areas: filteresAreas,
+        categories: categories.responseMessage
     }
 
-    if(recipes.responseMessage.length > 0){
+    if (recipes.responseMessage.length > 0) {
         res.render('index', renderOptions);
-    }else{
+    } else {
         renderOptions.recipes = null;
         res.render('index', renderOptions);
     }
@@ -87,7 +100,7 @@ module.exports = router;
  */
 const prepareRecipe = (recipe) => {
     const defaultValue = "Not provided";
-    
+
     if (recipe.author == null) {
         recipe.author = { username: defaultValue }
     }

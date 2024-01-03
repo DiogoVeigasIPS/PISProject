@@ -1,0 +1,21 @@
+<body>
+    <div>
+        <div class="row row-cols-1 row-cols-md-4 g-4" id="category-container">
+            {{#categories}}
+            <div class="col">
+                <div class="card category-card">
+                    <img src="{{image}}" class="card-img-top" alt="{{name}} Image">
+                    <div class="card-body">
+                        <h5 class="card-title">{{name}}</h5>
+                        <a href="/?category={{id}}" class="btn btn-primary">Explore Recipes</a>
+                    </div>
+                </div>
+            </div>
+            {{/categories}}
+            {{^categories}}
+                <p>No categories available at the moment.</p>
+            {{/categories}}
+        </div>
+    </div>
+</body>
+</html>
