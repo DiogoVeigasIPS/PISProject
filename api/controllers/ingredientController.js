@@ -8,11 +8,13 @@ const { handlePromise } = require('../utils');
 const readIngredients = (req, res) => {
     const query = req.query;
     const stringSearch = query.name ? query.name : null;
+    const maxResults = query.max && !isNaN(query.max) ? parseInt(query.max) : null;
 
     const queryOptions = {
-        stringSearch: stringSearch
+        stringSearch: stringSearch,
+        maxResults: maxResults
     }
-    
+
     handlePromise(ingredientActions.getIngredients(queryOptions), res);
 };
 

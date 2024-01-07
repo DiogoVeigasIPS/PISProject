@@ -15,10 +15,12 @@ const getIngredients = (queryOptions = null) => {
         }
 
         const filteredByStringSearch = queryOptions.stringSearch
-            ? ingredients.filter(ingredient => ingredient.name.toLowerCase().includes(queryOptions.stringSearch.toLowerCase()))
+            ? ingredients.filter(ingredient => ingredient.name.toLowerCase().startsWith(queryOptions.stringSearch.toLowerCase()))
             : ingredients;
-            
-        resolve({ statusCode: 200, responseMessage: filteredByStringSearch});
+
+        const filteredIngredients = queryOptions.maxResults ? filteredByStringSearch.slice(0, queryOptions.maxResults) : filteredByStringSearch;
+
+        resolve({ statusCode: 200, responseMessage: filteredIngredients });
     });
 }
 
@@ -29,17 +31,17 @@ const getIngredient = (id) => {
             reject({ statusCode: 404, responseMessage: 'Ingredient not found.' });
             return;
         }
-        resolve({ statusCode: 201, responseMessage: ingredient})
+        resolve({ statusCode: 201, responseMessage: ingredient })
     });
 }
 
 const addIngredient = (ingredient) => {
     return new Promise((resolve, reject) => {
-        const id = (ingredients.length == 0) ? 1: ingredients.at(-1).id + 1;
+        const id = (ingredients.length == 0) ? 1 : ingredients.at(-1).id + 1;
         const newIngredient = new Ingredient(ingredient, id);
-        if (objectIsValid(newIngredient)){
+        if (objectIsValid(newIngredient)) {
             ingredients.push(newIngredient);
-            resolve({ statusCode: 201, responseMessage: newIngredient});
+            resolve({ statusCode: 201, responseMessage: newIngredient });
             return ingredient;
         }
         reject({ statusCode: 400, responseMessage: 'Invalid Body.' });
@@ -73,14 +75,14 @@ const deleteIngredient = (id) => {
     return new Promise((resolve, reject) => {
         const ingredientIndex = ingredients.findIndex(c => c.id == id);
 
-        if (ingredientIndex == -1){
-            reject({ statusCode: 404, responseMessage: 'Ingredient not found.'})
+        if (ingredientIndex == -1) {
+            reject({ statusCode: 404, responseMessage: 'Ingredient not found.' })
             return;
         }
 
         ingredients.splice(ingredientIndex, 1);
 
-        resolve({ statusCode: 200, responseMessage: 'Ingredient deleted sucessfully.'});
+        resolve({ statusCode: 200, responseMessage: 'Ingredient deleted sucessfully.' });
     })
 }
 

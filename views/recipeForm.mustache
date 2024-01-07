@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script src="/js/dynamicIngredientSearch.js" defer></script>
     <title>{{title}}</title>
 </head>
 <body>
@@ -111,14 +112,23 @@
                     </div>
 
                     <!-- Ingredients -->
-                    <div class="mb-3">
+                    <div class="mb-3 border p-3">
                         <label for="ingredients" class="form-label">Ingredients</label>
-                        <textarea class="form-control" id="ingredients" name="ingredients" placeholder="Enter the ingredients, separated by commas" required></textarea>
+                        <input type="text" class="form-control" id="ingredients" name="ingredients" placeholder="Enter the ingredient name">
                         <div class="invalid-feedback">
                             Please enter the ingredients.
                         </div>
+                        <div id="ingredientSuggestions" class="list-group mt-2"></div>
+
+                        <!-- Selected Ingredients Table -->
+                        <table class="table border" id="selectedIngredients">
+                            <tbody>
+                                <!-- Selected ingredients will be added dynamically here -->
+                            </tbody>
+                        </table>
                     </div>
 
+                    
                     <!-- Submit Button -->
                     <button type="submit" class="btn btn-primary">Submit Recipe</button>
                 </form>

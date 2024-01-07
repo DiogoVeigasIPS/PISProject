@@ -7,8 +7,11 @@ const { recipeActions, areaActions, categoryActions, difficultyActions } = requi
 
 const router = express.Router();
 
-router.get('/add-recipe', async (req, res) => {
+router.post('/submit-recipe', (req, res) => {
+    res.json(req.body);
+})
 
+router.get('/add-recipe', async (req, res) => {
     const categories = await categoryActions.getCategories();
     const areas = await areaActions.getAreas();
     const difficulties = await difficultyActions.getDifficulties();
