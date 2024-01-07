@@ -10,7 +10,7 @@ class UserDetails {
      * @constructor
      * @param {Object} userDetailsData - The data representing a user with his details.
      * @param {Recipe[]} userDetailsData.favoriteRecipes - The list of favorite recipes of a user.
-     * @param {RecipeList[]} userDetailsData.recipeLists - The lists of recipes a user created.
+     * @param {RecipeList[]} userDetailsData.recipeLists - The lists the user created to store recipes.
      * @param {Recipe[]} userDetailsData.createdRecipes - The list of recipes a user created.
      */
     constructor(userDetailsData, id = userDetailsData.id) {
