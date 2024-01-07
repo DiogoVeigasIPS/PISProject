@@ -7,9 +7,18 @@ const { objectIsValid } = require('../utils');
 
 const { ingredients } = require('../temporaryData');
 
-const getIngredients = () => {
+const getIngredients = (queryOptions = null) => {
     return new Promise((resolve, reject) => {
-        resolve({ statusCode: 200, responseMessage: ingredients});
+        if (!queryOptions) {
+            resolve({ statusCode: 200, responseMessage: ingredients });
+            return;
+        }
+
+        const filteredByStringSearch = queryOptions.stringSearch
+            ? ingredients.filter(ingredient => ingredient.name.toLowerCase().includes(queryOptions.stringSearch.toLowerCase()))
+            : ingredients;
+            
+        resolve({ statusCode: 200, responseMessage: filteredByStringSearch});
     });
 }
 
