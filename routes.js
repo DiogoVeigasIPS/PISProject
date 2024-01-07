@@ -3,9 +3,25 @@
  * Purpose: Manages the application's workflow.
  */
 const express = require('express');
-const { recipeActions, areaActions, categoryActions } = require('./api/actions');
+const { recipeActions, areaActions, categoryActions, difficultyActions } = require('./api/actions');
 
 const router = express.Router();
+
+router.get('/add-recipe', async (req, res) => {
+
+    const categories = await categoryActions.getCategories();
+    const areas = await areaActions.getAreas();
+    const difficulties = await difficultyActions.getDifficulties();
+
+    const renderOptions = {
+        title: "Adding a recipe",
+        categories: categories.responseMessage, 
+        areas: areas.responseMessage, 
+        difficulties: difficulties.responseMessage
+    }
+
+    res.render('recipeForm', renderOptions);
+});
 
 // Details Page
 router.get('/recipe', async (req, res) => {

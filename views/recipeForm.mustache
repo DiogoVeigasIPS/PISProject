@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en_US">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{{title}}</title>
+</head>
+<body>
+    {{>navbar}}
+
+    <div class="container content border p-3">
+        <div class="row justify-content-center">
+            <!-- New form section -->
+            <div class="col-md-8">
+                <h2 class="text-center">Create a New Recipe</h2>
+                <form action="/submit-recipe" method="post" class="needs-validation">
+                    <!-- Recipe Name -->
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Recipe Name</label>
+                        <input type="text" class="form-control" id="name" name="name" placeholder="Enter the recipe name" required>
+                        <div class="invalid-feedback">
+                            Please enter the recipe name.
+                        </div>
+                    </div>
+
+                    <!-- Category -->
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Category</label>
+                        <select class="form-select" id="category" name="category" required>
+                            <option value="" disabled selected>Select category</option>
+                            {{#categories}}
+                                <option value="{{id}}">{{name}}</option>
+                            {{/categories}}
+                        </select>
+                        <div class="invalid-feedback">
+                            Please select a category.
+                        </div>
+                    </div>
+
+                    <!-- Area -->
+                    <div class="mb-3">
+                        <label for="area" class="form-label">Area</label>
+                        <select class="form-select" id="area" name="area" required>
+                            <option value="" disabled selected>Select area</option>
+                            {{#areas}}
+                                <option value="{{id}}">{{name}}</option>
+                            {{/areas}}
+                        </select>
+                        <div class="invalid-feedback">
+                            Please select an area.
+                        </div>
+                    </div>
+
+                    <!-- Preparation Time -->
+                    <div class="mb-3">
+                        <label for="preparationTime" class="form-label">Preparation Time (in minutes)</label>
+                        <input type="number" class="form-control" id="preparationTime" name="preparationTime" placeholder="Enter preparation time" min="1" required>
+                        <div class="invalid-feedback">
+                            Please enter the preparation time.
+                        </div>
+                    </div>
+
+                    <!-- Difficulty -->
+                    <div class="mb-3">
+                        <label for="difficulty" class="form-label">Difficulty</label>
+                        <select class="form-select" id="difficulty" name="difficulty" required>
+                            <option value="" disabled selected>Select difficulty</option>
+                            {{#difficulties}}
+                                <option value="{{id}}">{{name}}</option>
+                            {{/difficulties}}
+                        </select>
+                        <div class="invalid-feedback">
+                            Please select a difficulty level.
+                        </div>
+                    </div>
+
+                    <!-- Cost -->
+                    <div class="mb-3">
+                        <label for="cost" class="form-label">Cost €</label>
+                        <input type="number" class="form-control" id="cost" name="cost" placeholder="Enter cost" min="1" required>
+                        <div class="invalid-feedback">
+                            Please enter the cost.
+                        </div>
+                    </div>
+
+                    <!-- Recipe Image URL -->
+                    <div class="mb-3">
+                        <label for="image" class="form-label">Recipe Image URL</label>
+                        <input type="text" class="form-control" id="image" name="image" placeholder="Enter the URL of the recipe image" required>
+                        <div class="invalid-feedback">
+                            Please enter a valid image URL.
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" placeholder="Enter the recipe description" required></textarea>
+                        <div class="invalid-feedback">
+                            Please enter the recipe description.
+                        </div>
+                    </div>
+
+                    <!-- Preparation Description -->
+                    <div class="mb-3">
+                        <label for="preparationDescription" class="form-label">Preparation Description</label>
+                        <textarea class="form-control" id="preparationDescription" name="preparationDescription" placeholder="Enter the preparation description" required></textarea>
+                        <div class="invalid-feedback">
+                            Please enter the preparation description.
+                        </div>
+                    </div>
+
+                    <!-- Ingredients -->
+                    <div class="mb-3">
+                        <label for="ingredients" class="form-label">Ingredients</label>
+                        <textarea class="form-control" id="ingredients" name="ingredients" placeholder="Enter the ingredients, separated by commas" required></textarea>
+                        <div class="invalid-feedback">
+                            Please enter the ingredients.
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-primary">Submit Recipe</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {{>footer}}
+</body>
+</html>
