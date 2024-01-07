@@ -50,8 +50,8 @@ CREATE TABLE IF NOT EXISTS recipe(
 	description TEXT NOT NULL,
 	preparation_description TEXT NOT NULL,
     area_id int not null,
-	author_id INT not null,
 	category_id INT not null,
+	author_id INT,
     difficulty_id INT,
     preparationTime INT,
     cost DECIMAL(5,2),
@@ -90,12 +90,18 @@ CREATE TABLE IF NOT EXISTS recipe_ingredients(
 
 DROP TABLE IF EXISTS recipe_list;
 CREATE TABLE IF NOT EXISTS recipe_list (
-	list_id INT PRIMARY KEY AUTO_INCREMENT,
+	id INT PRIMARY KEY AUTO_INCREMENT,
+    `name` varchar(155) not null,
     user_id INT,
+    FOREIGN KEY (user_id) REFERENCES `user`(id)
+);
+
+DROP TABLE IF EXISTS recipe_list_item;
+CREATE TABLE IF NOT EXISTS recipe_list_item (
+	list_id INT,
     recipe_id INT,
-    `name` varchar(155) not null ,
-    PRIMARY KEY (list_id),  
-    FOREIGN KEY (user_id) REFERENCES `user`(id),
+    PRIMARY KEY (list_id, recipe_id),  
+    FOREIGN KEY (list_id) REFERENCES recipe_list(id),
     FOREIGN KEY (recipe_id) REFERENCES recipe(id)
 );
 
@@ -225,8 +231,13 @@ LEFT JOIN
 GROUP BY
     r.id;
 
-
 SELECT * FROM search_recipes;
 
+-- Recipe list
+insert into recipe_list(`name`, user_id) values ("Piteu do veigas", 1);
+insert into recipe_list_item(list_id, recipe_id) values (1, 1);
+insert into recipe_list_item(list_id, recipe_id) values (1, 2);
 
--- More data after executing the SeedController
+select rl.name, r.name from recipe_list rl
+join recipe_list_item rli on rl.id = rli.list_id
+join recipe r on rli.recipe_id = r.id;
