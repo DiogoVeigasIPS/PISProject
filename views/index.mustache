@@ -41,8 +41,8 @@
     <hr class="container my-4">
 
     <div class="container content">
+        <h1 class="mb-3">Recipes</h1>
         <div class="row row-cols-1 row-cols-md-4 g-4" id="recipe-container">
-            <!-- Recipe Cards will be dynamically inserted here -->
             {{#recipes}}
             <div class="col">
                 <div class="card recipe-card">
@@ -61,6 +61,12 @@
 
         <hr class="my-4">
 
+        <h1 class="mb-3">Categories</h1>
+        {{>categoriesPreview}}
+
+        <hr class="my-4">
+
+        <h1 class="mb-3">Areas</h1>
         {{>areas}}
     </div>
 

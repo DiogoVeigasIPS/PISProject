@@ -13,13 +13,15 @@ const readRecipes = (req, res) => {
     const stringSearch = query.name ? query.name : null;
     const isPartial = query.partial && query.partial.toLowerCase() === 'true';
     const area = query.area && !isNaN(query.area) ? parseInt(query.area) : null;
+    const category = query.category && !isNaN(query.category) ? parseInt(query.category) : null;
 
     const queryOptions = {
         maxResults: maxResults,
         isRandom: isRandom,
         stringSearch: stringSearch,
         isPartial: isPartial,
-        area: area
+        area: area,
+        category: category
     }
 
     handlePromise(recipeActions.getRecipes(queryOptions), res);

@@ -18,7 +18,9 @@ const getRecipes = (queryOptions = null) => {
             return;
         }
 
-        const areaRecipes = queryOptions.area ? recipes.filter(r => r.area.id == queryOptions.area) : recipes;
+        const categoryRecipes = queryOptions.category ? recipes.filter(r => r.category.id == queryOptions.category) : recipes;
+
+        const areaRecipes = queryOptions.area ? categoryRecipes.filter(r => r.area.id == queryOptions.area) : categoryRecipes;
 
         const partialRecipes = queryOptions.isPartial ? areaRecipes.map(r => new PartialRecipe(r)) : areaRecipes;
 

@@ -6,7 +6,17 @@ const { categoryActions } = require('../actions');
 const { handlePromise } = require('../utils');
 
 const readCategories = (req, res) => {
-    handlePromise(categoryActions.getCategories(), res);
+    const query = req.query;
+
+    const maxResults = query.max && !isNaN(query.max) ? parseInt(query.max) : null;
+    const isRandom = query.random && query.random.toLowerCase() === 'true';
+
+    const queryOptions = {
+        maxResults: maxResults,
+        isRandom: isRandom
+    }
+
+    handlePromise(categoryActions.getCategories(queryOptions), res);
 };
 
 const readCategory = (req, res) => {

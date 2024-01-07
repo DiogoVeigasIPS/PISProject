@@ -24,5 +24,14 @@ For debuggin purposes, the following command might suit you best:
 npm run dev
 ```
 
+## Database
+The data base used in this project is MySQL, because of that, you must have MySQl Workbench or any other way of running MySQL scripts and run the ```db.sql``` file.
+
+### Seed the database
+In order to seed your database with the most updated data from the provider API, the following route does the job:
+```bash
+http://localhost:8081/api/seed/all?force=true
+```
+
 ## Project Status
 *Currently under active development.*

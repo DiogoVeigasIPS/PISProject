@@ -3,13 +3,22 @@
  * Purpose: Aggregates all actions for the Category entity.
  */
 const { Category } = require('../models');
-const { objectIsValid } = require('../utils');
+const { objectIsValid, shuffleArray } = require('../utils');
 
 const { categories } = require('../temporaryData');
 
-const getCategories = () => {
+const getCategories = (queryOptions = null) => {
     return new Promise((resolve, reject) => {
-        resolve({ statusCode: 200, responseMessage: categories});
+        if (!queryOptions) {
+            resolve({ statusCode: 200, responseMessage: categories });
+            return;
+        }
+
+        const shuffledCategories = queryOptions.isRandom ? shuffleArray(categories) : categories;
+
+        const filteredCategories = queryOptions.maxResults ? shuffledCategories.slice(0, queryOptions.maxResults) : shuffledCategories;
+
+        resolve({ statusCode: 200, responseMessage: filteredCategories});
     });
 }
 
