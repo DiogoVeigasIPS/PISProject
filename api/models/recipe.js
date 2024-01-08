@@ -25,7 +25,7 @@ class Recipe {
      */
     constructor(recipeData, id = recipeData.id) {
         this.id = id;
-        this.idProvider = recipeData.idProvider;
+        this.idProvider = recipeData.idProvider ? recipeData.idProvider : null;
         this.name = recipeData.name;
         this.category = recipeData.category;
         this.description = recipeData.description;

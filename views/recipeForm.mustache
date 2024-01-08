@@ -24,70 +24,73 @@
                         </div>
                     </div>
 
-                    <!-- Category -->
-                    <div class="mb-3">
-                        <label for="category" class="form-label">Category</label>
-                        <select class="form-select" id="category" name="category" required>
-                            <option value="" disabled selected>Select category</option>
-                            {{#categories}}
-                                <option value="{{id}}">{{name}}</option>
-                            {{/categories}}
-                        </select>
-                        <div class="invalid-feedback">
-                            Please select a category.
+                    <div class="row">
+                        <!-- Category -->
+                        <div class="mb-3 col-md-6">
+                            <label for="category" class="form-label">Category</label>
+                            <select class="form-select" id="category" name="category" required>
+                                <option value="" disabled selected>Select category</option>
+                                {{#categories}}
+                                    <option value="{{id}}">{{name}}</option>
+                                {{/categories}}
+                            </select>
+                            <div class="invalid-feedback">
+                                Please select a category.
+                            </div>
+                        </div>
+                        <!-- Area -->
+                        <div class="mb-3 col-md-6">
+                            <label for="area" class="form-label">Area</label>
+                            <select class="form-select" id="area" name="area" required>
+                                <option value="" disabled selected>Select area</option>
+                                {{#areas}}
+                                    <option value="{{id}}">{{name}}</option>
+                                {{/areas}}
+                            </select>
+                            <div class="invalid-feedback">
+                                Please select an area.
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Area -->
-                    <div class="mb-3">
-                        <label for="area" class="form-label">Area</label>
-                        <select class="form-select" id="area" name="area" required>
-                            <option value="" disabled selected>Select area</option>
-                            {{#areas}}
-                                <option value="{{id}}">{{name}}</option>
-                            {{/areas}}
-                        </select>
-                        <div class="invalid-feedback">
-                            Please select an area.
+                    <div class="row">
+                        <!-- Preparation Time -->
+                        <div class="mb-3 col">
+                            <label for="preparationTime" class="form-label">Preparation Time (in minutes)</label>
+                            <input type="number" class="form-control" id="preparationTime" name="preparationTime" placeholder="Enter preparation time" min="1" required>
+                            <div class="invalid-feedback">
+                                Please enter the preparation time.
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Preparation Time -->
-                    <div class="mb-3">
-                        <label for="preparationTime" class="form-label">Preparation Time (in minutes)</label>
-                        <input type="number" class="form-control" id="preparationTime" name="preparationTime" placeholder="Enter preparation time" min="1" required>
-                        <div class="invalid-feedback">
-                            Please enter the preparation time.
+                        <!-- Difficulty -->
+                        <div class="mb-3 col">
+                            <label for="difficulty" class="form-label">Difficulty</label>
+                            <select class="form-select" id="difficulty" name="difficulty" required>
+                                <option value="" disabled selected>Select difficulty</option>
+                                {{#difficulties}}
+                                    <option value="{{id}}">{{name}}</option>
+                                {{/difficulties}}
+                            </select>
+                            <div class="invalid-feedback">
+                                Please select a difficulty level.
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Difficulty -->
-                    <div class="mb-3">
-                        <label for="difficulty" class="form-label">Difficulty</label>
-                        <select class="form-select" id="difficulty" name="difficulty" required>
-                            <option value="" disabled selected>Select difficulty</option>
-                            {{#difficulties}}
-                                <option value="{{id}}">{{name}}</option>
-                            {{/difficulties}}
-                        </select>
-                        <div class="invalid-feedback">
-                            Please select a difficulty level.
-                        </div>
-                    </div>
-
-                    <!-- Cost -->
-                    <div class="mb-3">
-                        <label for="cost" class="form-label">Cost €</label>
-                        <input type="number" class="form-control" id="cost" name="cost" placeholder="Enter cost" min="1" required>
-                        <div class="invalid-feedback">
-                            Please enter the cost.
+                        <!-- Cost -->
+                        <div class="mb-3 col">
+                            <label for="cost" class="form-label">Cost €</label>
+                            <input type="number" class="form-control" id="cost" name="cost" placeholder="Enter cost" min="1" required>
+                            <div class="invalid-feedback">
+                                Please enter the cost.
+                            </div>
                         </div>
                     </div>
 
                     <!-- Recipe Image URL -->
                     <div class="mb-3">
                         <label for="image" class="form-label">Recipe Image URL</label>
-                        <input type="text" class="form-control" id="image" name="image" placeholder="Enter the URL of the recipe image" required>
+                        <input type="url" class="form-control" id="image" name="image" placeholder="Enter the URL of the recipe image" required>
                         <div class="invalid-feedback">
                             Please enter a valid image URL.
                         </div>

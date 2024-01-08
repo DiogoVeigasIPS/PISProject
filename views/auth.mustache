@@ -16,7 +16,7 @@
                     <!-- Card for Login Form -->
                     <div class="card" id="loginCard">
                         <div class="card-body">
-                            <form action="/login" method="post" class="needs-validation" novalidate>
+                            <form action="/login" method="post" class="needs-validation">
                                 <div class="mb-3">
                                     <label for="username" class="form-label">Username</label>
                                     <input type="text" class="form-control" id="username" name="username" placeholder="Enter your username" required>
@@ -40,18 +40,18 @@
                     <!-- Card for Registration Form (Initially Hidden) -->
                     <div class="card d-none" id="registrationCard">
                         <div class="card-body">
-                            <form action="/register" method="post" class="needs-validation" novalidate>
+                            <form action="/signup" method="post" class="needs-validation">
                                 <div class="row">
                                     <div class="mb-3 col-md-6">
-                                        <label for="newEmail" class="form-label">Email</label>
-                                        <input type="email" class="form-control" id="newEmail" name="newEmail" placeholder="Enter your email" required>
+                                        <label for="email" class="form-label">Email</label>
+                                        <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
                                         <div class="invalid-feedback">
                                             Please enter a valid email address.
                                         </div>
                                     </div>
                                     <div class="mb-3 col-md-6">
-                                        <label for="newUsername" class="form-label">Username</label>
-                                        <input type="text" class="form-control" id="newUsername" name="newUsername" placeholder="Enter your username" required>
+                                        <label for="username" class="form-label">Username</label>
+                                        <input type="text" class="form-control" id="username" name="username" placeholder="Enter your username" required>
                                         <div class="invalid-feedback">
                                             Please enter a username.
                                         </div>
@@ -75,8 +75,8 @@
                                 </div>
                                 <div class="row">
                                     <div class="mb-3 col-md-6">
-                                        <label for="newPassword" class="form-label">Password</label>
-                                        <input type="password" class="form-control" id="newPassword" name="newPassword" placeholder="Enter your password" required>
+                                        <label for="password" class="form-label">Password</label>
+                                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
                                         <div class="invalid-feedback">
                                             Please enter a password.
                                         </div>

@@ -3,9 +3,9 @@
  *
  * @class
  */
-class User {
+class Author {
     /**
-     * Creates an instance of Recipe.
+     * Creates an instance of Author.
      *
      * @constructor
      * @param {Object} authorData - The data representing a user.
@@ -22,4 +22,4 @@ class User {
     }
 }
 
-module.exports = User;
+module.exports = Author;

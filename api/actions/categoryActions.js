@@ -29,7 +29,7 @@ const getCategory = (id) => {
             reject({ statusCode: 404, responseMessage: 'Category not found.' });
             return;
         }
-        resolve({ statusCode: 201, responseMessage: category})
+        resolve({ statusCode: 200, responseMessage: category})
     });
 }
 

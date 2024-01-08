@@ -3,35 +3,67 @@
  * Purpose: Manages the application's workflow.
  */
 const express = require('express');
-const { recipeActions, areaActions, categoryActions, difficultyActions } = require('./api/actions');
+const { recipeActions, areaActions, categoryActions, difficultyActions, userActions } = require('./api/actions');
+const { IngredientInRecipe, Ingredient, Category, Area, Difficulty, Recipe, Author } = require('./api/models');
 
 const router = express.Router();
 
-router.post('/submit-recipe', (req, res) => {
+router.post('/signup', async (req, res) => {
+    try{
+        const signup = await userActions.signupUser(req.body);
+        res.send(signup);
+    }catch(error){
+        res.send(error);
+    }
+});
+
+router.post('/login', async (req, res) => {
+    try{
+        const login = await userActions.loginUser(req.body);
+        res.send(login);
+    }catch(error){
+        res.send(error);
+    }
+});
+
+router.post('/submit-recipe', async (req, res) => {
     const body = req.body;
 
-    // Get list of ingredients (convert them into ingredients in recipe)
-    const recipe = {
-        name: body.name,
-        category: body.category,
-        description: body.description,
-        preparationDescription: body.preparationDescription,
-        area: body.area,
-        author: body.author,
-        image: body.image,
-        preparationTime: body.preparationTime,
-        difficulty: body.difficulty,
-        cost: body.cost
+    const ingredients = [];
+
+    // Add the ids and quantities
+    for (let i = 0; i < body.quantities.length; i++) {
+        ingredients.push(new IngredientInRecipe({
+            ingredient: new Ingredient({ id: body.ingredientIds[i] }),
+            quantity: body.quantities[i]
+        }))
     }
 
-    // Add recipe
+    const recipe = new Recipe({
+        id: null,
+        name: body.name,
+        category: new Category({ id: body.category, name: null, description: null, image: null }),
+        description: body.description,
+        preparationDescription: body.preparationDescription,
+        area: new Area({ id: body.area, name: null }),
+        author: new Author({ id: null, username: null, firstName: null, lastName: null }),
+        image: body.image,
+        preparationTime: body.preparationTime,
+        difficulty: new Difficulty({ id: body.difficulty, name: null }),
+        cost: body.cost,
+        ingredients: ingredients
+    });
 
-    // If success, send to the recipe page
+    try {
+        const newRecipe = await recipeActions.addRecipe(recipe);
+        res.redirect(`/recipe?id=${newRecipe.responseMessage.id}`);
+    } catch (error) {
+        console.log(error)
+        res.status(500).send(error);
+    }
 
-    // If insuccess, send the problem
-
-    res.json(body);
-})
+    //res.json(body);
+});
 
 router.get('/add-recipe', async (req, res) => {
     const categories = await categoryActions.getCategories();

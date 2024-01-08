@@ -5,7 +5,7 @@
  */
 class IngredientInRecipe {
     /**
-     * Creates an instance of Recipe.
+     * Creates an instance of IngredientInRecipe.
      *
      * @constructor
      * @param {Object} ingredientInRecipeData - The data representing a ingredient in a recipe.

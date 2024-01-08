@@ -28,8 +28,18 @@ const deleteUser = (req, res) => {
     handlePromise(userActions.deleteUser(id), res);
 };
 
+const loginUser = (req, res) => {
+    handlePromise(userActions.loginUser(req.body), res);
+};
+
+const signupUser = (req, res) => {
+    handlePromise(userActions.signupUser(req.body), res);
+};
+
 module.exports.readUsers = readUsers;
 module.exports.readUser = readUser;
 module.exports.addUser = addUser;
 module.exports.editUser = editUser;
 module.exports.deleteUser = deleteUser;
+module.exports.loginUser = loginUser;
+module.exports.signupUser = signupUser;

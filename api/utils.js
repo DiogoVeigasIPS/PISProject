@@ -4,8 +4,10 @@
  */
 const objectIsValid = (obj) => {
     for (const prop in obj) {
-        if (obj[prop] === undefined)
-            return false;
+        if (obj[prop] === undefined) { 
+            console.log(prop);
+            return false; 
+        }
     }
 
     return true;
