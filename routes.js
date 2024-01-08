@@ -8,7 +8,29 @@ const { recipeActions, areaActions, categoryActions, difficultyActions } = requi
 const router = express.Router();
 
 router.post('/submit-recipe', (req, res) => {
-    res.json(req.body);
+    const body = req.body;
+
+    // Get list of ingredients (convert them into ingredients in recipe)
+    const recipe = {
+        name: body.name,
+        category: body.category,
+        description: body.description,
+        preparationDescription: body.preparationDescription,
+        area: body.area,
+        author: body.author,
+        image: body.image,
+        preparationTime: body.preparationTime,
+        difficulty: body.difficulty,
+        cost: body.cost
+    }
+
+    // Add recipe
+
+    // If success, send to the recipe page
+
+    // If insuccess, send the problem
+
+    res.json(body);
 })
 
 router.get('/add-recipe', async (req, res) => {
@@ -18,8 +40,8 @@ router.get('/add-recipe', async (req, res) => {
 
     const renderOptions = {
         title: "Adding a recipe",
-        categories: categories.responseMessage, 
-        areas: areas.responseMessage, 
+        categories: categories.responseMessage,
+        areas: areas.responseMessage,
         difficulties: difficulties.responseMessage
     }
 
