@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Add a cell with the image
         const cellImage = row.insertCell(0);
         const ingredientImage = document.createElement('img');
-        ingredientImage.src = `https://www.themealdb.com/images/ingredients/${ingredient.name}.png`;
+        ingredientImage.src = ingredient.image;
         ingredientImage.alt = ingredient.name;
         ingredientImage.style.width = '5rem';
         cellImage.appendChild(ingredientImage);

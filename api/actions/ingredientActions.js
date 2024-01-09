@@ -39,6 +39,7 @@ const addIngredient = (ingredient) => {
     return new Promise((resolve, reject) => {
         const id = (ingredients.length == 0) ? 1 : ingredients.at(-1).id + 1;
         const newIngredient = new Ingredient(ingredient, id);
+        console.log(newIngredient)
         if (objectIsValid(newIngredient)) {
             ingredients.push(newIngredient);
             resolve({ statusCode: 201, responseMessage: newIngredient });

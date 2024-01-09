@@ -40,7 +40,6 @@ CREATE TABLE IF NOT EXISTS `area`(
     `area` varchar(60) not null unique
 );
 
-
 DROP TABLE IF EXISTS recipe;
 CREATE TABLE IF NOT EXISTS recipe(
 	id INT PRIMARY KEY AUTO_INCREMENT,
@@ -61,11 +60,12 @@ CREATE TABLE IF NOT EXISTS recipe(
     FOREIGN KEY (difficulty_id) REFERENCES difficulty(id)
 );
 
-DROP TABLE IF EXISTS ingredients;
-CREATE TABLE IF NOT EXISTS ingredients (
+DROP TABLE IF EXISTS ingredient;
+CREATE TABLE IF NOT EXISTS ingredient (
     id INT PRIMARY KEY AUTO_INCREMENT,
     `name` VARCHAR(50) NOT NULL UNIQUE,
-    `description` VARCHAR (100) not null
+    `description` VARCHAR (100) not null,
+    `image` VARCHAR (120) not null
 );
 
 -- Many to Many tables
@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS recipe_ingredients(
     quantity varchar(50),
     PRIMARY KEY (recipe_id, ingredient_id),
     FOREIGN KEY (recipe_id) references recipe(id),
-    FOREIGN KEY (ingredient_id) references ingredients(id)
+    FOREIGN KEY (ingredient_id) references ingredient(id)
 );
 
 DROP TABLE IF EXISTS recipe_list;
@@ -159,7 +159,7 @@ VALUES
 (101, 'Sushi Rolls', 15, 1, 'https://www.themealdb.com/images/media/meals/g046bb1663960946.jpg/preview', 'Steps:\n1. Prepare the rice vinegar-seasoned rice. \n2. Place a nori sheet on a bamboo rolling mat.\n3. Spread a thin layer of prepared rice on the nori sheet.\n4. Add sliced avocado along one edge of the rice.\n5. Roll the sushi tightly and cut into bite-sized pieces.', 3),
 (102, 'Mediterranean Salad', 18, 1, 'https://www.themealdb.com/images/media/meals/wvqpwt1468339226.jpg/preview', 'Steps:\n1. Cook the farfalle pasta according to package instructions.\n2. In a large bowl, combine cherry tomatoes, olives, mozzarella balls, tuna, and cooked farfalle.\n3. Drizzle olive oil over the salad and toss gently to combine.\n4. Garnish with fresh basil before serving.', 4);
 
-INSERT IGNORE INTO ingredients (`name`, `description`)
+INSERT IGNORE INTO ingredient (`name`, `description`)
 VALUES
 ('Nori Sheets', 'Seaweed sheets for sushi rolls'),
 ('Avocado', 'Fresh avocado for sushi rolls'),
@@ -206,7 +206,7 @@ SELECT
                     JSON_OBJECT('ingredient_id', i.id, 'name', i.name, 'quantity', ri.quantity)
                 )
                 FROM recipe_ingredients ri
-                JOIN ingredients i ON ri.ingredient_id = i.id
+                JOIN ingredient i ON ri.ingredient_id = i.id
                 WHERE ri.recipe_id = r.id
             ),
             'image', r.image,
