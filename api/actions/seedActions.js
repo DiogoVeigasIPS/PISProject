@@ -82,7 +82,8 @@ const seedIngredients = (force) => {
                     return new Ingredient({
                         id: parseInt(r.idIngredient),
                         name: r.strIngredient,
-                        description: r.strDescription
+                        description: r.strDescription,
+                        image: `https://www.themealdb.com/images/ingredients/${r.strIngredient}.png`
                     });
                 });
 
@@ -186,7 +187,8 @@ const addIngredients = async (recipe) => {
             if (!foundIngredient) {
                 foundIngredient = await addIngredient({
                     name: capitalizeWords(recipe[prop]),
-                    description: null
+                    description: null,
+                    image: null
                 });
             }
 
@@ -194,7 +196,8 @@ const addIngredients = async (recipe) => {
                 ingredient: new Ingredient({
                     id: foundIngredient.id,
                     name: foundIngredient.name,
-                    description: foundIngredient.description
+                    description: foundIngredient.description,
+                    image: foundIngredient.image
                 }),
                 quantity: recipe["strMeasure" + ingredientNumber]
             });

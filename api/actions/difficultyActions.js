@@ -20,7 +20,7 @@ const getDifficulty = (id) => {
             reject({ statusCode: 404, responseMessage: 'Difficulty not found.' });
             return;
         }
-        resolve({ statusCode: 201, responseMessage: difficulty})
+        resolve({ statusCode: 200, responseMessage: difficulty})
     });
 }
 

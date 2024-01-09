@@ -9,7 +9,7 @@ const mustacheExpress = require('mustache-express');
 
 // Try without index
 const apiRouter = require('./api/routes/index');
-const appRouter = require('./routes');
+const appRouter = require('./app');
 
 const app = express();
 

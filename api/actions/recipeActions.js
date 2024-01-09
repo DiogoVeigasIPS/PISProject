@@ -44,7 +44,7 @@ const getRecipe = (id) => {
             reject({ statusCode: 404, responseMessage: 'Recipe not found.' });
             return;
         }
-        resolve({ statusCode: 201, responseMessage: recipe })
+        resolve({ statusCode: 200, responseMessage: recipe })
     });
 }
 
@@ -180,20 +180,19 @@ const processRecipeData = (recipe) => {
         name: foundDifficulty.name
     });
 
-    // Check author
-    const authorId = recipe.author.id;
+    // Check author (Nullable)
+    const authorId = recipe.author ? recipe.author.id : null;
     const foundAuthor = users.find(c => c.id == authorId);
+    var author = null;
 
-    if (foundAuthor == null) {
-        throw { statusCode: 400, responseMessage: 'Recipe author not found.' };
+    if (foundAuthor != null) {
+        author = new Author({
+            id: authorId,
+            username: foundAuthor.username,
+            firstName: foundAuthor.firstName,
+            lastName: foundAuthor.lastName
+        });
     }
-
-    const author = new Author({
-        id: authorId,
-        username: foundAuthor.username,
-        firstName: foundAuthor.firstName,
-        lastName: foundAuthor.lastName
-    });
 
     // Check ingredients
     const ingredientsIds = recipe.ingredients.map(i => {

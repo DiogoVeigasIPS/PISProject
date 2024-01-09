@@ -20,7 +20,7 @@ const getArea = (id) => {
             reject({ statusCode: 404, responseMessage: 'Area not found.' });
             return;
         }
-        resolve({ statusCode: 201, responseMessage: area})
+        resolve({ statusCode: 200, responseMessage: area})
     });
 }
 

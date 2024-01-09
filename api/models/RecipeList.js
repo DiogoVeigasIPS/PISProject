@@ -5,7 +5,7 @@
  */
 class RecipeList {
     /**
-     * Creates an instance of Recipe.
+     * Creates an instance of RecipeList.
      *
      * @constructor
      * @param {Object} recipeListData - The data representing a recipe list.

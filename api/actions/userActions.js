@@ -20,7 +20,7 @@ const getUser = (id) => {
             reject({ statusCode: 404, responseMessage: 'User not found.' });
             return;
         }
-        resolve({ statusCode: 201, responseMessage: user })
+        resolve({ statusCode: 200, responseMessage: user })
     });
 }
 
@@ -75,8 +75,77 @@ const deleteUser = (id) => {
     })
 }
 
+const loginUser = ({ username, password }) => {
+    return new Promise((resolve, reject) => {
+        const user = users.find(u => u.username == username);
+
+        if (!user) {
+            reject({ statusCode: 404, responseMessage: 'User not found.' })
+            return;
+        }
+
+        if (user.password != password) {
+            reject({ statusCode: 404, responseMessage: 'Incorrect Password.' })
+            return;
+        }
+
+        resolve({ statusCode: 200, responseMessage: 'User logged in successfully' });
+    })
+}
+
+const signupUser = ({ username, email, password, repeatPassword, firstName, lastName }) => {
+    return new Promise(async (resolve, reject) => {
+        const repeatedEmail = users.find(u => u.email == email);
+        const repeatedUsername = users.find(u => u.username == username);
+
+        if (repeatedEmail) {
+            reject({ statusCode: 404, responseMessage: 'Email already in use.' })
+            return;
+        }
+
+        if (repeatedUsername) {
+            reject({ statusCode: 404, responseMessage: 'Username already in use.' })
+            return;
+        }
+
+        if (password.length < 4) {
+            reject({ statusCode: 404, responseMessage: 'Password is too small.' })
+            return;
+        }
+
+        if (password.length > 30) {
+            reject({ statusCode: 404, responseMessage: 'Password is too big.' })
+            return;
+        }
+
+        if (password != repeatPassword) {
+            reject({ statusCode: 404, responseMessage: 'Passwords must be equal.' })
+            return;
+        }
+
+        try {
+            const user = await addUser(
+                new User({
+                    id: null,
+                    username: username,
+                    email: email,
+                    password: password,
+                    firstName: firstName,
+                    lastName: lastName,
+                    token: null
+                })
+            );
+            resolve({ statusCode: 200, responseMessage: 'User signed up successfully' });
+        } catch (error) {
+            reject({ statusCode: 500, responseMessage: 'Something went wrong.' })
+        }
+    });
+};
+
 module.exports.getUsers = getUsers;
 module.exports.getUser = getUser;
 module.exports.addUser = addUser;
 module.exports.editUser = editUser;
 module.exports.deleteUser = deleteUser;
+module.exports.loginUser = loginUser;
+module.exports.signupUser = signupUser;

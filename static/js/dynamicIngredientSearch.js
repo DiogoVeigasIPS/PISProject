@@ -1,11 +1,11 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const ingredientsInput = document.getElementById('ingredients');
+    const ingredientsInput = document.getElementById('ingredientInput');
     const ingredientSuggestions = document.getElementById('ingredientSuggestions');
     const selectedIngredientsTable = document.getElementById('selectedIngredients');
     const selectedIngredientNames = new Set(); // Set to store selected ingredient names
 
-    ingredientsInput.addEventListener('input', function () {
-        const inputText = this.value.trim();
+    ingredientsInput.addEventListener('input', () => {
+        const inputText = ingredientsInput.value.trim();
 
         // Create a new XMLHttpRequest object
         const xhr = new XMLHttpRequest();
@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function () {
         xhr.open('GET', `http://localhost:8081/api/ingredient?name=${inputText}&max=8`, true);
 
         // Set up the callback function
-        xhr.onreadystatechange = function () {
+        xhr.onreadystatechange = () => {
             if (xhr.readyState === 4 && xhr.status === 200) {
                 const data = JSON.parse(xhr.responseText);
                 updateSuggestions(data);
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Display new suggestions
         filteredSuggestions.forEach(suggestion => {
             const listItem = document.createElement('div');
-            listItem.classList.add('list-group-item');
+            listItem.classList.add('list-group-item', 'list-group-item-action', 'custom-hover-class');
             listItem.style.cursor = 'pointer'; // Set cursor to pointer
             listItem.textContent = suggestion.name;
 
@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Add a cell with the image
         const cellImage = row.insertCell(0);
         const ingredientImage = document.createElement('img');
-        ingredientImage.src = `https://www.themealdb.com/images/ingredients/${ingredient.name}.png`;
+        ingredientImage.src = ingredient.image;
         ingredientImage.alt = ingredient.name;
         ingredientImage.style.width = '5rem';
         cellImage.appendChild(ingredientImage);
@@ -69,6 +69,13 @@ document.addEventListener('DOMContentLoaded', function () {
         const cellName = row.insertCell(1);
         cellName.textContent = ingredient.name;
         cellName.classList.add('align-middle'); // Bootstrap class to vertically align
+    
+        // Add a hidden input with the ingredient ID
+        const hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = `ingredientIds[]`;
+        hiddenInput.value = ingredient.id;
+        cellName.appendChild(hiddenInput);
     
         // Add a cell with the input for quantity
         const cellQuantity = row.insertCell(2);

@@ -5,7 +5,7 @@
  */
 class UserDetails {
     /**
-     * Creates an instance of Recipe.
+     * Creates an instance of UserDetails.
      *
      * @constructor
      * @param {Object} userDetailsData - The data representing a user with his details.

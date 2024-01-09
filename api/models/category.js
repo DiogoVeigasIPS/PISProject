@@ -5,7 +5,7 @@
  */
 class Category {
     /**
-     * Creates an instance of category.
+     * Creates an instance of Category.
      *
      * @constructor
      * @param {Object} categoryData - The data representing a category.

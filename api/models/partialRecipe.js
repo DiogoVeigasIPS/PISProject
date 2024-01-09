@@ -5,7 +5,7 @@
  */
 class PartialRecipe {
     /**
-     * Creates an instance of Recipe.
+     * Creates an instance of PartialRecipe.
      *
      * @constructor
      * @param {Object} recipeData - The data representing a recipe.
