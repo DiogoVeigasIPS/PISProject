@@ -1,10 +1,10 @@
 /**
  * Filename: index.js
- * Purpose: Manages the application's workflow.
+ * Purpose: Manages the application's basic user workflow.
  */
 const express = require('express');
-const { recipeActions, areaActions, categoryActions, difficultyActions, userActions } = require('./api/actions');
-const { IngredientInRecipe, Ingredient, Category, Area, Difficulty, Recipe, Author } = require('./api/models');
+const { recipeActions, areaActions, categoryActions, difficultyActions, userActions } = require('../../api/actions');
+const { IngredientInRecipe, Ingredient, Category, Area, Difficulty, Recipe, Author } = require('../../api/models');
 
 const router = express.Router();
 
