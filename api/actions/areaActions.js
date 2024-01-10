@@ -2,35 +2,61 @@
  * Filename: areaActions.js
  * Purpose: Aggregates all actions for the Area entity.
  */
+const mysql = require('mysql2');
+const connectionOptions = require('./connectionOptions.json');
+
 const { Area } = require('../models');
 const { objectIsValid } = require('../utils');
 
-const { areas } = require('../temporaryData');
-
 const getAreas = () => {
     return new Promise((resolve, reject) => {
-        resolve({ statusCode: 200, responseMessage: areas});
+        const connection = mysql.createConnection(connectionOptions);
+        connection.connect();
+
+        connection.query("SELECT * FROM area", (err, rows, fields) => {
+            if (err) {
+                console.error(err);
+                reject({ statusCode: 500, responseMessage: err });
+                return;
+            } 
+
+            const areas = rows.map(r => new Area(r));
+
+            resolve({ statusCode: 200, responseMessage: areas });
+        });
+
+        connection.end();
     });
 }
 
 const getArea = (id) => {
     return new Promise((resolve, reject) => {
-        const area = areas.find(a => a.id == id)
-        if (area == null) {
-            reject({ statusCode: 404, responseMessage: 'Area not found.' });
-            return;
-        }
-        resolve({ statusCode: 200, responseMessage: area})
+        const connection = mysql.createConnection(connectionOptions);
+        connection.connect();
+
+        connection.query("SELECT * FROM area WHERE id = ?", [id], (err, rows, fields) => {
+            if (err) {
+                console.error(err);
+                reject({ statusCode: 404, responseMessage: 'Area not found.' });
+                return;
+            } 
+
+            const area = rows[0];
+
+            resolve({ statusCode: 200, responseMessage: area });
+        });
+
+        connection.end();
     });
 }
 
 const addArea = (area) => {
     return new Promise((resolve, reject) => {
-        const id = (areas.length == 0) ? 1: areas.at(-1).id + 1;
+        const id = (areas.length == 0) ? 1 : areas.at(-1).id + 1;
         const newArea = new Area(area, id);
-        if (objectIsValid(newArea)){
+        if (objectIsValid(newArea)) {
             areas.push(newArea);
-            resolve({ statusCode: 201, responseMessage: newArea});
+            resolve({ statusCode: 201, responseMessage: newArea });
             return;
         }
         reject({ statusCode: 400, responseMessage: 'Invalid Body.' });
@@ -64,14 +90,14 @@ const deleteArea = (id) => {
     return new Promise((resolve, reject) => {
         const areaIndex = areas.findIndex(a => a.id == id);
 
-        if (areaIndex == -1){
-            reject({ statusCode: 404, responseMessage: 'Area not found.'})
+        if (areaIndex == -1) {
+            reject({ statusCode: 404, responseMessage: 'Area not found.' })
             return;
         }
 
         areas.splice(areaIndex, 1);
 
-        resolve({ statusCode: 200, responseMessage: 'Area deleted sucessfully.'});
+        resolve({ statusCode: 200, responseMessage: 'Area deleted sucessfully.' });
     })
 }
 
