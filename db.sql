@@ -8,10 +8,10 @@ CREATE TABLE IF NOT EXISTS `user` (
     id INT PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(30) NOT NULL UNIQUE,
 	`password` VARCHAR(255) NOT NULL,
-	token VARCHAR(255) NOT NULL UNIQUE,
+	token VARCHAR(255),
     email VARCHAR(60) NOT NULL UNIQUE,
-    first_name VARCHAR(15) NOT NULL,
-    last_name VARCHAR(15) NOT NULL
+    firstName VARCHAR(15) NOT NULL,
+    lastName VARCHAR(15) NOT NULL
 );
 
 /* DROP TABLE IF EXISTS author;
@@ -106,7 +106,7 @@ CREATE TABLE IF NOT EXISTS recipe_list_item (
 );
 
 -- Fixed Atributes
-INSERT IGNORE INTO `user` (username, email, `password`, first_name, last_name)
+INSERT IGNORE INTO `user` (username, email, `password`, firstName, lastName)
 VALUES ('System', 'system@example.com', 'system_password', 'System', 'User');
 
 INSERT IGNORE INTO author (id) VALUES (1);  -- Assuming 1 is the ID of the user created above
@@ -200,7 +200,7 @@ SELECT
             'area_id', a.id,
             'area', a.name,
             'author_id', u.id,
-            'author', CONCAT(u.first_name, ' ', u.last_name),
+            'author', CONCAT(u.firstName, ' ', u.lastName),
             'ingredients', (
                 SELECT JSON_ARRAYAGG(
                     JSON_OBJECT('ingredient_id', i.id, 'name', i.name, 'quantity', ri.quantity)

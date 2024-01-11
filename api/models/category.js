@@ -15,7 +15,7 @@ class Category {
      * @param {string} categoryData.image - The image of a category.
      */
     constructor(categoryData, id = categoryData.id) {
-        this.id = id;
+        this.id = id ?? null;
         this.name = categoryData.name;
         this.description = categoryData.description;
         this.image = categoryData.image;    
