@@ -8,22 +8,22 @@ CREATE TABLE IF NOT EXISTS `user` (
     id INT PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(30) NOT NULL UNIQUE,
 	`password` VARCHAR(255) NOT NULL,
-	token VARCHAR(255) NOT NULL UNIQUE,
+	token VARCHAR(255),
     email VARCHAR(60) NOT NULL UNIQUE,
-    first_name VARCHAR(15) NOT NULL,
-    last_name VARCHAR(15) NOT NULL
+    firstName VARCHAR(15) NOT NULL,
+    lastName VARCHAR(15) NOT NULL
 );
 
-DROP TABLE IF EXISTS author;
+/* DROP TABLE IF EXISTS author;
 CREATE TABLE IF NOT EXISTS author(
 	id int primary key,
 	foreign key (id) references `user`(id)
-);
+); */
 
 DROP TABLE IF EXISTS difficulty;
 CREATE TABLE IF NOT EXISTS difficulty(
 	id INT PRIMARY KEY AUTO_INCREMENT,
-    difficulty varchar(10) UNIQUE
+    `name` varchar(50) UNIQUE
 );
 
 DROP TABLE IF EXISTS category;
@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS category (
 DROP TABLE IF EXISTS `area`;
 CREATE TABLE IF NOT EXISTS `area`(
 	id INT PRIMARY KEY AUTO_INCREMENT,
-    `area` varchar(60) not null unique
+    `name` varchar(60) not null unique
 );
 
 DROP TABLE IF EXISTS recipe;
@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS recipe(
     cost DECIMAL(5,2),
     FOREIGN KEY (category_id) references category(id),
     FOREIGN KEY (area_id) references `area`(id),
-    FOREIGN KEY (author_id) REFERENCES author(id),
+    FOREIGN KEY (author_id) REFERENCES user(id),
     FOREIGN KEY (difficulty_id) REFERENCES difficulty(id)
 );
 
@@ -106,17 +106,17 @@ CREATE TABLE IF NOT EXISTS recipe_list_item (
 );
 
 -- Fixed Atributes
-INSERT IGNORE INTO `user` (username, email, `password`, first_name, last_name)
+INSERT IGNORE INTO `user` (username, email, `password`, firstName, lastName)
 VALUES ('System', 'system@example.com', 'system_password', 'System', 'User');
 
 INSERT IGNORE INTO author (id) VALUES (1);  -- Assuming 1 is the ID of the user created above
 
-INSERT IGNORE INTO difficulty (difficulty) values
+INSERT IGNORE INTO difficulty (`name`) values
 ('Beginner'), 
 ('Cook'), 
 ('Chef');
 
-INSERT IGNORE INTO `area` (`area`) VALUES
+INSERT IGNORE INTO `area` (`name`) VALUES
 ('American'), 
 ('British'), 
 ('Canadian'), 
@@ -147,7 +147,7 @@ INSERT IGNORE INTO `area` (`area`) VALUES
 ('Unknown'), 
 ('Vietnamese');
 
-INSERT IGNORE INTO category (`name`, `description`, image) 
+INSERT IGNORE INTO category (`name`, `description`, image)
 VALUES
     ('Beef', 'Beef is a culinary delight derived from cattle, known for its rich flavor and nutritional value.', 'beef_image.jpg'),
     ('Chicken', 'Chicken, a domesticated fowl, is a versatile meat enjoyed worldwide for its lean protein and mild taste.', 'chicken_image.jpg'),
@@ -159,18 +159,18 @@ VALUES
 (101, 'Sushi Rolls', 15, 1, 'https://www.themealdb.com/images/media/meals/g046bb1663960946.jpg/preview', 'Steps:\n1. Prepare the rice vinegar-seasoned rice. \n2. Place a nori sheet on a bamboo rolling mat.\n3. Spread a thin layer of prepared rice on the nori sheet.\n4. Add sliced avocado along one edge of the rice.\n5. Roll the sushi tightly and cut into bite-sized pieces.', 3),
 (102, 'Mediterranean Salad', 18, 1, 'https://www.themealdb.com/images/media/meals/wvqpwt1468339226.jpg/preview', 'Steps:\n1. Cook the farfalle pasta according to package instructions.\n2. In a large bowl, combine cherry tomatoes, olives, mozzarella balls, tuna, and cooked farfalle.\n3. Drizzle olive oil over the salad and toss gently to combine.\n4. Garnish with fresh basil before serving.', 4);
 
-INSERT IGNORE INTO ingredient (`name`, `description`)
+INSERT IGNORE INTO ingredient (`name`, `description`, image)
 VALUES
-('Nori Sheets', 'Seaweed sheets for sushi rolls'),
-('Avocado', 'Fresh avocado for sushi rolls'),
-('Rice Vinegar', 'Seasoned rice vinegar for sushi rice'),
-('Cherry Tomatoes', 'Fresh cherry tomatoes for the salad'),
-('Olives', 'Kalamata olives for the salad'),
-('Olive Oil', 'Extra virgin olive oil for the salad'),
-('Mozzarella balls','Small balls made of mozzarella cheese'),
-('Tuna','Strong flavored fish cought in the ocean, mostly in the altantic'),
-('Basil','Fresh basil is used a lot to make salad and as a side condiment to a lot of mediterranean dishes'),
-('Farfalle', 'Small pasta in the shape of little bowties used a lot in mediterranean and especially in italian dishes');
+('Nori Sheets', 'Seaweed sheets for sushi rolls', 'http://image.example'),
+('Avocado', 'Fresh avocado for sushi rolls', 'http://image.example'),
+('Rice Vinegar', 'Seasoned rice vinegar for sushi rice', 'http://image.example'),
+('Cherry Tomatoes', 'Fresh cherry tomatoes for the salad', 'http://image.example'),
+('Olives', 'Kalamata olives for the salad', 'http://image.example'),
+('Olive Oil', 'Extra virgin olive oil for the salad', 'http://image.example'),
+('Mozzarella balls','Small balls made of mozzarella cheese', 'http://image.example'),
+('Tuna','Strong flavored fish cought in the ocean, mostly in the altantic', 'http://image.example'),
+('Basil','Fresh basil is used a lot to make salad and as a side condiment to a lot of mediterranean dishes', 'http://image.example'),
+('Farfalle', 'Small pasta in the shape of little bowties used a lot in mediterranean and especially in italian dishes', 'http://image.example');
 
 INSERT IGNORE INTO recipe_ingredients (recipe_id, ingredient_id, quantity)
 VALUES
@@ -185,7 +185,7 @@ VALUES
 (2, 9, '1 bunch'), -- 1 bunch of basil
 (2, 10 , '350g'); -- 350g of farfalle
 
--- Views 
+-- Views (probably will need to create object for author, area, category and difficulty)
 DROP VIEW IF EXISTS search_recipes;
 CREATE VIEW search_recipes AS
 SELECT
@@ -198,9 +198,9 @@ SELECT
             'description', r.description,
             'preparationDescription', r.preparation_description,
             'area_id', a.id,
-            'area', a.area,
+            'area', a.name,
             'author_id', u.id,
-            'author', CONCAT(u.first_name, ' ', u.last_name),
+            'author', CONCAT(u.firstName, ' ', u.lastName),
             'ingredients', (
                 SELECT JSON_ARRAYAGG(
                     JSON_OBJECT('ingredient_id', i.id, 'name', i.name, 'quantity', ri.quantity)
@@ -212,7 +212,7 @@ SELECT
             'image', r.image,
             'preparationTime', r.preparationTime,  
             'difficulty_id', d.id,
-            'difficulty', d.difficulty,
+            'difficulty', d.name,
             'cost', r.cost 
         )
     )
@@ -241,3 +241,7 @@ insert into recipe_list_item(list_id, recipe_id) values (1, 2);
 select rl.name, r.name from recipe_list rl
 join recipe_list_item rli on rl.id = rli.list_id
 join recipe r on rli.recipe_id = r.id;
+
+/* delete from recipe_list_item;
+delete from recipe_ingredients;
+delete from recipe; */

@@ -18,7 +18,7 @@ class User {
      * @param {string} userData.token - The token of a user.
      */
     constructor(userData, id = userData.id) {
-        this.id = id;
+        this.id = id ?? null;
         this.username = userData.username;
         this.email = userData.email;
         this.password = userData.password;

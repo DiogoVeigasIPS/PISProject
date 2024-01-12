@@ -13,5 +13,7 @@ router.get('/:id', areaController.readArea);
 router.post('', areaController.addArea);
 router.put('/:id', areaController.editArea);
 router.delete('/:id', areaController.deleteArea);
+router.delete('', areaController.truncateAreas);
+router.post('/bulk', areaController.addAreas);
 
 module.exports = router;

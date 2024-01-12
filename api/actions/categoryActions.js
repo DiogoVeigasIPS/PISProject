@@ -2,86 +2,155 @@
  * Filename: categoryActions.js
  * Purpose: Aggregates all actions for the Category entity.
  */
-const { Category } = require('../models');
-const { objectIsValid, shuffleArray } = require('../utils');
+const mysql = require('mysql2');
+const connectionOptions = require('./connectionOptions.json');
 
-const { categories } = require('../temporaryData');
+const { Category } = require('../models');
+const { objectIsValid } = require('../utils');
 
 const getCategories = (queryOptions = null) => {
     return new Promise((resolve, reject) => {
-        if (!queryOptions) {
-            resolve({ statusCode: 200, responseMessage: categories });
-            return;
+        var queryString = "SELECT * FROM category";
+        const queryParams = [];
+
+        if (queryOptions) {
+            queryString += queryOptions.isRandom ? " ORDER BY RAND()" : "";
+
+            if (queryOptions.maxResults) {
+                queryString += " LIMIT ?";
+                queryParams.push(queryOptions.maxResults);
+            }
+        } else {
+            queryString += " ORDER BY id";
         }
 
-        const shuffledCategories = queryOptions.isRandom ? shuffleArray(categories) : categories;
+        const connection = mysql.createConnection(connectionOptions);
 
-        const filteredCategories = queryOptions.maxResults ? shuffledCategories.slice(0, queryOptions.maxResults) : shuffledCategories;
+        connection.connect();
 
-        resolve({ statusCode: 200, responseMessage: filteredCategories});
+        connection.query(queryString, queryParams, (err, result) => {
+            if (err) {
+                console.error(err);
+                reject({ statusCode: 500, responseMessage: err });
+                return;
+            }
+
+            const categories = result.map(r => new Category(r));
+
+            resolve({ statusCode: 200, responseMessage: categories });
+        });
+
+        connection.end();
     });
 }
 
 const getCategory = (id) => {
     return new Promise((resolve, reject) => {
-        const category = categories.find(c => c.id == id)
-        if (category == null) {
-            reject({ statusCode: 404, responseMessage: 'Category not found.' });
-            return;
-        }
-        resolve({ statusCode: 200, responseMessage: category})
+        const connection = mysql.createConnection(connectionOptions);
+        connection.connect();
+
+        connection.query("SELECT * FROM category WHERE id = ?", [id], (err, result) => {
+            if (err) {
+                console.error(err);
+                reject({ statusCode: 404, responseMessage: err });
+                return;
+            }
+
+            if (result.length === 0) {
+                reject({ statusCode: 404, responseMessage: 'Category not found.' });
+                return;
+            }
+
+            resolve({ statusCode: 200, responseMessage: result[0] });
+        });
+
+        connection.end();
     });
 }
 
 const addCategory = (category) => {
     return new Promise((resolve, reject) => {
-        const id = (categories.length == 0) ? 1: categories.at(-1).id + 1;
-        const newCategory = new Category(category, id);
-        if (objectIsValid(newCategory)){
-            categories.push(newCategory);
-            resolve({ statusCode: 201, responseMessage: newCategory});
+        const newCategory = new Category(category);
+
+        if (!objectIsValid(newCategory)) {
+            reject({ statusCode: 400, responseMessage: 'Invalid Body.' });
             return;
         }
-        reject({ statusCode: 400, responseMessage: 'Invalid Body.' });
-    })
+
+        const connection = mysql.createConnection(connectionOptions);
+        connection.connect();
+
+        connection.query("INSERT INTO category (name, description, image) VALUES (?, ?, ?)",
+            [newCategory.name, newCategory.description, newCategory.image],
+            (err, result) => {
+                if (err) {
+                    console.error(err);
+                    reject({ statusCode: 400, responseMessage: err });
+                    return;
+                }
+
+                newCategory.id = result.insertId;
+                resolve({ statusCode: 200, responseMessage: newCategory });
+            });
+
+        connection.end();
+    });
 }
 
 const editCategory = (id, category) => {
     return new Promise((resolve, reject) => {
-        const newCategory = new Category(category, id);
-        const oldCategory = categories.find(c => c.id == id);
+        const newCategory = new Category(category);
 
         if (!objectIsValid(newCategory)) {
             reject({ statusCode: 400, responseMessage: 'Invalid body.' });
             return;
         }
 
-        if (oldCategory == null) {
-            reject({ statusCode: 404, responseMessage: 'Category not found.' });
-            return;
-        }
+        const connection = mysql.createConnection(connectionOptions);
+        connection.connect();
 
-        for (prop in newCategory) {
-            oldCategory[prop] = newCategory[prop];
-        }
+        connection.query("UPDATE category SET name = ?, description = ?, image = ? WHERE id = ?",
+            [newCategory.name, newCategory.description, newCategory.image, id],
+            (err, result) => {
+                if (err) {
+                    console.error(err);
+                    reject({ statusCode: 400, responseMessage: err });
+                    return;
+                }
 
-        resolve({ statusCode: 200, responseMessage: oldCategory });
-    })
+                if (result.affectedRows > 0) {
+                    const editedCategory = { id, name: newCategory.name, description: newCategory.description, image: newCategory.image };
+                    resolve({ statusCode: 200, responseMessage: editedCategory });
+                } else {
+                    reject({ statusCode: 404, responseMessage: 'Category not found.' });
+                }
+            });
+
+        connection.end();
+    });
 }
 
 const deleteCategory = (id) => {
     return new Promise((resolve, reject) => {
-        const categoryIndex = categories.findIndex(c => c.id == id);
+        const connection = mysql.createConnection(connectionOptions);
+        connection.connect();
 
-        if (categoryIndex == -1){
-            reject({ statusCode: 404, responseMessage: 'Category not found.'})
-            return;
-        }
+        connection.query("DELETE FROM category WHERE id = ?", [id], (err, result) => {
+            if (err) {
+                console.error(err);
+                reject({ statusCode: 400, responseMessage: err });
+                return;
+            }
 
-        categories.splice(categoryIndex, 1);
+            if (result.affectedRows > 0) {
+                resolve({ statusCode: 200, responseMessage: 'Category deleted successfully.' });
+            } else {
+                reject({ statusCode: 404, responseMessage: 'Category not found.' });
+            }
+        });
 
-        resolve({ statusCode: 200, responseMessage: 'Category deleted sucessfully.'});
-    })
+        connection.end();
+    });
 }
 
 module.exports.getCategories = getCategories;

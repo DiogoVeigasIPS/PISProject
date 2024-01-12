@@ -15,7 +15,7 @@ class Ingredient {
      * @param {string} ingredientData.image - The image of an ingredient.
      */
     constructor(ingredientData, id = ingredientData.id) {
-        this.id = id;
+        this.id = id ?? null;
         this.name = ingredientData.name;
         this.description = ingredientData.description;
         this.image = ingredientData.image;

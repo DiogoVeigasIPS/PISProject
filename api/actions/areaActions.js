@@ -2,81 +2,202 @@
  * Filename: areaActions.js
  * Purpose: Aggregates all actions for the Area entity.
  */
+const mysql = require('mysql2');
+const connectionOptions = require('./connectionOptions.json');
+
 const { Area } = require('../models');
 const { objectIsValid } = require('../utils');
 
-const { areas } = require('../temporaryData');
-
 const getAreas = () => {
     return new Promise((resolve, reject) => {
-        resolve({ statusCode: 200, responseMessage: areas});
+        const connection = mysql.createConnection(connectionOptions);
+        connection.connect();
+
+        connection.query("SELECT * FROM area ORDER BY id", (err, result) => {
+            if (err) {
+                console.error(err);
+                reject({ statusCode: 500, responseMessage: err });
+                return;
+            }
+
+            const areas = result.map(r => new Area(r));
+
+            resolve({ statusCode: 200, responseMessage: areas });
+        });
+
+        connection.end();
     });
 }
 
 const getArea = (id) => {
     return new Promise((resolve, reject) => {
-        const area = areas.find(a => a.id == id)
-        if (area == null) {
-            reject({ statusCode: 404, responseMessage: 'Area not found.' });
-            return;
-        }
-        resolve({ statusCode: 200, responseMessage: area})
+        const connection = mysql.createConnection(connectionOptions);
+        connection.connect();
+
+        connection.query("SELECT * FROM area WHERE id = ?", [id], (err, result) => {
+            if (err) {
+                console.error(err);
+                reject({ statusCode: 400, responseMessage: err });
+                return;
+            }
+
+            if (result.length == 0) {
+                reject({ statusCode: 404, responseMessage: 'Area not found.' });
+                return;
+            }
+
+            resolve({ statusCode: 200, responseMessage: result[0] });
+        });
+
+        connection.end();
     });
 }
 
 const addArea = (area) => {
     return new Promise((resolve, reject) => {
-        const id = (areas.length == 0) ? 1: areas.at(-1).id + 1;
-        const newArea = new Area(area, id);
-        if (objectIsValid(newArea)){
-            areas.push(newArea);
-            resolve({ statusCode: 201, responseMessage: newArea});
+        const newArea = new Area(area);
+
+        if (!objectIsValid(newArea)) {
+            reject({ statusCode: 400, responseMessage: 'Invalid Body.' });
             return;
         }
-        reject({ statusCode: 400, responseMessage: 'Invalid Body.' });
-    })
+
+        const connection = mysql.createConnection(connectionOptions);
+        connection.connect();
+
+        connection.query("INSERT INTO area (name) VALUES (?)", [newArea.name], (err, result) => {
+            if (err) {
+                console.error(err);
+                reject({ statusCode: 400, responseMessage: err });
+                return;
+            }
+
+            newArea.id = result.insertId;
+            resolve({ statusCode: 200, responseMessage: newArea });
+        });
+
+        connection.end();
+    });
 }
 
 const editArea = (id, area) => {
     return new Promise((resolve, reject) => {
-        const newArea = new Area(area, id);
-        const oldArea = areas.find(a => a.id == id);
+        const newArea = new Area(area);
 
         if (!objectIsValid(newArea)) {
             reject({ statusCode: 400, responseMessage: 'Invalid body.' });
             return;
         }
 
-        if (oldArea == null) {
-            reject({ statusCode: 404, responseMessage: 'Area not found.' });
-            return;
-        }
+        const connection = mysql.createConnection(connectionOptions);
+        connection.connect();
 
-        for (prop in newArea) {
-            oldArea[prop] = newArea[prop];
-        }
+        connection.query("UPDATE area SET name = ? WHERE id = ?", [newArea.name, id], (err, result) => {
+            if (err) {
+                console.error(err);
+                reject({ statusCode: 400, responseMessage: err });
+                return;
+            }
 
-        resolve({ statusCode: 200, responseMessage: oldArea });
-    })
+            if (result.affectedRows > 0) {
+                const editedArea = { id, name: newArea.name };
+                resolve({ statusCode: 200, responseMessage: editedArea });
+            } else {
+                reject({ statusCode: 404, responseMessage: 'Area not found.' });
+            }
+        });
+
+        connection.end();
+    });
 }
 
 const deleteArea = (id) => {
     return new Promise((resolve, reject) => {
-        const areaIndex = areas.findIndex(a => a.id == id);
+        const connection = mysql.createConnection(connectionOptions);
+        connection.connect();
 
-        if (areaIndex == -1){
-            reject({ statusCode: 404, responseMessage: 'Area not found.'})
-            return;
+        connection.query("DELETE FROM area WHERE id = ?", [id], (err, result) => {
+            if (err) {
+                console.error(err);
+                reject({ statusCode: 400, responseMessage: err });
+                return;
+            }
+
+            if (result.affectedRows > 0) {
+                resolve({ statusCode: 200, responseMessage: 'Area deleted sucessfully.' });
+            } else {
+                reject({ statusCode: 404, responseMessage: 'Area not found.' });
+            }
+        });
+
+        connection.end();
+    });
+}
+
+const truncateAreas = () => {
+    return new Promise((resolve, reject) => {
+        const multipleStatementsOptions = {... connectionOptions};
+        multipleStatementsOptions.multipleStatements = true;
+
+        const connection = mysql.createConnection(multipleStatementsOptions);
+        connection.connect();
+
+        const queryString = "SET FOREIGN_KEY_CHECKS = 0; TRUNCATE TABLE area; SET FOREIGN_KEY_CHECKS = 1;";
+
+        connection.query(queryString, (truncateErr, truncateResult) => {
+            if (truncateErr) {
+                console.error(truncateErr);
+                reject({ statusCode: 500, responseMessage: truncateErr });
+                return;
+            }
+
+            resolve({ statusCode: 200, responseMessage: 'Areas truncated successfully.' });
+
+            connection.end();
+        });
+    });
+};
+
+const addAreas = (areas) => {
+    return new Promise((resolve, reject) => {
+        const newAreas = areas.map(a => new Area(a));
+
+        for (const newArea of newAreas) {
+            if (!objectIsValid(newArea)) {
+                reject({ statusCode: 400, responseMessage: 'Invalid Body.' });
+                return;
+            }
         }
 
-        areas.splice(areaIndex, 1);
+        const connection = mysql.createConnection(connectionOptions);
+        connection.connect();
 
-        resolve({ statusCode: 200, responseMessage: 'Area deleted sucessfully.'});
-    })
-}
+        // Create an array of values for bulk insert
+        const values = newAreas.map(newArea => [newArea.name]);
+
+        connection.query("INSERT INTO area (name) VALUES ?", [values], (err, result) => {
+            if (err) {
+                console.error(err);
+                reject({ statusCode: 400, responseMessage: err });
+                return;
+            }
+
+            // Update the IDs for the newly inserted areas
+            for (let i = 0; i < result.affectedRows; i++) {
+                newAreas[i].id = result.insertId + i;
+            }
+
+            resolve({ statusCode: 200, responseMessage: newAreas });
+            connection.end();
+        });
+    });
+};
+
 
 module.exports.getAreas = getAreas;
 module.exports.getArea = getArea;
 module.exports.addArea = addArea;
 module.exports.editArea = editArea;
 module.exports.deleteArea = deleteArea;
+module.exports.truncateAreas = truncateAreas;
+module.exports.addAreas = addAreas;

@@ -13,7 +13,7 @@ class Difficulty {
      * @param {string} difficultyData.name - The name of a difficulty.
      */
     constructor(difficultyData, id = difficultyData.id) {
-        this.id = id;
+        this.id = id ?? null;
         this.name = difficultyData.name;
     }
 }

@@ -1,90 +1,151 @@
 /**
  * Filename: ingredientActions.js
- * Purpose: Aggregates all actions for the Ingridient entity.
+ * Purpose: Aggregates all actions for the Ingredient entity.
  */
+const mysql = require('mysql2');
+const connectionOptions = require('./connectionOptions.json');
+
 const { Ingredient } = require('../models');
 const { objectIsValid } = require('../utils');
 
-const { ingredients } = require('../temporaryData');
-
 const getIngredients = (queryOptions = null) => {
     return new Promise((resolve, reject) => {
-        if (!queryOptions) {
+        const queryString = queryOptions
+            ? "SELECT * FROM ingredient" +
+            (queryOptions.stringSearch ? " WHERE name LIKE ?" : "") +
+            (queryOptions.isRandom ? " ORDER BY RAND()" : "") +
+            (queryOptions.maxResults ? " LIMIT ?" : "")
+            : "SELECT * FROM ingredient ORDER BY id";
+
+        const queryParams = [];
+        if (queryOptions.stringSearch) { queryParams.push(`%${queryOptions.stringSearch}%`); }
+        if (queryOptions.maxResults) { queryParams.push(queryOptions.maxResults); }
+
+        const connection = mysql.createConnection(connectionOptions);
+        connection.connect();
+
+        connection.query(queryString, queryParams, (err, result) => {
+            if (err) {
+                console.error(err);
+                reject({ statusCode: 500, responseMessage: err });
+                return;
+            }
+
+            const ingredients = result.map(r => new Ingredient(r));
+
             resolve({ statusCode: 200, responseMessage: ingredients });
-            return;
-        }
-
-        const filteredByStringSearch = queryOptions.stringSearch
-            ? ingredients.filter(ingredient => ingredient.name.toLowerCase().startsWith(queryOptions.stringSearch.toLowerCase()))
-            : ingredients;
-
-        const filteredIngredients = queryOptions.maxResults ? filteredByStringSearch.slice(0, queryOptions.maxResults) : filteredByStringSearch;
-
-        resolve({ statusCode: 200, responseMessage: filteredIngredients });
+            connection.end();
+        });
     });
-}
+};
 
 const getIngredient = (id) => {
     return new Promise((resolve, reject) => {
-        const ingredient = ingredients.find(d => d.id == id)
-        if (ingredient == null) {
-            reject({ statusCode: 404, responseMessage: 'Ingredient not found.' });
-            return;
-        }
-        resolve({ statusCode: 201, responseMessage: ingredient })
+        const connection = mysql.createConnection(connectionOptions);
+        connection.connect();
+
+        connection.query("SELECT * FROM ingredient WHERE id = ?", [id], (err, result) => {
+            if (err) {
+                console.error(err);
+                reject({ statusCode: 404, responseMessage: err });
+                return;
+            }
+
+            if (result.length === 0) {
+                reject({ statusCode: 404, responseMessage: 'Ingredient not found.' });
+                return;
+            }
+
+            resolve({ statusCode: 200, responseMessage: result[0] });
+        });
+
+        connection.end();
     });
 }
 
 const addIngredient = (ingredient) => {
     return new Promise((resolve, reject) => {
-        const id = (ingredients.length == 0) ? 1 : ingredients.at(-1).id + 1;
-        const newIngredient = new Ingredient(ingredient, id);
-        console.log(newIngredient)
-        if (objectIsValid(newIngredient)) {
-            ingredients.push(newIngredient);
-            resolve({ statusCode: 201, responseMessage: newIngredient });
-            return ingredient;
+        const newIngredient = new Ingredient(ingredient);
+
+        if (!objectIsValid(newIngredient)) {
+            reject({ statusCode: 400, responseMessage: 'Invalid Body.' });
+            return;
         }
-        reject({ statusCode: 400, responseMessage: 'Invalid Body.' });
-    })
+
+        const connection = mysql.createConnection(connectionOptions);
+        connection.connect();
+
+        connection.query("INSERT INTO ingredient (name, description, image) VALUES (?, ?, ?)",
+            [newIngredient.name, newIngredient.description, newIngredient.image],
+            (err, result) => {
+                if (err) {
+                    console.error(err);
+                    reject({ statusCode: 400, responseMessage: err });
+                    return;
+                }
+
+                newIngredient.id = result.insertId;
+                resolve({ statusCode: 200, responseMessage: newIngredient });
+            });
+
+        connection.end();
+    });
 }
 
 const editIngredient = (id, ingredient) => {
     return new Promise((resolve, reject) => {
-        const newIngredient = new Ingredient(ingredient, id);
-        const oldIngredient = ingredients.find(c => c.id == id);
+        const newIngredient = new Ingredient(ingredient);
 
         if (!objectIsValid(newIngredient)) {
             reject({ statusCode: 400, responseMessage: 'Invalid body.' });
             return;
         }
 
-        if (oldIngredient == null) {
-            reject({ statusCode: 404, responseMessage: 'Ingredient not found.' });
-            return;
-        }
+        const connection = mysql.createConnection(connectionOptions);
+        connection.connect();
 
-        for (prop in newIngredient) {
-            oldIngredient[prop] = newIngredient[prop];
-        }
+        connection.query("UPDATE ingredient SET name = ?, description = ?, image = ? WHERE id = ?",
+            [newIngredient.name, newIngredient.description, newIngredient.image, id],
+            (err, result) => {
+                if (err) {
+                    console.error(err);
+                    reject({ statusCode: 400, responseMessage: err });
+                    return;
+                }
 
-        resolve({ statusCode: 200, responseMessage: oldIngredient });
-    })
+                if (result.affectedRows > 0) {
+                    const editedIngredient = { id, name: newIngredient.name, description: newIngredient.description, image: newIngredient.image };
+                    resolve({ statusCode: 200, responseMessage: editedIngredient });
+                } else {
+                    reject({ statusCode: 404, responseMessage: 'Ingredient not found.' });
+                }
+            });
+
+        connection.end();
+    });
 }
 
 const deleteIngredient = (id) => {
     return new Promise((resolve, reject) => {
-        const ingredientIndex = ingredients.findIndex(c => c.id == id);
+        const connection = mysql.createConnection(connectionOptions);
+        connection.connect();
 
-        if (ingredientIndex == -1) {
-            reject({ statusCode: 404, responseMessage: 'Ingredient not found.' })
-            return;
-        }
+        connection.query("DELETE FROM ingredient WHERE id = ?", [id], (err, result) => {
+            if (err) {
+                console.error(err);
+                reject({ statusCode: 400, responseMessage: err });
+                return;
+            }
 
-        ingredients.splice(ingredientIndex, 1);
+            if (result.affectedRows > 0) {
+                resolve({ statusCode: 200, responseMessage: 'Ingredient deleted successfully.' });
+            } else {
+                reject({ statusCode: 404, responseMessage: 'Ingredient not found.' });
+            }
+        });
 
-        resolve({ statusCode: 200, responseMessage: 'Ingredient deleted sucessfully.' });
-    })
+        connection.end();
+    });
 }
 
 module.exports.getIngredients = getIngredients;
