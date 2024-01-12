@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS author(
 DROP TABLE IF EXISTS difficulty;
 CREATE TABLE IF NOT EXISTS difficulty(
 	id INT PRIMARY KEY AUTO_INCREMENT,
-    `name` varchar(10) UNIQUE
+    `name` varchar(50) UNIQUE
 );
 
 DROP TABLE IF EXISTS category;
