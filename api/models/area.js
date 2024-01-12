@@ -13,7 +13,7 @@ class Area {
      * @param {string} areaData.name - The name of a area.
      */
     constructor(areaData, id = areaData.id) {
-        this.id = id;
+        this.id = id ?? null;
         this.name = areaData.name;
     }
 }

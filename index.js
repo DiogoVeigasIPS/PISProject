@@ -19,7 +19,9 @@ app.use(express.static(__dirname + '/static'));
 app.use(express.urlencoded({ extended: true }));
 
 // Mustache and views.
-app.engine('mustache', mustacheExpress());
+const VIEWS_PATH = './views';
+
+app.engine('mustache', mustacheExpress(VIEWS_PATH + '/partials'));
 app.set('view engine', 'mustache');
 app.set('views', path.join(__dirname, '/views'));
 

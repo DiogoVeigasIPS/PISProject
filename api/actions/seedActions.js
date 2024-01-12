@@ -3,7 +3,11 @@
  * Purpose: Aggregates all actions to seed the API.
  */
 const axios = require('axios');
+const mysql = require('mysql2');
+const connectionOptions = require('./connectionOptions.json');
+
 const { Category, Area, Ingredient, Recipe, IngredientInRecipe } = require('../models');
+const { getAreas, truncateAreas, addAreas } = require('./areaActions');
 const { categories, areas, ingredients, recipes } = require('../temporaryData');
 const { addIngredient } = require('./ingredientActions');
 const { capitalizeWords } = require('../utils');
@@ -42,10 +46,10 @@ const seedCategories = (force) => {
     });
 }
 
-const seedAreas = (force) => {
-    return new Promise((resolve, reject) => {
+const seedAreas = async (force) => {
+    return new Promise( async (resolve, reject) => {
         axios.get('https://www.themealdb.com/api/json/v1/1/list.php?a=list')
-            .then((response) => {
+            .then( async (response) => {
                 const responseData = response.data.meals;
                 var id = 1;
                 const processedAreas = responseData.map(r => {
@@ -55,16 +59,18 @@ const seedAreas = (force) => {
                     });
                 });
 
+                const areas = (await getAreas()).responseMessage;
+
                 if (areas.length != 0 && !force) {
                     reject({ statusCode: 400, responseMessage: 'Areas must be empty.' });
                     return;
                 }
 
                 // Empty array
-                areas.length = 0;
-
-                areas.push(...processedAreas);
-                resolve({ statusCode: 200, responseMessage: processedAreas });
+                await truncateAreas();
+                
+                const areasWithUpdatedId = (await addAreas(processedAreas)).responseMessage;
+                resolve({ statusCode: 200, responseMessage: areasWithUpdatedId });
             })
             .catch((error) => {
                 console.error(error);
