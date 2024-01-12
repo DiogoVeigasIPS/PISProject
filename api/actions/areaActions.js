@@ -37,7 +37,7 @@ const getArea = (id) => {
         connection.query("SELECT * FROM area WHERE id = ?", [id], (err, result) => {
             if (err) {
                 console.error(err);
-                reject({ statusCode: 404, responseMessage: err });
+                reject({ statusCode: 400, responseMessage: err });
                 return;
             }
 
@@ -68,7 +68,7 @@ const addArea = (area) => {
         connection.query("INSERT INTO area (name) VALUES (?)", [newArea.name], (err, result) => {
             if (err) {
                 console.error(err);
-                reject({ statusCode: 404, responseMessage: err });
+                reject({ statusCode: 400, responseMessage: err });
                 return;
             }
 
@@ -95,7 +95,7 @@ const editArea = (id, area) => {
         connection.query("UPDATE area SET name = ? WHERE id = ?", [newArea.name, id], (err, result) => {
             if (err) {
                 console.error(err);
-                reject({ statusCode: 404, responseMessage: err });
+                reject({ statusCode: 400, responseMessage: err });
                 return;
             }
 
@@ -119,7 +119,7 @@ const deleteArea = (id) => {
         connection.query("DELETE FROM area WHERE id = ?", [id], (err, result) => {
             if (err) {
                 console.error(err);
-                reject({ statusCode: 404, responseMessage: err });
+                reject({ statusCode: 400, responseMessage: err });
                 return;
             }
 

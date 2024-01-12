@@ -23,7 +23,6 @@ const handlePromise = (promise, res) => {
         });
 };
 
-
 const capitalizeWords = (inputString) => {
     const words = inputString.split(' ');
 

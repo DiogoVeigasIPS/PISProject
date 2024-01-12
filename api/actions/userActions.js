@@ -38,7 +38,7 @@ const getUser = (id) => {
         connection.query("SELECT * FROM user WHERE id = ?", [id], (err, result) => {
             if (err) {
                 console.error(err);
-                reject({ statusCode: 404, responseMessage: err });
+                reject({ statusCode: 400, responseMessage: err });
                 return;
             }
 
@@ -71,7 +71,7 @@ const addUser = (user) => {
             (err, result) => {
                 if (err) {
                     console.error(err);
-                    reject({ statusCode: 404, responseMessage: err });
+                    reject({ statusCode: 400, responseMessage: err });
                     return;
                 }
 
@@ -100,7 +100,7 @@ const editUser = (id, user) => {
             (err, result) => {
                 if (err) {
                     console.error(err);
-                    reject({ statusCode: 404, responseMessage: err });
+                    reject({ statusCode: 400, responseMessage: err });
                     return;
                 }
 
@@ -124,7 +124,7 @@ const deleteUser = (id) => {
         connection.query("DELETE FROM user WHERE id = ?", [id], (err, result) => {
             if (err) {
                 console.error(err);
-                reject({ statusCode: 404, responseMessage: err });
+                reject({ statusCode: 400, responseMessage: err });
                 return;
             }
 
@@ -147,7 +147,7 @@ const loginUser = ({ username, password }) => {
         connection.query("SELECT * FROM user WHERE username = ? AND password = ?", [username, password], (err, result) => {
             if (err) {
                 console.error(err);
-                reject({ statusCode: 500, responseMessage: err });
+                reject({ statusCode: 400, responseMessage: err });
                 return;
             }
 
