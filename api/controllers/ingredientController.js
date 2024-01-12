@@ -9,10 +9,12 @@ const readIngredients = (req, res) => {
     const query = req.query;
     const stringSearch = query.name ? query.name : null;
     const maxResults = query.max && !isNaN(query.max) ? parseInt(query.max) : null;
+    const isRandom = query.random && query.random.toLowerCase() === 'true';
 
     const queryOptions = {
         stringSearch: stringSearch,
-        maxResults: maxResults
+        maxResults: maxResults,
+        isRandom: isRandom
     }
 
     handlePromise(ingredientActions.getIngredients(queryOptions), res);

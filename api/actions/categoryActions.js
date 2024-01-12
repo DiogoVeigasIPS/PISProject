@@ -20,6 +20,8 @@ const getCategories = (queryOptions = null) => {
                 queryString += " LIMIT ?";
                 queryParams.push(queryOptions.maxResults);
             }
+        } else {
+            queryString += " ORDER BY id";
         }
 
         const connection = mysql.createConnection(connectionOptions);
@@ -41,7 +43,6 @@ const getCategories = (queryOptions = null) => {
         connection.end();
     });
 }
-
 
 const getCategory = (id) => {
     return new Promise((resolve, reject) => {
