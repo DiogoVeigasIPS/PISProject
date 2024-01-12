@@ -13,5 +13,7 @@ router.get('/:id', ingredientController.readIngredient);
 router.post('', ingredientController.addIngredient);
 router.put('/:id', ingredientController.editIngredient);
 router.delete('/:id', ingredientController.deleteIngredient);
+router.delete('', ingredientController.truncateIngredients);
+router.post('/bulk', ingredientController.addIngredients);
 
 module.exports = router;

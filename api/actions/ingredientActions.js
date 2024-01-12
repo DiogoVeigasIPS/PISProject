@@ -148,8 +148,64 @@ const deleteIngredient = (id) => {
     });
 }
 
+const truncateIngredients = () => {
+    return new Promise((resolve, reject) => {
+        const multipleStatementsOptions = {... connectionOptions};
+        multipleStatementsOptions.multipleStatements = true;
+
+        const connection = mysql.createConnection(multipleStatementsOptions);
+        connection.connect();
+
+        const queryString = "SET FOREIGN_KEY_CHECKS = 0; TRUNCATE TABLE ingredient; SET FOREIGN_KEY_CHECKS = 1;";
+
+        connection.query(queryString, (truncateErr, truncateResult) => {
+            if (truncateErr) {
+                console.error(truncateErr);
+                reject({ statusCode: 500, responseMessage: truncateErr});
+                return;
+            }
+
+            resolve({ statusCode: 200, responseMessage: 'Ingredients truncated sucessfully.'});
+            
+            connection.end();
+        });
+    });
+};
+
+const addIngredients = (ingredients) => {
+    return new Promise((resolve, reject) => {
+        const newIngredients = ingredients.map(i => new Ingredient(i));
+
+        for (const newIngredient of newIngredients){
+            if (!objectIsValid(newIngredient)){
+                reject({ statusCode: 400, responseMessage: 'Invalid Body.'});
+            }
+        }
+
+        const connection = mysql.createConnection(connectionOptions);
+        connection.connect();
+
+        const values = newIngredients.map(newIngredient => [newIngredient.name, newIngredient.description, newIngredient.image]);
+
+        connection.query("INSERT INTO ingredient(name, description, image) VALUES ?", [values], (err, result) => {
+            if (err){
+                console.error(err);
+                reject ({statusCode: 400, responseMessage: err});
+                return;
+            }
+            for (let z = 0; z < result.affectedRows; z++){
+                newIngredients[z] = result.insertId + z;
+            }
+            resolve({ statusCode: 200, responseMessage: newIngredients});
+            connection.end();
+        })
+    })
+}
+
 module.exports.getIngredients = getIngredients;
 module.exports.getIngredient = getIngredient;
 module.exports.addIngredient = addIngredient;
 module.exports.editIngredient = editIngredient;
 module.exports.deleteIngredient = deleteIngredient;
+module.exports.truncateIngredients = truncateIngredients;
+module.exports.addIngredients = addIngredients;

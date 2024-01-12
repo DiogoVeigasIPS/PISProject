@@ -108,9 +108,9 @@ CREATE TABLE IF NOT EXISTS recipe_list_item (
 -- Fixed Atributes
 INSERT IGNORE INTO `user` (username, email, `password`, firstName, lastName)
 VALUES ('System', 'system@example.com', 'system_password', 'System', 'User');
-
+/*
 INSERT IGNORE INTO author (id) VALUES (1);  -- Assuming 1 is the ID of the user created above
-
+*/
 INSERT IGNORE INTO difficulty (`name`) values
 ('Beginner'), 
 ('Cook'), 
@@ -220,10 +220,12 @@ FROM
     recipe r
 JOIN
     area a ON r.area_id = a.id
-JOIN
+LEFT JOIN 
+    `user` u ON r.author_id = u.id
+/*JOIN
     author au ON r.author_id = au.id
 JOIN
-    `user` u ON au.id = u.id
+    `user` u ON au.id = u.id*/
 LEFT JOIN
     category c ON r.category_id = c.id
 LEFT JOIN

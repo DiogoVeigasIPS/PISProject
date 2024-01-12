@@ -8,16 +8,18 @@ const connectionOptions = require('./connectionOptions.json');
 
 const { Category, Area, Ingredient, Recipe, IngredientInRecipe } = require('../models');
 const { getAreas, truncateAreas, addAreas } = require('./areaActions');
+const { getCategories, truncateCategories, addCategories } = require('./categoryActions');
+const { getIngredients, truncateIngredients, addIngredients } = require('./ingredientActions');
 const { categories, areas, ingredients, recipes } = require('../temporaryData');
 const { addIngredient } = require('./ingredientActions');
 const { capitalizeWords } = require('../utils');
 
 const commonErrorMessage = 'Something went wrong, please try again later.';
 
-const seedCategories = (force) => {
-    return new Promise((resolve, reject) => {
+const seedCategories = async (force) => {
+    return new Promise( async (resolve, reject) => {
         axios.get('https://www.themealdb.com/api/json/v1/1/categories.php')
-            .then((response) => {
+            .then( async (response) => {
                 const responseData = response.data.categories;
                 const processedCategories = responseData.map(r => {
                     return new Category({
@@ -28,16 +30,18 @@ const seedCategories = (force) => {
                     });
                 });
 
+                const categories = (await getCategories()).responseMessage;
+
                 if (categories.length != 0 && !force) {
                     reject({ statusCode: 400, responseMessage: 'Categories must be empty.' });
                     return;
                 }
 
                 // Empty array
-                categories.length = 0;
+                await truncateCategories();
 
-                categories.push(...processedCategories);
-                resolve({ statusCode: 200, responseMessage: processedCategories });
+                const categoriesWithUpdatedId = (await addCategories(processedCategories)).responseMessage;
+                resolve({ statusCode: 200, responseMessage: categoriesWithUpdatedId });
             })
             .catch((error) => {
                 console.error(error);
@@ -79,10 +83,10 @@ const seedAreas = async (force) => {
     });
 }
 
-const seedIngredients = (force) => {
-    return new Promise((resolve, reject) => {
+const seedIngredients = async (force) => {
+    return new Promise( async (resolve, reject) => {
         axios.get('https://www.themealdb.com/api/json/v1/1/list.php?i=list')
-            .then((response) => {
+            .then( async (response) => {
                 const responseData = response.data.meals;
                 const processedIngredients = responseData.map(r => {
                     return new Ingredient({
@@ -93,16 +97,17 @@ const seedIngredients = (force) => {
                     });
                 });
 
+                const ingredients = (await getIngredients()).responseMessage;
+
                 if (ingredients.length != 0 && !force) {
                     reject({ statusCode: 400, responseMessage: 'Ingredients must be empty.' });
                     return;
                 }
 
-                // Empty array
-                ingredients.length = 0;
+                await truncateIngredients();
 
-                ingredients.push(...processedIngredients);
-                resolve({ statusCode: 200, responseMessage: processedIngredients });
+                const ingredientsWithUpdatedId = (await addIngredients(processedIngredients)).responseMessage;
+                resolve({ statusCode: 200, responseMessage: ingredientsWithUpdatedId });
             })
             .catch((error) => {
                 console.error(error);
@@ -128,7 +133,7 @@ const seedRecipes = (force) => {
                     preparationDescription: r.strInstructions,
                     area: areas.find(a => a.name.toLowerCase() === r.strArea.toLowerCase()),
                     author: null,
-                    ingredients: await addIngredients(r), // Use 'await' here
+                    ingredients: await addIngredientsInRecipe(r), // Use 'await' here
                     image: r.strMealThumb,
                     preparationTime: null,
                     difficulty: null,
@@ -181,7 +186,7 @@ module.exports.seedAll = seedAll;
  * @param {Recipe} recipe - Recipe from the API.
  * @returns {IngredientInRecipe[]} - The processed recipe.
  */
-const addIngredients = async (recipe) => {
+const addIngredientsInRecipe = async (recipe) => {
     let ingredientNumber = 0;
 
     const processedIngredients = [];

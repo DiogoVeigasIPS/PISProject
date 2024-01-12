@@ -153,8 +153,63 @@ const deleteCategory = (id) => {
     });
 }
 
+const truncateCategories = () => {
+    return new Promise((resolve, reject) => {
+        const multipleStatementsOptions = {... connectionOptions};
+        multipleStatementsOptions.multipleStatements = true;
+
+        const connection = mysql.createConnection(multipleStatementsOptions);
+        connection.connect();
+
+        const queryString = "SET FOREIGN_KEY_CHECKS = 0; TRUNCATE TABLE category; SET FOREIGN_KEY_CHECKS = 1;";
+
+        connection.query(queryString, (truncateErr, truncateResult) => {
+            if (truncateErr) {
+                console.error(truncateErr);
+                reject({ statusCode: 500, responseMessage: truncateErr });
+                return;
+            }
+            resolve({ statusCode: 200, responseMessage: 'Categories truncated successfully.' });
+
+            connection.end();
+        });
+    });
+}
+
+const addCategories = (categories) => {
+    return new Promise((resolve, reject) => {
+        const newCategories = categories.map(c => new Category(c));
+
+        for (const newCategory of newCategories){
+            if (!objectIsValid(newCategories)){
+                reject({ status: 400, responseMessage: 'Invalid Body.'});
+                return;
+            }
+        }
+        const connection = mysql.createConnection(connectionOptions);
+        connection.connect();
+
+        const values = newCategories.map(newCategory => [newCategory.name, newCategory.description, newCategory.image]);
+        
+        connection.query("INSERT INTO category(name, description, image) VALUES ?", [values], (err, result) => {
+            if (err){
+                console.error(err);
+                reject({ statusCode: 400, responseMessage: err});
+                return;
+            }
+            for (let i = 0; i < result.affectedRows; i++){
+                newCategories[i] = result.insertId + i;
+            }
+            resolve({ statusCode: 200, responseMessage: newCategories});
+            connection.end();
+        });
+    });
+};
+
 module.exports.getCategories = getCategories;
 module.exports.getCategory = getCategory;
 module.exports.addCategory = addCategory;
 module.exports.editCategory = editCategory;
 module.exports.deleteCategory = deleteCategory;
+module.exports.truncateCategories = truncateCategories;
+module.exports.addCategories = addCategories;
