@@ -155,7 +155,9 @@ router.get('/', async (req, res) => {
         renderOptions.recipes = null;
         res.render('index', renderOptions);
     }
+
 });
+
 
 router.get('*', (req, res) => {
     res.status(404).render('notFound', { title: 'Page Not Found' });
