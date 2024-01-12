@@ -28,8 +28,18 @@ const deleteArea = (req, res) => {
     handlePromise(areaActions.deleteArea(id), res);
 };
 
+const truncateAreas = (req, res) => {
+    handlePromise(areaActions.truncateAreas(), res);
+};
+
+const addAreas = (req, res) => {
+    handlePromise(areaActions.addAreas(req.body), res);
+};
+
 module.exports.readAreas = readAreas;
 module.exports.readArea = readArea;
 module.exports.addArea = addArea;
 module.exports.editArea = editArea;
 module.exports.deleteArea = deleteArea;
+module.exports.truncateAreas = truncateAreas;
+module.exports.addAreas = addAreas;

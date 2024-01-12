@@ -134,8 +134,70 @@ const deleteArea = (id) => {
     });
 }
 
+const truncateAreas = () => {
+    return new Promise((resolve, reject) => {
+        const multipleStatementsOptions = {... connectionOptions};
+        multipleStatementsOptions.multipleStatements = true;
+
+        const connection = mysql.createConnection(multipleStatementsOptions);
+        connection.connect();
+
+        const queryString = "SET FOREIGN_KEY_CHECKS = 0; TRUNCATE TABLE area; SET FOREIGN_KEY_CHECKS = 1;";
+
+        connection.query(queryString, (truncateErr, truncateResult) => {
+            if (truncateErr) {
+                console.error(truncateErr);
+                reject({ statusCode: 500, responseMessage: truncateErr });
+                return;
+            }
+
+            resolve({ statusCode: 200, responseMessage: 'Areas truncated successfully.' });
+
+            connection.end();
+        });
+    });
+};
+
+const addAreas = (areas) => {
+    return new Promise((resolve, reject) => {
+        const newAreas = areas.map(a => new Area(a));
+
+        for (const newArea of newAreas) {
+            if (!objectIsValid(newArea)) {
+                reject({ statusCode: 400, responseMessage: 'Invalid Body.' });
+                return;
+            }
+        }
+
+        const connection = mysql.createConnection(connectionOptions);
+        connection.connect();
+
+        // Create an array of values for bulk insert
+        const values = newAreas.map(newArea => [newArea.name]);
+
+        connection.query("INSERT INTO area (name) VALUES ?", [values], (err, result) => {
+            if (err) {
+                console.error(err);
+                reject({ statusCode: 400, responseMessage: err });
+                return;
+            }
+
+            // Update the IDs for the newly inserted areas
+            for (let i = 0; i < result.affectedRows; i++) {
+                newAreas[i].id = result.insertId + i;
+            }
+
+            resolve({ statusCode: 200, responseMessage: newAreas });
+            connection.end();
+        });
+    });
+};
+
+
 module.exports.getAreas = getAreas;
 module.exports.getArea = getArea;
 module.exports.addArea = addArea;
 module.exports.editArea = editArea;
 module.exports.deleteArea = deleteArea;
+module.exports.truncateAreas = truncateAreas;
+module.exports.addAreas = addAreas;

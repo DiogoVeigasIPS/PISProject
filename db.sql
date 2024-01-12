@@ -241,3 +241,7 @@ insert into recipe_list_item(list_id, recipe_id) values (1, 2);
 select rl.name, r.name from recipe_list rl
 join recipe_list_item rli on rl.id = rli.list_id
 join recipe r on rli.recipe_id = r.id;
+
+/* delete from recipe_list_item;
+delete from recipe_ingredients;
+delete from recipe; */
