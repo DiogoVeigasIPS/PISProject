@@ -69,6 +69,14 @@ const removeIngredientFromRecipe = (req, res) => {
     handlePromise(recipeActions.removeIngredientFromRecipe(recipe, ingredient), res);
 };
 
+const addRecipes = (req, res) => {
+    handlePromise(recipeActions.addRecipes(req.body), res);
+};
+
+const truncateRecipes = (req, res) => {
+    handlePromise(recipeActions.truncateRecipes(), res);
+};
+
 module.exports.readRecipes = readRecipes;
 module.exports.readRecipe = readRecipe;
 module.exports.addRecipe = addRecipe;
@@ -77,3 +85,5 @@ module.exports.deleteRecipe = deleteRecipe;
 module.exports.addIngredientToRecipe = addIngredientToRecipe;
 module.exports.editIngredientQuantityInRecipe = editIngredientQuantityInRecipe;
 module.exports.removeIngredientFromRecipe = removeIngredientFromRecipe;
+module.exports.addRecipes = addRecipes;
+module.exports.truncateRecipes = truncateRecipes;
