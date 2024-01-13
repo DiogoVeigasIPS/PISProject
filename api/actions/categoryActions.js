@@ -197,9 +197,11 @@ const addCategories = (categories) => {
                 reject({ statusCode: 400, responseMessage: err});
                 return;
             }
+
             for (let i = 0; i < result.affectedRows; i++){
-                newCategories[i] = result.insertId + i;
+                newCategories[i].id = result.insertId + i;
             }
+
             resolve({ statusCode: 200, responseMessage: newCategories});
             connection.end();
         });

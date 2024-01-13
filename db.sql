@@ -23,33 +23,33 @@ CREATE TABLE IF NOT EXISTS author(
 DROP TABLE IF EXISTS difficulty;
 CREATE TABLE IF NOT EXISTS difficulty(
 	id INT PRIMARY KEY AUTO_INCREMENT,
-    `name` varchar(50) UNIQUE
+    `name` VARCHAR(50) UNIQUE
 );
 
 DROP TABLE IF EXISTS category;
 CREATE TABLE IF NOT EXISTS category (
     id INT PRIMARY KEY AUTO_INCREMENT,
     `name` VARCHAR(50) NOT NULL UNIQUE,
-    `description` VARCHAR(255) not null,
-    image varchar(120) not null 
+    `description` TEXT,
+    image VARCHAR(120) NOT NULL 
 );
 
 DROP TABLE IF EXISTS `area`;
 CREATE TABLE IF NOT EXISTS `area`(
 	id INT PRIMARY KEY AUTO_INCREMENT,
-    `name` varchar(60) not null unique
+    `name` VARCHAR(60) NOT NULL unique
 );
 
 DROP TABLE IF EXISTS recipe;
 CREATE TABLE IF NOT EXISTS recipe(
 	id INT PRIMARY KEY AUTO_INCREMENT,
-    external_id int not null unique,
+    external_id int NOT NULL unique,
     `name` VARCHAR(50) NOT NULL UNIQUE,
-    image varchar(120) not null,
+    image VARCHAR(120) NOT NULL,
 	description TEXT NOT NULL,
 	preparation_description TEXT NOT NULL,
-    area_id int not null,
-	category_id INT not null,
+    area_id int NOT NULL,
+	category_id INT NOT NULL,
 	author_id INT,
     difficulty_id INT,
     preparationTime INT,
@@ -64,8 +64,8 @@ DROP TABLE IF EXISTS ingredient;
 CREATE TABLE IF NOT EXISTS ingredient (
     id INT PRIMARY KEY AUTO_INCREMENT,
     `name` VARCHAR(50) NOT NULL UNIQUE,
-    `description` VARCHAR (100) not null,
-    `image` VARCHAR (120) not null
+    `description` TEXT,
+    `image` VARCHAR (120) NOT NULL
 );
 
 -- Many to Many tables
@@ -82,7 +82,7 @@ DROP TABLE IF EXISTS recipe_ingredients;
 CREATE TABLE IF NOT EXISTS recipe_ingredients(
 	recipe_id int,
     ingredient_id int,
-    quantity varchar(50),
+    quantity VARCHAR(50),
     PRIMARY KEY (recipe_id, ingredient_id),
     FOREIGN KEY (recipe_id) references recipe(id),
     FOREIGN KEY (ingredient_id) references ingredient(id)
@@ -91,7 +91,7 @@ CREATE TABLE IF NOT EXISTS recipe_ingredients(
 DROP TABLE IF EXISTS recipe_list;
 CREATE TABLE IF NOT EXISTS recipe_list (
 	id INT PRIMARY KEY AUTO_INCREMENT,
-    `name` varchar(155) not null,
+    `name` VARCHAR(155) NOT NULL,
     user_id INT,
     FOREIGN KEY (user_id) REFERENCES `user`(id)
 );

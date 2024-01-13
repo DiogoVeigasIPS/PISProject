@@ -10,16 +10,22 @@ const { objectIsValid } = require('../utils');
 
 const getIngredients = (queryOptions = null) => {
     return new Promise((resolve, reject) => {
-        const queryString = queryOptions
+        var queryString;
+        if(queryOptions){
+            queryString = queryOptions
             ? "SELECT * FROM ingredient" +
             (queryOptions.stringSearch ? " WHERE name LIKE ?" : "") +
             (queryOptions.isRandom ? " ORDER BY RAND()" : "") +
-            (queryOptions.maxResults ? " LIMIT ?" : "")
-            : "SELECT * FROM ingredient ORDER BY id";
-
+            (queryOptions.maxResults ? " LIMIT ?" : "") : "";
+        }else{
+            queryString = "SELECT * FROM ingredient ORDER BY id";
+        }
+        
         const queryParams = [];
-        if (queryOptions.stringSearch) { queryParams.push(`%${queryOptions.stringSearch}%`); }
-        if (queryOptions.maxResults) { queryParams.push(queryOptions.maxResults); }
+        if(queryOptions){
+            if (queryOptions.stringSearch) { queryParams.push(`%${queryOptions.stringSearch}%`); }
+            if (queryOptions.maxResults) { queryParams.push(queryOptions.maxResults); }
+        }   
 
         const connection = mysql.createConnection(connectionOptions);
         connection.connect();
@@ -193,9 +199,11 @@ const addIngredients = (ingredients) => {
                 reject ({statusCode: 400, responseMessage: err});
                 return;
             }
-            for (let z = 0; z < result.affectedRows; z++){
-                newIngredients[z] = result.insertId + z;
+
+            for (let i = 0; i < result.affectedRows; i++){
+                newIngredients[i].id = result.insertId + i;
             }
+
             resolve({ statusCode: 200, responseMessage: newIngredients});
             connection.end();
         })
