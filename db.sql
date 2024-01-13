@@ -189,6 +189,7 @@ DROP VIEW IF EXISTS search_recipes;
 CREATE VIEW search_recipes AS
 SELECT
     r.id AS id,
+    r.external_id AS idProvider,
     r.name AS name,
     c.id AS category_id,
     JSON_OBJECT(
@@ -239,6 +240,15 @@ FROM
     LEFT JOIN `user` u ON r.author_id = u.id
     LEFT JOIN category c ON r.category_id = c.id
     LEFT JOIN difficulty d ON r.difficulty_id = d.id;
+
+DROP VIEW IF EXISTS partial_search_recipes;
+CREATE VIEW partial_search_recipes AS
+SELECT
+    id AS id,
+    name AS name,
+    image AS image,
+    external_id AS idProvider
+    from recipe;
 
 -- Query the view
 SELECT * FROM search_recipes WHERE name like 'Sushi%';

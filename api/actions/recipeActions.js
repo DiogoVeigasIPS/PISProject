@@ -19,7 +19,7 @@ const getRecipes = (queryOptions = null) => {
     return new Promise((resolve, reject) => {
         const connection = mysql.createConnection(connectionOptions);
 
-        let queryString = 'SELECT * FROM search_recipes WHERE 1=1';
+        let queryString = queryOptions?.isPartial ? 'SELECT * FROM partial_search_recipes WHERE 1=1' : 'SELECT * FROM search_recipes WHERE 1=1';
         const queryValues = [];
 
         if (queryOptions?.category) {
