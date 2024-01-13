@@ -28,12 +28,10 @@ const getIngredients = (queryOptions = null, connection = null) => {
             }
         }
 
-        const useProvidedConnection = connection !== null;
-        const connectionToUse = useProvidedConnection ? connection : mysql.createConnection(connectionOptions);
+        const connection = mysql.createConnection(connectionOptions);
+        connection.connect();
 
-        connectionToUse.connect();
-
-        connectionToUse.query(queryString, queryParams, (err, result) => {
+        connection.query(queryString, queryParams, (err, result) => {
             if (err) {
                 console.error(err);
                 reject({ statusCode: 500, responseMessage: err });
@@ -44,10 +42,9 @@ const getIngredients = (queryOptions = null, connection = null) => {
 
             resolve({ statusCode: 200, responseMessage: ingredients });
 
-            if (!useProvidedConnection) {
-                connectionToUse.end(); // Close the connection if it was created in this function.
-            }
         });
+
+        connection.end();
     });
 };
 
@@ -165,7 +162,7 @@ const deleteIngredient = (id) => {
 
 const truncateIngredients = () => {
     return new Promise((resolve, reject) => {
-        const multipleStatementsOptions = {... connectionOptions};
+        const multipleStatementsOptions = { ...connectionOptions };
         multipleStatementsOptions.multipleStatements = true;
 
         const connection = mysql.createConnection(multipleStatementsOptions);
@@ -176,12 +173,12 @@ const truncateIngredients = () => {
         connection.query(queryString, (truncateErr, truncateResult) => {
             if (truncateErr) {
                 console.error(truncateErr);
-                reject({ statusCode: 500, responseMessage: truncateErr});
+                reject({ statusCode: 500, responseMessage: truncateErr });
                 return;
             }
 
-            resolve({ statusCode: 200, responseMessage: 'Ingredients truncated sucessfully.'});
-            
+            resolve({ statusCode: 200, responseMessage: 'Ingredients truncated sucessfully.' });
+
             connection.end();
         });
     });
@@ -191,9 +188,9 @@ const addIngredients = (ingredients) => {
     return new Promise((resolve, reject) => {
         const newIngredients = ingredients.map(i => new Ingredient(i));
 
-        for (const newIngredient of newIngredients){
-            if (!objectIsValid(newIngredient)){
-                reject({ statusCode: 400, responseMessage: 'Invalid Body.'});
+        for (const newIngredient of newIngredients) {
+            if (!objectIsValid(newIngredient)) {
+                reject({ statusCode: 400, responseMessage: 'Invalid Body.' });
             }
         }
 
@@ -203,17 +200,17 @@ const addIngredients = (ingredients) => {
         const values = newIngredients.map(newIngredient => [newIngredient.name, newIngredient.description, newIngredient.image]);
 
         connection.query("INSERT INTO ingredient(name, description, image) VALUES ?", [values], (err, result) => {
-            if (err){
+            if (err) {
                 console.error(err);
-                reject ({statusCode: 400, responseMessage: err});
+                reject({ statusCode: 400, responseMessage: err });
                 return;
             }
 
-            for (let i = 0; i < result.affectedRows; i++){
+            for (let i = 0; i < result.affectedRows; i++) {
                 newIngredients[i].id = result.insertId + i;
             }
 
-            resolve({ statusCode: 200, responseMessage: newIngredients});
+            resolve({ statusCode: 200, responseMessage: newIngredients });
             connection.end();
         })
     })

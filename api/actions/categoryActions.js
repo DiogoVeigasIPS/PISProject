@@ -24,12 +24,10 @@ const getCategories = (queryOptions = null, connection = null) => {
             queryString += " ORDER BY id";
         }
 
-        const useProvidedConnection = connection !== null;
-        const connectionToUse = useProvidedConnection ? connection : mysql.createConnection(connectionOptions);
+        const connection = mysql.createConnection(connectionOptions);
+        connection.connect();
 
-        connectionToUse.connect();
-
-        connectionToUse.query(queryString, queryParams, (err, result) => {
+        connection.query(queryString, queryParams, (err, result) => {
             if (err) {
                 console.error(err);
                 reject({ statusCode: 500, responseMessage: err });
@@ -39,11 +37,9 @@ const getCategories = (queryOptions = null, connection = null) => {
             const categories = result.map(r => new Category(r));
 
             resolve({ statusCode: 200, responseMessage: categories });
-
-            if (!useProvidedConnection) {
-                connectionToUse.end(); // Close the connection if it was created in this function.
-            }
         });
+
+        connection.end();
     });
 };
 
