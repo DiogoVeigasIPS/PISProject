@@ -92,8 +92,7 @@ const getRecipe = (id) => {
 const addRecipe = async (recipe) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const processedRecipe = await processRecipeData(recipe);
-            const newRecipe = new Recipe(processedRecipe);
+            const newRecipe = new Recipe(recipe);
 
             if (!objectIsValid(newRecipe)) {
                 reject({ statusCode: 400, responseMessage: 'Invalid Body.' });
@@ -194,8 +193,7 @@ const addRecipe = async (recipe) => {
 
 const editRecipe = (id, recipe) => {
     return new Promise(async (resolve, reject) => {
-        const processedRecipe = await processRecipeData(recipe);
-        const newRecipe = new Recipe(processedRecipe);
+        const newRecipe = new Recipe(recipe);
 
         if (!objectIsValid(newRecipe)) {
             reject({ statusCode: 400, responseMessage: 'Invalid body.' });
@@ -272,19 +270,17 @@ const addRecipes = async (recipes) => {
 
                     try {
                         const insertPromises = recipes.map(async (recipe) => {
-                            const processedRecipe = await processRecipeData(recipe, true);
-
-                            const newRecipe = new Recipe(processedRecipe);
+                            const newRecipe = new Recipe(recipe);
 
                             if (!objectIsValid(newRecipe)) {
                                 throw { statusCode: 400, responseMessage: 'Invalid Body.' };
                             }
 
-                            const recipeQuery = "INSERT INTO recipe (name, description, image, preparation_description, area_id, category_id, author_id, difficulty_id, preparationTime, cost) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                            const recipeQuery = "INSERT IGNORE INTO recipe (name, description, image, preparation_description, area_id, category_id, author_id, difficulty_id, preparationTime, cost) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                             const recipeValues = [
                                 newRecipe.name, newRecipe.description, newRecipe.image,
                                 newRecipe.preparationDescription, newRecipe.area.id, newRecipe.category.id,
-                                newRecipe.author.id, newRecipe.difficulty.id, newRecipe.preparation, newRecipe.cost
+                                newRecipe.author.id, newRecipe.difficulty ? newRecipe.difficulty.id : null, newRecipe.preparation, newRecipe.cost
                             ];
 
                             return new Promise((resolve, reject) => {
@@ -298,7 +294,7 @@ const addRecipes = async (recipes) => {
                                     }
 
                                     const ingredientsQueries = newRecipe.ingredients.map(i => {
-                                        return ["INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity) VALUES (?, ?, ?)", [result.insertId, i.ingredient.id, i.quantity]];
+                                        return ["INSERT IGNORE INTO recipe_ingredient (recipe_id, ingredient_id, quantity) VALUES (?, ?, ?)", [result.insertId, i.ingredient.id, i.quantity]];
                                     });
 
                                     async.each(ingredientsQueries, (query, callback) => {
@@ -471,88 +467,4 @@ module.exports.editIngredientQuantityInRecipe = editIngredientQuantityInRecipe;
 module.exports.removeIngredientFromRecipe = removeIngredientFromRecipe;
 module.exports.addRecipes = addRecipes;
 module.exports.truncateRecipes = truncateRecipes;
-
-/**
- * [ingredientsAreDuplicate] - Checks for duplicated.
- *
- * @param {Object} ingredientsIds - ids and quantities of a recipe.
- * @returns {boolean} - There are either duplicates or not.
- */
-const ingredientsAreDuplicate = (ingredientsIds) => {
-    const set = new Set();
-
-    for (const ingredient of ingredientsIds) {
-        const id = ingredient.id;
-
-        if (set.has(id)) return true;
-
-        set.add(id);
-    }
-
-    return false;
-};
-
-/**
- * [processRecipeData] - Processes a recipe in order to validate it and insert it.
- *
- * @param {Recipe} recipe - Recipe before being processed.
- * @param {Recipe} seeding - Defines if the recipe is seeded (from provider API), or inserted manually.
- * @returns {Recipe} - The processed recipe.
- * @throws {Object} - An error object with a status statusCode and descriptive message.
- */
-const processRecipeData = (recipe, seeding = false) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            // Check category 
-            const categoryId = recipe.category.id;
-            const foundCategory = (await getCategory(categoryId)).responseMessage;
-
-            if (foundCategory == null) {
-                throw { statusCode: 400, responseMessage: 'Recipe category not found.' };
-            }
-            const category = new Category({
-                id: categoryId,
-                name: foundCategory.name,
-                description: foundCategory.description,
-                image: foundCategory.image
-            });
-
-            // Check area 
-            const areaId = recipe.area.id;
-            const foundArea = (await getArea(areaId)).responseMessage;
-
-            if (foundArea == null) {
-                throw { statusCode: 400, responseMessage: 'Recipe area not found.' };
-            }
-            const area = new Area({
-                id: areaId
-            });
-
-            // Check difficulty 
-            const difficultyId = recipe.difficulty.id;
-            const foundDifficulty = (await getDifficulty(difficultyId)).responseMessage;
-            const difficulty = foundDifficulty ? new Difficulty(foundDifficulty) : null;
-
-            // Check author
-            const authorId = recipe.author?.id;
-            const foundAuthor = authorId ? (await getUser(authorId)).responseMessage : null;
-            const author = foundAuthor ? new Author(foundAuthor) : null;
-
-            if (seeding == false && author == null || difficulty == null) {
-                const response = author == null ? 'Recipe author not found.' : 'Recipe difficulty not found.';
-                throw { statusCode: 400, responseMessage: response };
-            }
-
-            // Assign calculated values
-            recipe.category = category;
-            recipe.area = area;
-            recipe.difficulty = difficulty;
-            recipe.author = author;
-
-            resolve(recipe);
-        } catch (error) {
-            reject(error);
-        }
-    });
-};
 
