@@ -2,37 +2,58 @@
  * Filename: recipeActions.js
  * Purpose: Aggregates all actions for the Recipe entity.
  */
+const mysql = require('mysql2');
+const connectionOptions = require('./connectionOptions.json');
+
 const { Recipe, Category, Author, Area, Difficulty, Ingredient, IngredientInRecipe, PartialRecipe } = require('../models');
 const { objectIsValid, shuffleArray } = require('../utils');
 
 const { recipes, categories, users, areas, difficulties, ingredients } = require('../temporaryData');
 
-// TODO (methods need change)
-// Get and gets change user to Author
-// Fix Add
-
 const getRecipes = (queryOptions = null) => {
     return new Promise((resolve, reject) => {
-        if (!queryOptions) {
-            resolve({ statusCode: 200, responseMessage: recipes });
-            return;
+        const connection = mysql.createConnection(connectionOptions);
+
+        let queryString = 'SELECT * FROM search_recipes WHERE 1=1';
+        const queryValues = [];
+
+        if (queryOptions?.category) {
+            queryString += ' AND category_id = ?';
+            queryValues.push(queryOptions.category);
         }
 
-        const categoryRecipes = queryOptions.category ? recipes.filter(r => r.category.id == queryOptions.category) : recipes;
+        if (queryOptions?.area) {
+            queryString += ' AND area_id = ?';
+            queryValues.push(queryOptions.area);
+        }
 
-        const areaRecipes = queryOptions.area ? categoryRecipes.filter(r => r.area.id == queryOptions.area) : categoryRecipes;
+        if (queryOptions?.stringSearch) {
+            queryString += ' AND name LIKE ?';
+            queryValues.push(`%${queryOptions.stringSearch}%`);
+        }
 
-        const partialRecipes = queryOptions.isPartial ? areaRecipes.map(r => new PartialRecipe(r)) : areaRecipes;
+        if (queryOptions?.isRandom) {
+            queryString += ' ORDER BY RAND()';
+        }
 
-        const shuffledRecipes = queryOptions.isRandom ? shuffleArray(partialRecipes) : partialRecipes;
+        if (queryOptions?.maxResults) {
+            queryString += ' LIMIT ?';
+            queryValues.push(queryOptions.maxResults);
+        }
 
-        const filteredByStringSearch = queryOptions.stringSearch
-            ? shuffledRecipes.filter(recipe => recipe.name.toLowerCase().includes(queryOptions.stringSearch.toLowerCase()))
-            : shuffledRecipes;
+        connection.query(queryString, queryValues, (err, result) => {
+            if (err) {
+                console.error(err);
+                reject({ statusCode: 500, responseMessage: err });
+                return;
+            }
 
-        const filteredRecipes = queryOptions.maxResults ? filteredByStringSearch.slice(0, queryOptions.maxResults) : filteredByStringSearch;
+            const recipes = result.map(r => new Recipe(r));
 
-        resolve({ statusCode: 200, responseMessage: filteredRecipes });
+            resolve({ statusCode: 200, responseMessage: recipes });
+        });
+
+        connection.end();
     });
 };
 

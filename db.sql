@@ -185,55 +185,67 @@ VALUES
 (2, 9, '1 bunch'), -- 1 bunch of basil
 (2, 10 , '350g'); -- 350g of farfalle
 
--- Views (probably will need to create object for author, area, category and difficulty)
+-- Views
 DROP VIEW IF EXISTS search_recipes;
 CREATE VIEW search_recipes AS
 SELECT
-    'recipes', JSON_ARRAYAGG(
-        JSON_OBJECT(
-            'id', r.id,
-            'name', r.name,
-            'category_id', c.id,
-            'category', c.name,
-            'description', r.description,
-            'preparationDescription', r.preparation_description,
-            'area_id', a.id,
-            'area', a.name,
-            'author_id', u.id,
-            'author', CONCAT(u.firstName, ' ', u.lastName),
-            'ingredients', (
-                SELECT JSON_ARRAYAGG(
-                    JSON_OBJECT('ingredient_id', i.id, 'name', i.name, 'quantity', ri.quantity)
-                )
-                FROM recipe_ingredients ri
-                JOIN ingredient i ON ri.ingredient_id = i.id
-                WHERE ri.recipe_id = r.id
-            ),
-            'image', r.image,
-            'preparationTime', r.preparationTime,  
-            'difficulty_id', d.id,
-            'difficulty', d.name,
-            'cost', r.cost 
-        )
-    )
+    r.id AS id,
+    r.name AS name,
+    c.id AS category_id,
+    JSON_OBJECT(
+        'id', c.id,
+        'name', c.name,
+        'description', c.description,
+        'image', c.image
+    ) AS category,
+    r.description AS description,
+    r.preparation_description AS preparationDescription,
+    a.id AS area_id,
+    JSON_OBJECT(
+        'id', a.id,
+        'name', a.name
+    ) AS area,
+    u.id AS author_id,
+    JSON_OBJECT(
+        'id', u.id,
+        'username', u.username,
+        'firstName', u.firstName,
+        'lastName', u.lastName
+    ) AS author,
+    (
+        SELECT JSON_ARRAYAGG(
+            JSON_OBJECT(
+                'ingredient', JSON_OBJECT(
+                    'id', i.id,
+                    'name', i.name
+                ),
+                'quantity', ri.quantity
+            )
+        ) AS ingredients
+        FROM recipe_ingredients ri
+        JOIN ingredient i ON ri.ingredient_id = i.id
+        WHERE ri.recipe_id = r.id
+    ) AS ingredients,
+    r.image AS image,
+    r.preparationTime AS preparationTime,
+    JSON_OBJECT(
+        'id', d.id,
+        'name', d.name
+    ) AS difficulty,
+    r.cost AS cost
 FROM
     recipe r
-JOIN
-    area a ON r.area_id = a.id
-LEFT JOIN 
-    `user` u ON r.author_id = u.id
-/*JOIN
-    author au ON r.author_id = au.id
-JOIN
-    `user` u ON au.id = u.id*/
-LEFT JOIN
-    category c ON r.category_id = c.id
-LEFT JOIN
-    difficulty d ON r.difficulty_id = d.id	
-GROUP BY
-    r.id;
+    JOIN area a ON r.area_id = a.id
+    LEFT JOIN `user` u ON r.author_id = u.id
+    LEFT JOIN category c ON r.category_id = c.id
+    LEFT JOIN difficulty d ON r.difficulty_id = d.id;
 
-SELECT * FROM search_recipes;
+-- Query the view
+SELECT * FROM search_recipes WHERE name like 'Sushi%';
+SELECT * FROM search_recipes WHERE category_id = 4;
+SELECT * FROM search_recipes WHERE area_id = 15;
+SELECT * FROM search_recipes ORDER BY RAND();
+SELECT * FROM search_recipes LIMIT 1;
 
 -- Recipe list
 insert into recipe_list(`name`, user_id) values ("Piteu do veigas", 1);
