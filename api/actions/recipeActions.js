@@ -3,10 +3,15 @@
  * Purpose: Aggregates all actions for the Recipe entity.
  */
 const mysql = require('mysql2');
+const async = require('async');
 const connectionOptions = require('./connectionOptions.json');
 
 const { Recipe, Category, Author, Area, Difficulty, Ingredient, IngredientInRecipe, PartialRecipe } = require('../models');
-const { objectIsValid, shuffleArray } = require('../utils');
+const { objectIsValid } = require('../utils');
+const { getCategory } = require('./categoryActions');
+const { getArea } = require('./areaActions');
+const { getDifficulty } = require('./difficultyActions');
+const { getUser } = require('./userActions');
 
 const { recipes, categories, users, areas, difficulties, ingredients } = require('../temporaryData');
 
@@ -84,22 +89,104 @@ const getRecipe = (id) => {
     });
 }
 
-const addRecipe = (recipe) => {
-    return new Promise((resolve, reject) => {
-        const id = (recipes.length == 0) ? 1 : recipes.at(-1).id + 1;
-
+const addRecipe = async (recipe) => {
+    return new Promise(async (resolve, reject) => {
         try {
-            const processedRecipe = processRecipeData(recipe);
-            const newRecipe = new Recipe(processedRecipe, id);
+            const processedRecipe = await processRecipeData(recipe);
+            const newRecipe = new Recipe(processedRecipe);
 
-            if (objectIsValid(newRecipe)) {
-                recipes.push(newRecipe);
-                resolve({ statusCode: 201, responseMessage: newRecipe });
-            } else {
+            if (!objectIsValid(newRecipe)) {
                 reject({ statusCode: 400, responseMessage: 'Invalid Body.' });
+                return;
             }
+
+            const pool = mysql.createPool(connectionOptions);
+
+            pool.getConnection(async (err, connection) => {
+                if (err) {
+                    console.error(err);
+                    reject({ statusCode: 500, responseMessage: 'Connection Error.' });
+                    return;
+                }
+
+                connection.beginTransaction(async (err) => {
+                    if (err) {
+                        console.error(err);
+                        connection.release();
+                        reject({ statusCode: 500, responseMessage: 'Transaction Begin Error.' });
+                        return;
+                    }
+
+                    try {
+                        const recipeQuery = "INSERT INTO recipe (name, description, image, preparation_description, area_id, category_id, author_id, difficulty_id, preparationTime, cost) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                        const recipeValues = [
+                            newRecipe.name, newRecipe.description, newRecipe.image,
+                            newRecipe.preparationDescription, newRecipe.area.id, newRecipe.category.id,
+                            newRecipe.author.id, newRecipe.difficulty.id, newRecipe.preparation, newRecipe.cost
+                        ];
+
+                        connection.query(recipeQuery, recipeValues, async (err, result) => {
+                            if (err) {
+                                console.error(err);
+                                connection.rollback(() => {
+                                    connection.release();
+                                    reject({ statusCode: 400, responseMessage: err });
+                                });
+                                return;
+                            }
+
+                            const ingredientsQueries = newRecipe.ingredients.map(i => {
+                                return ["INSERT INTO recipe_ingredients (recipe_id, ingredient_id, quantity) VALUES (?, ?, ?)", [result.insertId, i.ingredient.id, i.quantity]];
+                            });
+
+                            async.each(ingredientsQueries, (query, callback) => {
+                                connection.query(...query, (err, result) => {
+                                    if (err) {
+                                        console.error(err);
+                                        connection.rollback(() => {
+                                            connection.release();
+                                            reject({ statusCode: 400, responseMessage: [newRecipe, "Ingredients not added"] });
+                                        });
+                                        return callback(err);
+                                    }
+                                    callback();
+                                });
+                            }, (err) => {
+                                if (err) {
+                                    connection.rollback(() => {
+                                        connection.release();
+                                        reject({ statusCode: 500, responseMessage: 'Transaction Error.' });
+                                    });
+                                    return;
+                                }
+
+                                connection.commit((err) => {
+                                    if (err) {
+                                        console.error(err);
+                                        connection.rollback(() => {
+                                            connection.release();
+                                            reject({ statusCode: 500, responseMessage: 'Commit Error.' });
+                                        });
+                                        return;
+                                    }
+
+                                    connection.release();
+                                    newRecipe.id = result.insertId;
+                                    resolve({ statusCode: 200, responseMessage: newRecipe });
+                                });
+                            });
+                        });
+                    } catch (error) {
+                        connection.rollback(() => {
+                            connection.release();
+                            reject({ statusCode: 500, responseMessage: error });
+                        });
+                    }
+                });
+            });
+
         } catch (error) {
-            reject(error);
+            reject({ statusCode: 500, responseMessage: error });
         }
     });
 };
@@ -177,96 +264,72 @@ const ingredientsAreDuplicate = (ingredientsIds) => {
  * @throws {Object} - An error object with a status statusCode and descriptive message.
  */
 const processRecipeData = (recipe) => {
-    // Check category 
-    const categoryId = recipe.category.id;
-    const foundCategory = categories.find(c => c.id == categoryId);
+    return new Promise(async (resolve, reject) => {
+        try {
+            // Check category 
+            const categoryId = recipe.category.id;
+            const foundCategory = (await getCategory(categoryId)).responseMessage;
 
-    if (foundCategory == null) {
-        throw { statusCode: 400, responseMessage: 'Recipe category not found.' };
-    }
+            if (foundCategory == null) {
+                throw { statusCode: 400, responseMessage: 'Recipe category not found.' };
+            }
+            const category = new Category({
+                id: categoryId,
+                name: foundCategory.name,
+                description: foundCategory.description,
+                image: foundCategory.image
+            });
 
-    const category = new Category({
-        id: categoryId,
-        name: foundCategory.name,
-        description: foundCategory.description,
-        image: foundCategory.image
-    });
+            // Check area 
+            const areaId = recipe.area.id;
+            const foundArea = (await getArea(areaId)).responseMessage;
 
-    // Check area 
-    const areaId = recipe.area.id;
-    const foundArea = areas.find(a => a.id == areaId);
-    if (foundArea == null) {
-        throw { statusCode: 400, responseMessage: 'Recipe area not found.' };
-    }
+            if (foundArea == null) {
+                throw { statusCode: 400, responseMessage: 'Recipe area not found.' };
+            }
+            const area = new Area({
+                id: areaId,
+                name: foundArea.name
+            });
 
-    const area = new Area({
-        id: areaId,
-        name: foundArea.name
-    });
+            // Check difficulty 
+            const difficultyId = recipe.difficulty.id;
+            const foundDifficulty = (await getDifficulty(difficultyId)).responseMessage;
+            if (foundDifficulty == null) {
+                throw { statusCode: 400, responseMessage: 'Recipe difficulty not found.' };
+            }
 
-    // Check difficulty 
-    const difficultyId = recipe.difficulty.id;
-    const foundDifficulty = difficulties.find(d => d.id == difficultyId);
-    if (foundDifficulty == null) {
-        throw { statusCode: 400, responseMessage: 'Recipe difficulty not found.' };
-    }
+            const difficulty = new Difficulty({
+                id: difficultyId,
+                name: foundDifficulty.name
+            });
 
-    const difficulty = new Difficulty({
-        id: difficultyId,
-        name: foundDifficulty.name
-    });
+            // Check author (Nullable)
+            const authorId = recipe.author ? recipe.author.id : null;
+            const foundAuthor = (await getUser(authorId)).responseMessage;
+            let author = null;
 
-    // Check author (Nullable)
-    const authorId = recipe.author ? recipe.author.id : null;
-    const foundAuthor = users.find(c => c.id == authorId);
-    var author = null;
+            if (foundAuthor != null) {
+                author = new Author({
+                    id: authorId,
+                    username: foundAuthor.username,
+                    firstName: foundAuthor.firstName,
+                    lastName: foundAuthor.lastName
+                });
+            } else {
+                // System
+                foundAuthor = (await getUser(1)).responseMessage;
+            }
 
-    if (foundAuthor != null) {
-        author = new Author({
-            id: authorId,
-            username: foundAuthor.username,
-            firstName: foundAuthor.firstName,
-            lastName: foundAuthor.lastName
-        });
-    }
+            // Assign calculated values
+            recipe.category = category;
+            recipe.area = area;
+            recipe.difficulty = difficulty;
+            recipe.author = author;
 
-    // Check ingredients
-    const ingredientsIds = recipe.ingredients.map(i => {
-        if (i.quantity == undefined) {
-            throw { statusCode: 400, responseMessage: `Recipe ingredient with id=${i.ingredient.id} quantity not found.` };
+            resolve(recipe);
+        } catch (error) {
+            reject(error);
         }
-
-        return { id: i.ingredient.id, quantity: i.quantity };
     });
-
-    if (ingredientsAreDuplicate(ingredientsIds)) {
-        throw { statusCode: 400, responseMessage: `Recipe ingredient can't have duplicates.` };
-    }
-
-    const finalIngredients = [];
-    ingredientsIds.forEach(ingredient => {
-        const foundIngredient = ingredients.find(i => i && i.id == ingredient.id);
-        if (foundIngredient == null) {
-            throw { statusCode: 400, responseMessage: `Recipe ingredient with id=${ingredient.id} not found.` };
-        }
-
-        const finalIngredient = new IngredientInRecipe({
-            ingredient: new Ingredient({
-                id: ingredient.id,
-                name: foundIngredient.name,
-                description: foundIngredient.description
-            }),
-            quantity: ingredient.quantity
-        });
-        finalIngredients.push(finalIngredient);
-    });
-
-    // Assign calculated values
-    recipe.category = category;
-    recipe.area = area;
-    recipe.difficulty = difficulty;
-    recipe.author = author;
-    recipe.ingredients = finalIngredients;
-
-    return recipe;
 };

@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS `area`(
 DROP TABLE IF EXISTS recipe;
 CREATE TABLE IF NOT EXISTS recipe(
 	id INT PRIMARY KEY AUTO_INCREMENT,
-    external_id int NOT NULL unique,
+    external_id int unique,
     `name` VARCHAR(50) NOT NULL UNIQUE,
     image VARCHAR(120) NOT NULL,
 	description TEXT NOT NULL,
