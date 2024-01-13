@@ -8,7 +8,7 @@ const connectionOptions = require('./connectionOptions.json');
 const { Category } = require('../models');
 const { objectIsValid } = require('../utils');
 
-const getCategories = (queryOptions = null) => {
+const getCategories = (queryOptions = null, connection = null) => {
     return new Promise((resolve, reject) => {
         var queryString = "SELECT * FROM category";
         const queryParams = [];
@@ -24,11 +24,12 @@ const getCategories = (queryOptions = null) => {
             queryString += " ORDER BY id";
         }
 
-        const connection = mysql.createConnection(connectionOptions);
+        const useProvidedConnection = connection !== null;
+        const connectionToUse = useProvidedConnection ? connection : mysql.createConnection(connectionOptions);
 
-        connection.connect();
+        connectionToUse.connect();
 
-        connection.query(queryString, queryParams, (err, result) => {
+        connectionToUse.query(queryString, queryParams, (err, result) => {
             if (err) {
                 console.error(err);
                 reject({ statusCode: 500, responseMessage: err });
@@ -38,11 +39,13 @@ const getCategories = (queryOptions = null) => {
             const categories = result.map(r => new Category(r));
 
             resolve({ statusCode: 200, responseMessage: categories });
-        });
 
-        connection.end();
+            if (!useProvidedConnection) {
+                connectionToUse.end(); // Close the connection if it was created in this function.
+            }
+        });
     });
-}
+};
 
 const getCategory = (id) => {
     return new Promise((resolve, reject) => {

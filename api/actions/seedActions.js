@@ -4,22 +4,23 @@
  */
 const axios = require('axios');
 const mysql = require('mysql2');
+const mysqlPromise = require('mysql2/promise');
 const connectionOptions = require('./connectionOptions.json');
 
 const { Category, Area, Ingredient, Recipe, IngredientInRecipe } = require('../models');
 const { getAreas, truncateAreas, addAreas } = require('./areaActions');
 const { getCategories, truncateCategories, addCategories } = require('./categoryActions');
 const { getIngredients, truncateIngredients, addIngredients } = require('./ingredientActions');
-const { categories, areas, ingredients, recipes } = require('../temporaryData');
 const { addIngredient } = require('./ingredientActions');
 const { capitalizeWords } = require('../utils');
+const { addRecipes, getRecipes, truncateRecipes } = require('./recipeActions');
 
 const commonErrorMessage = 'Something went wrong, please try again later.';
 
 const seedCategories = async (force) => {
-    return new Promise( async (resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         axios.get('https://www.themealdb.com/api/json/v1/1/categories.php')
-            .then( async (response) => {
+            .then(async (response) => {
                 const responseData = response.data.categories;
                 const processedCategories = responseData.map(r => {
                     return new Category({
@@ -51,9 +52,9 @@ const seedCategories = async (force) => {
 }
 
 const seedAreas = async (force) => {
-    return new Promise( async (resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         axios.get('https://www.themealdb.com/api/json/v1/1/list.php?a=list')
-            .then( async (response) => {
+            .then(async (response) => {
                 const responseData = response.data.meals;
                 var id = 1;
                 const processedAreas = responseData.map(r => {
@@ -72,7 +73,7 @@ const seedAreas = async (force) => {
 
                 // Empty array
                 await truncateAreas();
-                
+
                 const areasWithUpdatedId = (await addAreas(processedAreas)).responseMessage;
                 resolve({ statusCode: 200, responseMessage: areasWithUpdatedId });
             })
@@ -84,9 +85,9 @@ const seedAreas = async (force) => {
 }
 
 const seedIngredients = async (force) => {
-    return new Promise( async (resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         axios.get('https://www.themealdb.com/api/json/v1/1/list.php?i=list')
-            .then( async (response) => {
+            .then(async (response) => {
                 const responseData = response.data.meals;
                 const processedIngredients = responseData.map(r => {
                     return new Ingredient({
@@ -117,11 +118,29 @@ const seedIngredients = async (force) => {
 }
 
 const seedRecipes = (force) => {
+    const pool = mysqlPromise.createPool(connectionOptions);
+
     return new Promise(async (resolve, reject) => {
+        let connection;
+
         try {
+            connection = await pool.getConnection();
+
             const response = await axios.get('https://www.themealdb.com/api/json/v1/1/search.php?f=%');
             const responseData = response.data.meals;
             let id = 1;
+
+            console.log('Aqui sim')
+            const [categoriesResponse, areasResponse, ingredientsResponse] = await Promise.all([
+                getCategories(null, connection),
+                getAreas(connection),
+                getIngredients(null, connection),
+            ]);
+            console.log('Aqui nao')
+
+            const categories = categoriesResponse.responseMessage;
+            const areas = areasResponse.responseMessage;
+            const ingredients = ingredientsResponse.responseMessage;
 
             const processedRecipes = responseData.map(async (r) => {
                 return new Recipe({
@@ -132,8 +151,8 @@ const seedRecipes = (force) => {
                     description: null,
                     preparationDescription: r.strInstructions,
                     area: areas.find(a => a.name.toLowerCase() === r.strArea.toLowerCase()),
-                    author: null,
-                    ingredients: await addIngredientsInRecipe(r), // Use 'await' here
+                    author: { id: 1 },
+                    ingredients: await addIngredientsInRecipe(r, ingredients),
                     image: r.strMealThumb,
                     preparationTime: null,
                     difficulty: null,
@@ -141,21 +160,21 @@ const seedRecipes = (force) => {
                 });
             });
 
-            if (recipes.length !== 0 && !force) {
-                reject({ statusCode: 400, responseMessage: 'Recipes must be empty.' });
-                return;
+            const recipes = (await getRecipes(null, connection)).responseMessage;
+
+            if (!force && recipes.length !== 0) {
+                throw { statusCode: 400, responseMessage: 'Recipes must be empty.' };
             }
 
-            // Empty array
-            recipes.length = 0;
+            await truncateRecipes(connection);
 
-            // 'await Promise.all' to wait for all promises to resolve
-            recipes.push(...(await Promise.all(processedRecipes)));
-
-            resolve({ statusCode: 200, responseMessage: recipes });
+            const recipesWithUpdatedId = (await addRecipes(processedRecipes, connection)).responseMessage;
+            resolve({ statusCode: 200, responseMessage: recipesWithUpdatedId });
         } catch (error) {
             console.error(error);
             reject({ statusCode: 500, responseMessage: commonErrorMessage });
+        } finally {
+            if (connection) connection.release();
         }
     });
 };
@@ -186,7 +205,7 @@ module.exports.seedAll = seedAll;
  * @param {Recipe} recipe - Recipe from the API.
  * @returns {IngredientInRecipe[]} - The processed recipe.
  */
-const addIngredientsInRecipe = async (recipe) => {
+const addIngredientsInRecipe = async (recipe, ingredients) => {
     let ingredientNumber = 0;
 
     const processedIngredients = [];

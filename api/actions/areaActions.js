@@ -8,12 +8,15 @@ const connectionOptions = require('./connectionOptions.json');
 const { Area } = require('../models');
 const { objectIsValid } = require('../utils');
 
-const getAreas = () => {
+const getAreas = (connection = null) => {
     return new Promise((resolve, reject) => {
-        const connection = mysql.createConnection(connectionOptions);
-        connection.connect();
+        const queryString = "SELECT * FROM area ORDER BY id";
+        const useProvidedConnection = connection !== null;
+        const connectionToUse = useProvidedConnection ? connection : mysql.createConnection(connectionOptions);
 
-        connection.query("SELECT * FROM area ORDER BY id", (err, result) => {
+        connectionToUse.connect();
+
+        connectionToUse.query(queryString, (err, result) => {
             if (err) {
                 console.error(err);
                 reject({ statusCode: 500, responseMessage: err });
@@ -23,11 +26,13 @@ const getAreas = () => {
             const areas = result.map(r => new Area(r));
 
             resolve({ statusCode: 200, responseMessage: areas });
-        });
 
-        connection.end();
+            if (!useProvidedConnection) {
+                connectionToUse.end(); // Close the connection if it was created in this function.
+            }
+        });
     });
-}
+};
 
 const getArea = (id) => {
     return new Promise((resolve, reject) => {

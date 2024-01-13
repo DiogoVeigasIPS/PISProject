@@ -8,29 +8,32 @@ const connectionOptions = require('./connectionOptions.json');
 const { Ingredient } = require('../models');
 const { objectIsValid } = require('../utils');
 
-const getIngredients = (queryOptions = null) => {
+const getIngredients = (queryOptions = null, connection = null) => {
     return new Promise((resolve, reject) => {
-        var queryString;
-        if(queryOptions){
-            queryString = queryOptions
-            ? "SELECT * FROM ingredient" +
-            (queryOptions.stringSearch ? " WHERE name LIKE ?" : "") +
-            (queryOptions.isRandom ? " ORDER BY RAND()" : "") +
-            (queryOptions.maxResults ? " LIMIT ?" : "") : "";
-        }else{
-            queryString = "SELECT * FROM ingredient ORDER BY id";
-        }
-        
+        const baseQueryString = "SELECT * FROM ingredient";
+        let queryString = baseQueryString;
+
         const queryParams = [];
-        if(queryOptions){
-            if (queryOptions.stringSearch) { queryParams.push(`%${queryOptions.stringSearch}%`); }
-            if (queryOptions.maxResults) { queryParams.push(queryOptions.maxResults); }
-        }   
 
-        const connection = mysql.createConnection(connectionOptions);
-        connection.connect();
+        if (queryOptions) {
+            queryString += queryOptions.stringSearch ? " WHERE name LIKE ?" : "";
+            queryString += queryOptions.isRandom ? " ORDER BY RAND()" : "";
+            queryString += queryOptions.maxResults ? " LIMIT ?" : "";
 
-        connection.query(queryString, queryParams, (err, result) => {
+            if (queryOptions.stringSearch) {
+                queryParams.push(`%${queryOptions.stringSearch}%`);
+            }
+            if (queryOptions.maxResults) {
+                queryParams.push(queryOptions.maxResults);
+            }
+        }
+
+        const useProvidedConnection = connection !== null;
+        const connectionToUse = useProvidedConnection ? connection : mysql.createConnection(connectionOptions);
+
+        connectionToUse.connect();
+
+        connectionToUse.query(queryString, queryParams, (err, result) => {
             if (err) {
                 console.error(err);
                 reject({ statusCode: 500, responseMessage: err });
@@ -40,10 +43,14 @@ const getIngredients = (queryOptions = null) => {
             const ingredients = result.map(r => new Ingredient(r));
 
             resolve({ statusCode: 200, responseMessage: ingredients });
-            connection.end();
+
+            if (!useProvidedConnection) {
+                connectionToUse.end(); // Close the connection if it was created in this function.
+            }
         });
     });
 };
+
 
 const getIngredient = (id) => {
     return new Promise((resolve, reject) => {

@@ -50,8 +50,8 @@ CREATE TABLE IF NOT EXISTS recipe(
 	preparation_description TEXT NOT NULL,
     area_id int NOT NULL,
 	category_id INT NOT NULL,
-	author_id INT,
-    difficulty_id INT,
+	author_id INT NULL,
+    difficulty_id INT NULL,
     preparationTime INT,
     cost DECIMAL(5,2),
     FOREIGN KEY (category_id) references category(id),
@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS ingredient (
     id INT PRIMARY KEY AUTO_INCREMENT,
     `name` VARCHAR(50) NOT NULL UNIQUE,
     `description` TEXT,
-    `image` VARCHAR (120) NOT NULL
+    `image` VARCHAR (120)
 );
 
 -- Many to Many tables
