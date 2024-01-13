@@ -2,7 +2,7 @@
  * Filename: ingredientController.js
  * Purpose: Aggregates all controllers for the Ingredient entity.
  */
-const { ingredientActions } = require('../actions');
+const { ingredientActions, categoryActions } = require('../actions');
 const { handlePromise } = require('../utils');
 
 const readIngredients = (req, res) => {
@@ -39,8 +39,18 @@ const deleteIngredient = (req, res) => {
     handlePromise(ingredientActions.deleteIngredient(id), res);
 };
 
+const truncateIngredients = (req, res) => {
+    handlePromise(ingredientActions.truncateIngredients(), res);
+};
+
+const addIngredients = (req, res) => {
+    handlePromise(ingredientActions.addIngredients(req.body), res);
+};
+
 module.exports.readIngredients = readIngredients;
 module.exports.readIngredient = readIngredient;
 module.exports.addIngredient = addIngredient;
 module.exports.editIngredient = editIngredient;
 module.exports.deleteIngredient = deleteIngredient;
+module.exports.truncateIngredients = truncateIngredients;
+module.exports.addIngredients = addIngredients;

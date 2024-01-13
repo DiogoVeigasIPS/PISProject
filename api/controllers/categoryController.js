@@ -2,7 +2,7 @@
  * Filename: categoryController.js
  * Purpose: Aggregates all controllers for the Category entity.
  */
-const { categoryActions } = require('../actions');
+const { categoryActions, areaActions } = require('../actions');
 const { handlePromise } = require('../utils');
 
 const readCategories = (req, res) => {
@@ -38,8 +38,18 @@ const deleteCategory = (req, res) => {
     handlePromise(categoryActions.deleteCategory(id), res);
 };
 
+const truncateCategories = (req, res) => {
+    handlePromise(categoryActions.truncateCategories(), res);
+};
+
+const addCategories = (req, res) => {
+    handlePromise(categoryActions.addCategories(req.body), res);
+};
+
 module.exports.readCategories = readCategories;
 module.exports.readCategory = readCategory;
 module.exports.addCategory = addCategory;
 module.exports.editCategory = editCategory;
 module.exports.deleteCategory = deleteCategory;
+module.exports.truncateCategories = truncateCategories;
+module.exports.addCategories = addCategories;

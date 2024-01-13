@@ -23,35 +23,35 @@ CREATE TABLE IF NOT EXISTS author(
 DROP TABLE IF EXISTS difficulty;
 CREATE TABLE IF NOT EXISTS difficulty(
 	id INT PRIMARY KEY AUTO_INCREMENT,
-    `name` varchar(50) UNIQUE
+    `name` VARCHAR(50) UNIQUE
 );
 
 DROP TABLE IF EXISTS category;
 CREATE TABLE IF NOT EXISTS category (
     id INT PRIMARY KEY AUTO_INCREMENT,
     `name` VARCHAR(50) NOT NULL UNIQUE,
-    `description` VARCHAR(255) not null,
-    image varchar(120) not null 
+    `description` TEXT,
+    image VARCHAR(120) NOT NULL 
 );
 
 DROP TABLE IF EXISTS `area`;
 CREATE TABLE IF NOT EXISTS `area`(
 	id INT PRIMARY KEY AUTO_INCREMENT,
-    `name` varchar(60) not null unique
+    `name` VARCHAR(60) NOT NULL unique
 );
 
 DROP TABLE IF EXISTS recipe;
 CREATE TABLE IF NOT EXISTS recipe(
 	id INT PRIMARY KEY AUTO_INCREMENT,
-    external_id int not null unique,
+    external_id int unique,
     `name` VARCHAR(50) NOT NULL UNIQUE,
-    image varchar(120) not null,
+    image VARCHAR(120) NOT NULL,
 	description TEXT NOT NULL,
 	preparation_description TEXT NOT NULL,
-    area_id int not null,
-	category_id INT not null,
-	author_id INT,
-    difficulty_id INT,
+    area_id int NOT NULL,
+	category_id INT NOT NULL,
+	author_id INT NULL,
+    difficulty_id INT NULL,
     preparationTime INT,
     cost DECIMAL(5,2),
     FOREIGN KEY (category_id) references category(id),
@@ -64,8 +64,8 @@ DROP TABLE IF EXISTS ingredient;
 CREATE TABLE IF NOT EXISTS ingredient (
     id INT PRIMARY KEY AUTO_INCREMENT,
     `name` VARCHAR(50) NOT NULL UNIQUE,
-    `description` VARCHAR (100) not null,
-    `image` VARCHAR (120) not null
+    `description` TEXT,
+    `image` VARCHAR (120)
 );
 
 -- Many to Many tables
@@ -78,11 +78,11 @@ CREATE TABLE IF NOT EXISTS favorite_recipe (
     FOREIGN KEY (recipe_id) REFERENCES recipe(id)
 );
 
-DROP TABLE IF EXISTS recipe_ingredients;
-CREATE TABLE IF NOT EXISTS recipe_ingredients(
+DROP TABLE IF EXISTS recipe_ingredient;
+CREATE TABLE IF NOT EXISTS recipe_ingredient(
 	recipe_id int,
     ingredient_id int,
-    quantity varchar(50),
+    quantity VARCHAR(50),
     PRIMARY KEY (recipe_id, ingredient_id),
     FOREIGN KEY (recipe_id) references recipe(id),
     FOREIGN KEY (ingredient_id) references ingredient(id)
@@ -91,7 +91,7 @@ CREATE TABLE IF NOT EXISTS recipe_ingredients(
 DROP TABLE IF EXISTS recipe_list;
 CREATE TABLE IF NOT EXISTS recipe_list (
 	id INT PRIMARY KEY AUTO_INCREMENT,
-    `name` varchar(155) not null,
+    `name` VARCHAR(155) NOT NULL,
     user_id INT,
     FOREIGN KEY (user_id) REFERENCES `user`(id)
 );
@@ -108,9 +108,9 @@ CREATE TABLE IF NOT EXISTS recipe_list_item (
 -- Fixed Atributes
 INSERT IGNORE INTO `user` (username, email, `password`, firstName, lastName)
 VALUES ('System', 'system@example.com', 'system_password', 'System', 'User');
-
+/*
 INSERT IGNORE INTO author (id) VALUES (1);  -- Assuming 1 is the ID of the user created above
-
+*/
 INSERT IGNORE INTO difficulty (`name`) values
 ('Beginner'), 
 ('Cook'), 
@@ -134,7 +134,6 @@ INSERT IGNORE INTO `area` (`name`) VALUES
 ('Japanese'), 
 ('Kenyan'), 
 ('Malaysian'), 
-('Mediterranean'),
 ('Mexican'), 
 ('Moroccan'), 
 ('Polish'), 
@@ -172,7 +171,7 @@ VALUES
 ('Basil','Fresh basil is used a lot to make salad and as a side condiment to a lot of mediterranean dishes', 'http://image.example'),
 ('Farfalle', 'Small pasta in the shape of little bowties used a lot in mediterranean and especially in italian dishes', 'http://image.example');
 
-INSERT IGNORE INTO recipe_ingredients (recipe_id, ingredient_id, quantity)
+INSERT IGNORE INTO recipe_ingredient (recipe_id, ingredient_id, quantity)
 VALUES
 (1, 1, '5 sheets'),       -- Sushi Rolls with 5 Nori sheets
 (1, 2, '2'),              -- 2 avocados
@@ -185,53 +184,78 @@ VALUES
 (2, 9, '1 bunch'), -- 1 bunch of basil
 (2, 10 , '350g'); -- 350g of farfalle
 
--- Views (probably will need to create object for author, area, category and difficulty)
+-- Views
 DROP VIEW IF EXISTS search_recipes;
 CREATE VIEW search_recipes AS
 SELECT
-    'recipes', JSON_ARRAYAGG(
-        JSON_OBJECT(
-            'id', r.id,
-            'name', r.name,
-            'category_id', c.id,
-            'category', c.name,
-            'description', r.description,
-            'preparationDescription', r.preparation_description,
-            'area_id', a.id,
-            'area', a.name,
-            'author_id', u.id,
-            'author', CONCAT(u.firstName, ' ', u.lastName),
-            'ingredients', (
-                SELECT JSON_ARRAYAGG(
-                    JSON_OBJECT('ingredient_id', i.id, 'name', i.name, 'quantity', ri.quantity)
-                )
-                FROM recipe_ingredients ri
-                JOIN ingredient i ON ri.ingredient_id = i.id
-                WHERE ri.recipe_id = r.id
-            ),
-            'image', r.image,
-            'preparationTime', r.preparationTime,  
-            'difficulty_id', d.id,
-            'difficulty', d.name,
-            'cost', r.cost 
-        )
-    )
+    r.id AS id,
+    r.external_id AS idProvider,
+    r.name AS name,
+    c.id AS category_id,
+    JSON_OBJECT(
+        'id', c.id,
+        'name', c.name,
+        'description', c.description,
+        'image', c.image
+    ) AS category,
+    r.description AS description,
+    r.preparation_description AS preparationDescription,
+    a.id AS area_id,
+    JSON_OBJECT(
+        'id', a.id,
+        'name', a.name
+    ) AS area,
+    u.id AS author_id,
+    JSON_OBJECT(
+        'id', u.id,
+        'username', u.username,
+        'firstName', u.firstName,
+        'lastName', u.lastName
+    ) AS author,
+    (
+        SELECT JSON_ARRAYAGG(
+            JSON_OBJECT(
+                'ingredient', JSON_OBJECT(
+                    'id', i.id,
+                    'name', i.name,
+                    'image', i.image
+                ),
+                'quantity', ri.quantity
+            )
+        ) AS ingredients
+        FROM recipe_ingredient ri
+        JOIN ingredient i ON ri.ingredient_id = i.id
+        WHERE ri.recipe_id = r.id
+    ) AS ingredients,
+    r.image AS image,
+    r.preparationTime AS preparationTime,
+    JSON_OBJECT(
+        'id', d.id,
+        'name', d.name
+    ) AS difficulty,
+    r.cost AS cost
 FROM
     recipe r
-JOIN
-    area a ON r.area_id = a.id
-JOIN
-    author au ON r.author_id = au.id
-JOIN
-    `user` u ON au.id = u.id
-LEFT JOIN
-    category c ON r.category_id = c.id
-LEFT JOIN
-    difficulty d ON r.difficulty_id = d.id	
-GROUP BY
-    r.id;
+    JOIN area a ON r.area_id = a.id
+    LEFT JOIN `user` u ON r.author_id = u.id
+    LEFT JOIN category c ON r.category_id = c.id
+    LEFT JOIN difficulty d ON r.difficulty_id = d.id;
 
-SELECT * FROM search_recipes;
+DROP VIEW IF EXISTS partial_search_recipes;
+CREATE VIEW partial_search_recipes AS
+SELECT
+    id AS id,
+    name AS name,
+    image AS image,
+    external_id AS idProvider
+    from recipe;
+
+-- Query the view
+SELECT * FROM search_recipes WHERE name like 'Sushi%';
+SELECT * FROM search_recipes WHERE category_id = 4;
+SELECT * FROM search_recipes WHERE area_id = 15;
+SELECT * FROM search_recipes ORDER BY RAND();
+SELECT * FROM search_recipes LIMIT 1;
 
 -- Recipe list
 insert into recipe_list(`name`, user_id) values ("Piteu do veigas", 1);
@@ -243,5 +267,5 @@ join recipe_list_item rli on rl.id = rli.list_id
 join recipe r on rli.recipe_id = r.id;
 
 /* delete from recipe_list_item;
-delete from recipe_ingredients;
+delete from recipe_ingredient;
 delete from recipe; */

@@ -13,5 +13,7 @@ router.get('/:id', categoryController.readCategory);
 router.post('', categoryController.addCategory);
 router.put('/:id', categoryController.editCategory);
 router.delete('/:id', categoryController.deleteCategory);
+router.delete('', categoryController.truncateCategories);
+router.post('/bulk', categoryController.addCategories);
 
 module.exports = router;

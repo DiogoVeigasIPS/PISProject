@@ -8,23 +8,32 @@ const connectionOptions = require('./connectionOptions.json');
 const { Ingredient } = require('../models');
 const { objectIsValid } = require('../utils');
 
-const getIngredients = (queryOptions = null) => {
+const getIngredients = (queryOptions = null, connection = null) => {
     return new Promise((resolve, reject) => {
-        const queryString = queryOptions
-            ? "SELECT * FROM ingredient" +
-            (queryOptions.stringSearch ? " WHERE name LIKE ?" : "") +
-            (queryOptions.isRandom ? " ORDER BY RAND()" : "") +
-            (queryOptions.maxResults ? " LIMIT ?" : "")
-            : "SELECT * FROM ingredient ORDER BY id";
+        const baseQueryString = "SELECT * FROM ingredient";
+        let queryString = baseQueryString;
 
         const queryParams = [];
-        if (queryOptions.stringSearch) { queryParams.push(`%${queryOptions.stringSearch}%`); }
-        if (queryOptions.maxResults) { queryParams.push(queryOptions.maxResults); }
 
-        const connection = mysql.createConnection(connectionOptions);
-        connection.connect();
+        if (queryOptions) {
+            queryString += queryOptions.stringSearch ? " WHERE name LIKE ?" : "";
+            queryString += queryOptions.isRandom ? " ORDER BY RAND()" : "";
+            queryString += queryOptions.maxResults ? " LIMIT ?" : "";
 
-        connection.query(queryString, queryParams, (err, result) => {
+            if (queryOptions.stringSearch) {
+                queryParams.push(`%${queryOptions.stringSearch}%`);
+            }
+            if (queryOptions.maxResults) {
+                queryParams.push(queryOptions.maxResults);
+            }
+        }
+
+        const useProvidedConnection = connection !== null;
+        const connectionToUse = useProvidedConnection ? connection : mysql.createConnection(connectionOptions);
+
+        connectionToUse.connect();
+
+        connectionToUse.query(queryString, queryParams, (err, result) => {
             if (err) {
                 console.error(err);
                 reject({ statusCode: 500, responseMessage: err });
@@ -34,10 +43,14 @@ const getIngredients = (queryOptions = null) => {
             const ingredients = result.map(r => new Ingredient(r));
 
             resolve({ statusCode: 200, responseMessage: ingredients });
-            connection.end();
+
+            if (!useProvidedConnection) {
+                connectionToUse.end(); // Close the connection if it was created in this function.
+            }
         });
     });
 };
+
 
 const getIngredient = (id) => {
     return new Promise((resolve, reject) => {
@@ -56,7 +69,9 @@ const getIngredient = (id) => {
                 return;
             }
 
-            resolve({ statusCode: 200, responseMessage: result[0] });
+            const ingredient = new Ingredient(result[0]);
+
+            resolve({ statusCode: 200, responseMessage: ingredient });
         });
 
         connection.end();
@@ -114,8 +129,8 @@ const editIngredient = (id, ingredient) => {
                 }
 
                 if (result.affectedRows > 0) {
-                    const editedIngredient = { id, name: newIngredient.name, description: newIngredient.description, image: newIngredient.image };
-                    resolve({ statusCode: 200, responseMessage: editedIngredient });
+                    newIngredient.id = id;
+                    resolve({ statusCode: 200, responseMessage: newIngredient });
                 } else {
                     reject({ statusCode: 404, responseMessage: 'Ingredient not found.' });
                 }
@@ -148,8 +163,66 @@ const deleteIngredient = (id) => {
     });
 }
 
+const truncateIngredients = () => {
+    return new Promise((resolve, reject) => {
+        const multipleStatementsOptions = {... connectionOptions};
+        multipleStatementsOptions.multipleStatements = true;
+
+        const connection = mysql.createConnection(multipleStatementsOptions);
+        connection.connect();
+
+        const queryString = "SET FOREIGN_KEY_CHECKS = 0; TRUNCATE TABLE ingredient; SET FOREIGN_KEY_CHECKS = 1;";
+
+        connection.query(queryString, (truncateErr, truncateResult) => {
+            if (truncateErr) {
+                console.error(truncateErr);
+                reject({ statusCode: 500, responseMessage: truncateErr});
+                return;
+            }
+
+            resolve({ statusCode: 200, responseMessage: 'Ingredients truncated sucessfully.'});
+            
+            connection.end();
+        });
+    });
+};
+
+const addIngredients = (ingredients) => {
+    return new Promise((resolve, reject) => {
+        const newIngredients = ingredients.map(i => new Ingredient(i));
+
+        for (const newIngredient of newIngredients){
+            if (!objectIsValid(newIngredient)){
+                reject({ statusCode: 400, responseMessage: 'Invalid Body.'});
+            }
+        }
+
+        const connection = mysql.createConnection(connectionOptions);
+        connection.connect();
+
+        const values = newIngredients.map(newIngredient => [newIngredient.name, newIngredient.description, newIngredient.image]);
+
+        connection.query("INSERT INTO ingredient(name, description, image) VALUES ?", [values], (err, result) => {
+            if (err){
+                console.error(err);
+                reject ({statusCode: 400, responseMessage: err});
+                return;
+            }
+
+            for (let i = 0; i < result.affectedRows; i++){
+                newIngredients[i].id = result.insertId + i;
+            }
+
+            resolve({ statusCode: 200, responseMessage: newIngredients});
+            connection.end();
+        })
+    })
+}
+
 module.exports.getIngredients = getIngredients;
 module.exports.getIngredient = getIngredient;
 module.exports.addIngredient = addIngredient;
 module.exports.editIngredient = editIngredient;
 module.exports.deleteIngredient = deleteIngredient;
+module.exports.truncateIngredients = truncateIngredients;
+module.exports.addIngredients = addIngredients;

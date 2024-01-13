@@ -24,7 +24,7 @@ class Recipe {
      * @param {number} recipeData.cost - The cost of a recipe.
      */
     constructor(recipeData, id = recipeData.id) {
-        this.id = id;
+        this.id = id ?? null;
         this.idProvider = recipeData.idProvider ? recipeData.idProvider : null;
         this.name = recipeData.name;
         this.category = recipeData.category;

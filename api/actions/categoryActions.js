@@ -8,7 +8,7 @@ const connectionOptions = require('./connectionOptions.json');
 const { Category } = require('../models');
 const { objectIsValid } = require('../utils');
 
-const getCategories = (queryOptions = null) => {
+const getCategories = (queryOptions = null, connection = null) => {
     return new Promise((resolve, reject) => {
         var queryString = "SELECT * FROM category";
         const queryParams = [];
@@ -24,11 +24,12 @@ const getCategories = (queryOptions = null) => {
             queryString += " ORDER BY id";
         }
 
-        const connection = mysql.createConnection(connectionOptions);
+        const useProvidedConnection = connection !== null;
+        const connectionToUse = useProvidedConnection ? connection : mysql.createConnection(connectionOptions);
 
-        connection.connect();
+        connectionToUse.connect();
 
-        connection.query(queryString, queryParams, (err, result) => {
+        connectionToUse.query(queryString, queryParams, (err, result) => {
             if (err) {
                 console.error(err);
                 reject({ statusCode: 500, responseMessage: err });
@@ -38,11 +39,13 @@ const getCategories = (queryOptions = null) => {
             const categories = result.map(r => new Category(r));
 
             resolve({ statusCode: 200, responseMessage: categories });
-        });
 
-        connection.end();
+            if (!useProvidedConnection) {
+                connectionToUse.end(); // Close the connection if it was created in this function.
+            }
+        });
     });
-}
+};
 
 const getCategory = (id) => {
     return new Promise((resolve, reject) => {
@@ -61,7 +64,9 @@ const getCategory = (id) => {
                 return;
             }
 
-            resolve({ statusCode: 200, responseMessage: result[0] });
+            const category = new Category(result[0]);
+
+            resolve({ statusCode: 200, responseMessage: category });
         });
 
         connection.end();
@@ -119,8 +124,8 @@ const editCategory = (id, category) => {
                 }
 
                 if (result.affectedRows > 0) {
-                    const editedCategory = { id, name: newCategory.name, description: newCategory.description, image: newCategory.image };
-                    resolve({ statusCode: 200, responseMessage: editedCategory });
+                    newCategory.id = id;
+                    resolve({ statusCode: 200, responseMessage: newCategory });
                 } else {
                     reject({ statusCode: 404, responseMessage: 'Category not found.' });
                 }
@@ -153,8 +158,65 @@ const deleteCategory = (id) => {
     });
 }
 
+const truncateCategories = () => {
+    return new Promise((resolve, reject) => {
+        const multipleStatementsOptions = { ...connectionOptions };
+        multipleStatementsOptions.multipleStatements = true;
+
+        const connection = mysql.createConnection(multipleStatementsOptions);
+        connection.connect();
+
+        const queryString = "SET FOREIGN_KEY_CHECKS = 0; TRUNCATE TABLE category; SET FOREIGN_KEY_CHECKS = 1;";
+
+        connection.query(queryString, (truncateErr, truncateResult) => {
+            if (truncateErr) {
+                console.error(truncateErr);
+                reject({ statusCode: 500, responseMessage: truncateErr });
+                return;
+            }
+            resolve({ statusCode: 200, responseMessage: 'Categories truncated successfully.' });
+
+            connection.end();
+        });
+    });
+}
+
+const addCategories = (categories) => {
+    return new Promise((resolve, reject) => {
+        const newCategories = categories.map(c => new Category(c));
+
+        for (const newCategory of newCategories) {
+            if (!objectIsValid(newCategories)) {
+                reject({ status: 400, responseMessage: 'Invalid Body.' });
+                return;
+            }
+        }
+        const connection = mysql.createConnection(connectionOptions);
+        connection.connect();
+
+        const values = newCategories.map(newCategory => [newCategory.name, newCategory.description, newCategory.image]);
+
+        connection.query("INSERT INTO category(name, description, image) VALUES ?", [values], (err, result) => {
+            if (err) {
+                console.error(err);
+                reject({ statusCode: 400, responseMessage: err });
+                return;
+            }
+
+            for (let i = 0; i < result.affectedRows; i++) {
+                newCategories[i].id = result.insertId + i;
+            }
+
+            resolve({ statusCode: 200, responseMessage: newCategories });
+            connection.end();
+        });
+    });
+};
+
 module.exports.getCategories = getCategories;
 module.exports.getCategory = getCategory;
 module.exports.addCategory = addCategory;
 module.exports.editCategory = editCategory;
 module.exports.deleteCategory = deleteCategory;
+module.exports.truncateCategories = truncateCategories;
+module.exports.addCategories = addCategories;
