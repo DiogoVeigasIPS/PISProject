@@ -117,6 +117,28 @@ const seedIngredients = async (force) => {
     });
 }
 
+const getCategoriesIngredientsAreas = () => {
+    return new Promise((resolve, reject) => {
+        const multipleStatementsOptions = { ...connectionOptions };
+        multipleStatementsOptions.multipleStatements = true;
+
+        const connection = mysql.createConnection(multipleStatementsOptions);
+        connection.connect();
+
+        connection.query("SELECT * FROM ingredient; SELECT * FROM area; SELECT * FROM category;", (err, result) => {
+            if (err) {
+                console.error(err);
+                reject({ statusCode: 500, responseMessage: err });
+                return;
+            }
+
+            resolve(result);
+        });
+
+        connection.end();
+    });
+}
+
 const seedRecipes = (force) => {
     const pool = mysqlPromise.createPool(connectionOptions);
 
@@ -130,17 +152,13 @@ const seedRecipes = (force) => {
             const responseData = response.data.meals;
             let id = 1;
 
-            console.log('Aqui sim')
-            const [categoriesResponse, areasResponse, ingredientsResponse] = await Promise.all([
-                getCategories(null, connection),
-                getAreas(connection),
-                getIngredients(null, connection),
-            ]);
-            console.log('Aqui nao')
-
-            const categories = categoriesResponse.responseMessage;
-            const areas = areasResponse.responseMessage;
-            const ingredients = ingredientsResponse.responseMessage;
+            /* const categories = (await getCategories()).responseMessage;
+            const areas = (await getAreas()).responseMessage;
+            const ingredients = (await getIngredients()).responseMessage; */
+            const all = await getCategoriesIngredientsAreas();
+            const ingredients = all[0];
+            const areas = all[1];
+            const categories = all[2];
 
             const processedRecipes = responseData.map(async (r) => {
                 return new Recipe({
@@ -181,6 +199,7 @@ const seedRecipes = (force) => {
 
 const seedAll = async (force) => {
     try {
+        await truncateRecipes();
         await seedCategories(force);
         await seedAreas(force);
         await seedIngredients(force);
@@ -214,12 +233,16 @@ const addIngredientsInRecipe = async (recipe, ingredients) => {
             ingredientNumber++;
             let foundIngredient = ingredients.find(i => i.name.toLowerCase().includes(recipe[prop].toLowerCase()));
 
-            if (!foundIngredient) {
+            /* if (!foundIngredient) {
                 foundIngredient = await addIngredient({
                     name: capitalizeWords(recipe[prop]),
                     description: null,
                     image: null
                 });
+            } */
+
+            if(!foundIngredient){
+                continue;
             }
 
             const ingredient = new IngredientInRecipe({
