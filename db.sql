@@ -44,9 +44,9 @@ DROP TABLE IF EXISTS recipe;
 CREATE TABLE IF NOT EXISTS recipe(
 	id INT PRIMARY KEY AUTO_INCREMENT,
     external_id int unique,
-    `name` VARCHAR(50) NOT NULL UNIQUE,
+    `name` VARCHAR(200) NOT NULL UNIQUE,
     image VARCHAR(120) NOT NULL,
-	description TEXT NOT NULL,
+	description TEXT,
 	preparation_description TEXT NOT NULL,
     area_id int NOT NULL,
 	category_id INT NOT NULL,
@@ -192,6 +192,9 @@ SELECT
     r.external_id AS idProvider,
     r.name AS name,
     c.id AS category_id,
+    a.id AS area_id,
+    u.id AS author_id,
+    d.id AS difficulty_id,
     JSON_OBJECT(
         'id', c.id,
         'name', c.name,
@@ -200,12 +203,10 @@ SELECT
     ) AS category,
     r.description AS description,
     r.preparation_description AS preparationDescription,
-    a.id AS area_id,
     JSON_OBJECT(
         'id', a.id,
         'name', a.name
     ) AS area,
-    u.id AS author_id,
     JSON_OBJECT(
         'id', u.id,
         'username', u.username,
@@ -244,11 +245,19 @@ FROM
 DROP VIEW IF EXISTS partial_search_recipes;
 CREATE VIEW partial_search_recipes AS
 SELECT
-    id AS id,
-    name AS name,
-    image AS image,
-    external_id AS idProvider
-    from recipe;
+    r.id AS id,
+    r.name AS name,
+    r.image AS image,
+    r.external_id AS idProvider,
+    c.id AS category_id,
+    a.id AS area_id,
+    u.id AS author_id,
+    d.id AS difficulty_id
+    FROM recipe r
+    JOIN area a ON r.area_id = a.id
+    LEFT JOIN `user` u ON r.author_id = u.id
+    LEFT JOIN category c ON r.category_id = c.id
+    LEFT JOIN difficulty d ON r.difficulty_id = d.id;
 
 -- Query the view
 SELECT * FROM search_recipes WHERE name like 'Sushi%';
