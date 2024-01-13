@@ -121,8 +121,8 @@ const editCategory = (id, category) => {
                 }
 
                 if (result.affectedRows > 0) {
-                    const editedCategory = { id, name: newCategory.name, description: newCategory.description, image: newCategory.image };
-                    resolve({ statusCode: 200, responseMessage: editedCategory });
+                    newCategory.id = id;
+                    resolve({ statusCode: 200, responseMessage: newCategory });
                 } else {
                     reject({ statusCode: 404, responseMessage: 'Category not found.' });
                 }

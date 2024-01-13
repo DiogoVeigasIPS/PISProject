@@ -136,7 +136,7 @@ const addRecipe = async (recipe) => {
                             }
 
                             const ingredientsQueries = newRecipe.ingredients.map(i => {
-                                return ["INSERT INTO recipe_ingredients (recipe_id, ingredient_id, quantity) VALUES (?, ?, ?)", [result.insertId, i.ingredient.id, i.quantity]];
+                                return ["INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity) VALUES (?, ?, ?)", [result.insertId, i.ingredient.id, i.quantity]];
                             });
 
                             async.each(ingredientsQueries, (query, callback) => {
@@ -192,49 +192,146 @@ const addRecipe = async (recipe) => {
 };
 
 const editRecipe = (id, recipe) => {
-    return new Promise((resolve, reject) => {
-        try {
-            const processedRecipe = processRecipeData(recipe);
-            processedRecipe.id = id;
+    return new Promise(async (resolve, reject) => {
+        const processedRecipe = await processRecipeData(recipe);
+        const newRecipe = new Recipe(processedRecipe);
 
-            const oldRecipe = recipes.find(a => a.id == id);
-
-            if (!objectIsValid(processedRecipe)) {
-                reject({ statusCode: 400, responseMessage: 'Invalid body.' });
-            } else if (oldRecipe == null) {
-                reject({ statusCode: 404, responseMessage: 'Recipe not found.' });
-            } else {
-                for (prop in processedRecipe) {
-                    oldRecipe[prop] = processedRecipe[prop];
-                }
-                resolve({ statusCode: 200, responseMessage: oldRecipe });
-            }
-        } catch (error) {
-            reject(error);
+        if (!objectIsValid(newRecipe)) {
+            reject({ statusCode: 400, responseMessage: 'Invalid body.' });
+            return;
         }
+
+        const connection = mysql.createConnection(connectionOptions);
+        connection.connect();
+        connection.query("UPDATE recipe SET name = ?, description = ?, image = ?, preparation_description = ?, area_id = ?, category_id = ?, author_id = ?, difficulty_id = ?, preparationTime = ?, cost= ? WHERE id = ?",
+            [newRecipe.name, newRecipe.description, newRecipe.image,
+            newRecipe.preparationDescription, newRecipe.area.id, newRecipe.category.id, newRecipe.author.id,
+            newRecipe.difficulty.id, newRecipe.preparationTime, newRecipe.cost, id],
+            (err, result) => {
+                if (err) {
+                    console.error(err);
+                    reject({ statusCode: 400, responseMessage: err });
+                    return;
+                }
+
+                if (result.affectedRows > 0) {
+                    newRecipe.id = id;
+                    resolve({ statusCode: 200, responseMessage: newRecipe });
+                } else {
+                    reject({ statusCode: 404, responseMessage: 'Recipe not found.' });
+                }
+            });
+
+        connection.end();
     });
 };
 
 const deleteRecipe = (id) => {
     return new Promise((resolve, reject) => {
-        const recipeIndex = recipes.findIndex(a => a.id == id);
+        const connection = mysql.createConnection(connectionOptions);
+        connection.connect();
 
-        if (recipeIndex == -1) {
-            reject({ statusCode: 404, responseMessage: 'Recipe not found.' })
-            return;
-        }
+        connection.query("DELETE FROM recipe WHERE id = ?", [id], (err, result) => {
+            if (err) {
+                console.error(err);
+                reject({ statusCode: 400, responseMessage: err });
+                return;
+            }
 
-        recipes.splice(recipeIndex, 1);
+            if (result.affectedRows > 0) {
+                resolve({ statusCode: 200, responseMessage: 'Recipe deleted sucessfully.' });
+            } else {
+                reject({ statusCode: 404, responseMessage: 'Recipe not found.' });
+            }
+        });
 
-        resolve({ statusCode: 200, responseMessage: 'Recipe deleted sucessfully.' });
+        connection.end();
+    });
+}
+
+// Manage ingredients in a recipe
+const addIngredientToRecipe = (recipeId, ingredientId, quantity) => {
+    return new Promise((resolve, reject) => {
+        const connection = mysql.createConnection(connectionOptions);
+        connection.connect();
+
+        connection.query("INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity) VALUES (?, ?, ?)", 
+        [recipeId, ingredientId, quantity], (err, result) => {
+            if (err) {
+                if(err.sqlMessage.startsWith("Duplicate entry")){
+                    reject({ statusCode: 400, responseMessage: 'Ingredient already in recipe.' });
+                    return;
+                }
+                console.error(err);
+                reject({ statusCode: 400, responseMessage: err });
+                return;
+            }
+
+            resolve({ statusCode: 200, responseMessage: 'Ingredient added sucessfully.' });
+        });
+
+        connection.end();
     })
 }
+
+const editIngredientQuantityInRecipe = (recipeId, ingredientId, newQuantity) => {
+    return new Promise((resolve, reject) => {
+        const connection = mysql.createConnection(connectionOptions);
+        connection.connect();
+
+        connection.query("UPDATE recipe_ingredient SET quantity = ? WHERE recipe_id = ? AND ingredient_id = ?", 
+        [newQuantity, recipeId, ingredientId], (err, result) => {
+            if (err) {
+                console.error(err);
+                reject({ statusCode: 400, responseMessage: err });
+                return;
+            }
+
+            if (result.affectedRows === 0) {
+                reject({ statusCode: 404, responseMessage: 'Ingredient not found in recipe.' });
+                return;
+            }
+
+            resolve({ statusCode: 200, responseMessage: 'Ingredient quantity updated successfully.' });
+        });
+
+        connection.end();
+    });
+};
+
+const removeIngredientFromRecipe = (recipeId, ingredientId) => {
+    return new Promise((resolve, reject) => {
+        const connection = mysql.createConnection(connectionOptions);
+        connection.connect();
+
+        connection.query("DELETE FROM recipe_ingredient WHERE recipe_id = ? AND ingredient_id = ?", 
+        [recipeId, ingredientId], (err, result) => {
+            if (err) {
+                console.error(err);
+                reject({ statusCode: 400, responseMessage: err });
+                return;
+            }
+
+            if (result.affectedRows === 0) {
+                reject({ statusCode: 404, responseMessage: 'Ingredient not found in recipe.' });
+                return;
+            }
+
+            resolve({ statusCode: 200, responseMessage: 'Ingredient removed successfully.' });
+        });
+
+        connection.end();
+    });
+};
 
 module.exports.getRecipes = getRecipes;
 module.exports.getRecipe = getRecipe;
 module.exports.addRecipe = addRecipe;
 module.exports.editRecipe = editRecipe;
 module.exports.deleteRecipe = deleteRecipe;
+module.exports.addIngredientToRecipe = addIngredientToRecipe;
+module.exports.editIngredientQuantityInRecipe = editIngredientQuantityInRecipe;
+module.exports.removeIngredientFromRecipe = removeIngredientFromRecipe;
 
 /**
  * [ingredientsAreDuplicate] - Checks for duplicated.

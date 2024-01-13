@@ -78,8 +78,8 @@ CREATE TABLE IF NOT EXISTS favorite_recipe (
     FOREIGN KEY (recipe_id) REFERENCES recipe(id)
 );
 
-DROP TABLE IF EXISTS recipe_ingredients;
-CREATE TABLE IF NOT EXISTS recipe_ingredients(
+DROP TABLE IF EXISTS recipe_ingredient;
+CREATE TABLE IF NOT EXISTS recipe_ingredient(
 	recipe_id int,
     ingredient_id int,
     quantity VARCHAR(50),
@@ -171,7 +171,7 @@ VALUES
 ('Basil','Fresh basil is used a lot to make salad and as a side condiment to a lot of mediterranean dishes', 'http://image.example'),
 ('Farfalle', 'Small pasta in the shape of little bowties used a lot in mediterranean and especially in italian dishes', 'http://image.example');
 
-INSERT IGNORE INTO recipe_ingredients (recipe_id, ingredient_id, quantity)
+INSERT IGNORE INTO recipe_ingredient (recipe_id, ingredient_id, quantity)
 VALUES
 (1, 1, '5 sheets'),       -- Sushi Rolls with 5 Nori sheets
 (1, 2, '2'),              -- 2 avocados
@@ -222,7 +222,7 @@ SELECT
                 'quantity', ri.quantity
             )
         ) AS ingredients
-        FROM recipe_ingredients ri
+        FROM recipe_ingredient ri
         JOIN ingredient i ON ri.ingredient_id = i.id
         WHERE ri.recipe_id = r.id
     ) AS ingredients,
@@ -257,5 +257,5 @@ join recipe_list_item rli on rl.id = rli.list_id
 join recipe r on rli.recipe_id = r.id;
 
 /* delete from recipe_list_item;
-delete from recipe_ingredients;
+delete from recipe_ingredient;
 delete from recipe; */

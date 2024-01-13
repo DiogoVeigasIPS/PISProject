@@ -46,8 +46,34 @@ const deleteRecipe = (req, res) => {
     handlePromise(recipeActions.deleteRecipe(id), res);
 };
 
+const addIngredientToRecipe = (req, res) => {
+    const recipe = req.params.id;
+    const ingredient = req.body.ingredientId;
+    const quantity = req.body.quantity;
+
+    handlePromise(recipeActions.addIngredientToRecipe(recipe, ingredient, quantity), res);
+};
+
+const editIngredientQuantityInRecipe = (req, res) => {
+    const recipe = req.params.id;
+    const ingredient = req.body.ingredientId;
+    const quantity = req.body.quantity;
+
+    handlePromise(recipeActions.editIngredientQuantityInRecipe(recipe, ingredient, quantity), res);
+};
+
+const removeIngredientFromRecipe = (req, res) => {
+    const recipe = req.params.id;
+    const ingredient = req.body.ingredientId;
+
+    handlePromise(recipeActions.removeIngredientFromRecipe(recipe, ingredient), res);
+};
+
 module.exports.readRecipes = readRecipes;
 module.exports.readRecipe = readRecipe;
 module.exports.addRecipe = addRecipe;
 module.exports.editRecipe = editRecipe;
 module.exports.deleteRecipe = deleteRecipe;
+module.exports.addIngredientToRecipe = addIngredientToRecipe;
+module.exports.editIngredientQuantityInRecipe = editIngredientQuantityInRecipe;
+module.exports.removeIngredientFromRecipe = removeIngredientFromRecipe;

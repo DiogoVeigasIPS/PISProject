@@ -122,8 +122,8 @@ const editIngredient = (id, ingredient) => {
                 }
 
                 if (result.affectedRows > 0) {
-                    const editedIngredient = { id, name: newIngredient.name, description: newIngredient.description, image: newIngredient.image };
-                    resolve({ statusCode: 200, responseMessage: editedIngredient });
+                    newIngredient.id = id;
+                    resolve({ statusCode: 200, responseMessage: newIngredient });
                 } else {
                     reject({ statusCode: 404, responseMessage: 'Ingredient not found.' });
                 }

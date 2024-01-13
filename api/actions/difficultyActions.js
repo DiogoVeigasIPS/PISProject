@@ -102,8 +102,8 @@ const editDifficulty = (id, difficulty) => {
             }
 
             if (result.affectedRows > 0) {
-                const editedDifficulty = { id, name: newDifficulty.name };
-                resolve({ statusCode: 200, responseMessage: editedDifficulty });
+                newDifficulty.id = id;
+                resolve({ statusCode: 200, responseMessage: newDifficulty });
             } else {
                 reject({ statusCode: 404, responseMessage: 'Difficulty not found.' });
             }

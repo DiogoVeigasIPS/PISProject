@@ -102,8 +102,8 @@ const editArea = (id, area) => {
             }
 
             if (result.affectedRows > 0) {
-                const editedArea = { id, name: newArea.name };
-                resolve({ statusCode: 200, responseMessage: editedArea });
+                newArea.id = id;
+                resolve({ statusCode: 200, responseMessage: newArea });
             } else {
                 reject({ statusCode: 404, responseMessage: 'Area not found.' });
             }
