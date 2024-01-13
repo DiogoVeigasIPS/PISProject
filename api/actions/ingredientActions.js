@@ -62,7 +62,9 @@ const getIngredient = (id) => {
                 return;
             }
 
-            resolve({ statusCode: 200, responseMessage: result[0] });
+            const ingredient = new Ingredient(result[0]);
+
+            resolve({ statusCode: 200, responseMessage: ingredient });
         });
 
         connection.end();

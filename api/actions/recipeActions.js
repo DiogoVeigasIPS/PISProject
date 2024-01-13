@@ -60,12 +60,27 @@ const getRecipes = (queryOptions = null) => {
 
 const getRecipe = (id) => {
     return new Promise((resolve, reject) => {
-        const recipe = recipes.find(a => a.id == id)
-        if (recipe == null) {
-            reject({ statusCode: 404, responseMessage: 'Recipe not found.' });
-            return;
-        }
-        resolve({ statusCode: 200, responseMessage: recipe })
+        const connection = mysql.createConnection(connectionOptions);
+        connection.connect();
+
+        connection.query("SELECT * FROM search_recipes WHERE id = ?", [id], (err, result) => {
+            if (err) {
+                console.error(err);
+                reject({ statusCode: 404, responseMessage: err });
+                return;
+            }
+
+            if (result.length === 0) {
+                reject({ statusCode: 404, responseMessage: 'Recipe not found.' });
+                return;
+            }
+
+            const recipe = new Recipe(result[0]);
+
+            resolve({ statusCode: 200, responseMessage: recipe });
+        });
+
+        connection.end();
     });
 }
 

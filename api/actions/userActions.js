@@ -47,7 +47,9 @@ const getUser = (id) => {
                 return;
             }
 
-            resolve({ statusCode: 200, responseMessage: result[0] });
+            const user = new User(result[0]);
+
+            resolve({ statusCode: 200, responseMessage: user });
         });
 
         connection.end();

@@ -134,7 +134,6 @@ INSERT IGNORE INTO `area` (`name`) VALUES
 ('Japanese'), 
 ('Kenyan'), 
 ('Malaysian'), 
-('Mediterranean'),
 ('Mexican'), 
 ('Moroccan'), 
 ('Polish'), 
@@ -217,7 +216,8 @@ SELECT
             JSON_OBJECT(
                 'ingredient', JSON_OBJECT(
                     'id', i.id,
-                    'name', i.name
+                    'name', i.name,
+                    'image', i.image
                 ),
                 'quantity', ri.quantity
             )

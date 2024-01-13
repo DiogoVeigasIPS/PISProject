@@ -46,7 +46,9 @@ const getArea = (id) => {
                 return;
             }
 
-            resolve({ statusCode: 200, responseMessage: result[0] });
+            const area = new Area(result[0]);
+
+            resolve({ statusCode: 200, responseMessage: area });
         });
 
         connection.end();
@@ -136,7 +138,7 @@ const deleteArea = (id) => {
 
 const truncateAreas = () => {
     return new Promise((resolve, reject) => {
-        const multipleStatementsOptions = {... connectionOptions};
+        const multipleStatementsOptions = { ...connectionOptions };
         multipleStatementsOptions.multipleStatements = true;
 
         const connection = mysql.createConnection(multipleStatementsOptions);

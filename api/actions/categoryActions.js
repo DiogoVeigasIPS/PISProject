@@ -61,7 +61,9 @@ const getCategory = (id) => {
                 return;
             }
 
-            resolve({ statusCode: 200, responseMessage: result[0] });
+            const category = new Category(result[0]);
+
+            resolve({ statusCode: 200, responseMessage: category });
         });
 
         connection.end();
@@ -155,7 +157,7 @@ const deleteCategory = (id) => {
 
 const truncateCategories = () => {
     return new Promise((resolve, reject) => {
-        const multipleStatementsOptions = {... connectionOptions};
+        const multipleStatementsOptions = { ...connectionOptions };
         multipleStatementsOptions.multipleStatements = true;
 
         const connection = mysql.createConnection(multipleStatementsOptions);
@@ -180,9 +182,9 @@ const addCategories = (categories) => {
     return new Promise((resolve, reject) => {
         const newCategories = categories.map(c => new Category(c));
 
-        for (const newCategory of newCategories){
-            if (!objectIsValid(newCategories)){
-                reject({ status: 400, responseMessage: 'Invalid Body.'});
+        for (const newCategory of newCategories) {
+            if (!objectIsValid(newCategories)) {
+                reject({ status: 400, responseMessage: 'Invalid Body.' });
                 return;
             }
         }
@@ -190,19 +192,19 @@ const addCategories = (categories) => {
         connection.connect();
 
         const values = newCategories.map(newCategory => [newCategory.name, newCategory.description, newCategory.image]);
-        
+
         connection.query("INSERT INTO category(name, description, image) VALUES ?", [values], (err, result) => {
-            if (err){
+            if (err) {
                 console.error(err);
-                reject({ statusCode: 400, responseMessage: err});
+                reject({ statusCode: 400, responseMessage: err });
                 return;
             }
 
-            for (let i = 0; i < result.affectedRows; i++){
+            for (let i = 0; i < result.affectedRows; i++) {
                 newCategories[i].id = result.insertId + i;
             }
 
-            resolve({ statusCode: 200, responseMessage: newCategories});
+            resolve({ statusCode: 200, responseMessage: newCategories });
             connection.end();
         });
     });

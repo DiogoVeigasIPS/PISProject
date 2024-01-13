@@ -46,7 +46,9 @@ const getDifficulty = (id) => {
                 return;
             }
 
-            resolve({ statusCode: 200, responseMessage: result[0] });
+            const difficulty = new Difficulty(result[0]);
+
+            resolve({ statusCode: 200, responseMessage: difficulty });
         });
 
         connection.end();
