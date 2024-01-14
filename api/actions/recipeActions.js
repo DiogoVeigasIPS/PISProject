@@ -503,52 +503,6 @@ const ingredientsAreDuplicate = (ingredientsIds) => {
 const processRecipeData = (recipe, seeding = false) => {
     return new Promise(async (resolve, reject) => {
         try {
-            /* // Check category 
-            const categoryId = recipe.category ? recipe.category.id : null;
-            const foundCategory = categoryId ? (await getCategory(categoryId)).responseMessage : null;
-
-            if (foundCategory == null) {
-                throw { statusCode: 400, responseMessage: 'Recipe category not found.' };
-            }
-            const category = new Category({
-                id: categoryId,
-                name: foundCategory.name,
-                description: foundCategory.description,
-                image: foundCategory.image
-            });
-
-            // Check area 
-            const areaId = recipe.area.id;
-            const foundArea = (await getArea(areaId)).responseMessage;
-
-            if (foundArea == null) {
-                throw { statusCode: 400, responseMessage: 'Recipe area not found.' };
-            }
-            const area = new Area({
-                id: areaId
-            });
-
-            // Check difficulty 
-            const difficultyId = recipe.difficulty.id;
-            const foundDifficulty = (await getDifficulty(difficultyId)).responseMessage;
-            const difficulty = foundDifficulty ? new Difficulty(foundDifficulty) : null;
-
-            // Check author
-            const authorId = recipe.author?.id;
-            const foundAuthor = authorId ? (await getUser(authorId)).responseMessage : null;
-            const author = foundAuthor ? new Author(foundAuthor) : null;
-
-            if (seeding == false && author == null || difficulty == null) {
-                const response = author == null ? 'Recipe author not found.' : 'Recipe difficulty not found.';
-                throw { statusCode: 400, responseMessage: response };
-            }
-
-            // Assign calculated values
-            recipe.category = category;
-            recipe.area = area;
-            recipe.difficulty = difficulty;
-            recipe.author = author; */
-            
             resolve(recipe);
         } catch (error) {
             reject(error);

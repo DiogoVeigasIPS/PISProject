@@ -2,7 +2,7 @@
  * Filename: userController.js
  * Purpose: Aggregates all actions for the User entity.
  */
-
+const bcrypt = require('bcrypt');
 const mysql = require('mysql2');
 const connectionOptions = require('./connectionOptions.json');
 
@@ -142,11 +142,11 @@ const deleteUser = (id) => {
 }
 
 const loginUser = ({ username, password }) => {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         const connection = mysql.createConnection(connectionOptions);
         connection.connect();
 
-        connection.query("SELECT * FROM user WHERE username = ? AND password = ?", [username, password], (err, result) => {
+        connection.query("SELECT * FROM user WHERE username = ?", [username], async (err, result) => {
             if (err) {
                 console.error(err);
                 reject({ statusCode: 400, responseMessage: err });
@@ -160,12 +160,24 @@ const loginUser = ({ username, password }) => {
                 return;
             }
 
-            resolve({ statusCode: 200, responseMessage: 'User logged in successfully' });
-        });
+            try {
+                const isPasswordMatch = await bcrypt.compare(password, user.password);
 
-        connection.end();
+                if (!isPasswordMatch) {
+                    reject({ statusCode: 401, responseMessage: 'Incorrect password.' });
+                    return;
+                }
+
+                resolve({ statusCode: 200, responseMessage: 'User logged in successfully' });
+            } catch (error) {
+                console.error(error);
+                reject({ statusCode: 500, responseMessage: 'Something went wrong.' });
+            } finally {
+                connection.end();
+            }
+        });
     });
-}
+};
 
 const signupUser = ({ username, email, password, repeatPassword, firstName, lastName }) => {
     return new Promise(async (resolve, reject) => {
@@ -195,11 +207,13 @@ const signupUser = ({ username, email, password, repeatPassword, firstName, last
         }
 
         try {
+            const hashedPassword = await bcrypt.hash(password, 10);
+
             await addUser(
                 new User({
                     username: username,
                     email: email,
-                    password: password,
+                    password: hashedPassword,
                     firstName: firstName,
                     lastName: lastName,
                     token: null
