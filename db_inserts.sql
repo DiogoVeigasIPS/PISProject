@@ -30,7 +30,6 @@ INSERT INTO `recipe_ingredient` VALUES (1,6,'1 teaspoon'),(1,42,'1'),(1,69,'1'),
 
 -- recipe_list
 
-INSERT INTO `recipe_list` VALUES (1,'Piteu do veigas',1);
-
-
-
+insert into recipe_list(`name`, user_id) values ("Piteu do veigas", 1);
+insert into recipe_list_item(list_id, recipe_id) values (1, 1);
+insert into recipe_list_item(list_id, recipe_id) values (1, 2);
