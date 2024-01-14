@@ -6,9 +6,9 @@ const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const mustacheExpress = require('mustache-express');
+let dotenv = require('dotenv').config()
 
-// Try without index
-const apiRouter = require('./api/routes/index');
+const apiRouter = require('./api/routes');
 const appRouter = require('./app');
 
 const app = express();
@@ -32,6 +32,6 @@ app.get('*', (req, res) => {
     res.status(404).send("Page not found.");
 });
 
-app.listen(8081, () => {
+app.listen(dotenv.parsed.PORT, () => {
     console.log("listening to: http://localhost:8081");
 });

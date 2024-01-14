@@ -5,7 +5,8 @@
 const bcrypt = require('bcrypt');
 const mysql = require('mysql2');
 const jwt = require('jsonwebtoken');
-const connectionOptions = require('./connectionOptions.json');
+let dotenv = require('dotenv').config()
+const connectionOptions = require('./connectionOptions');
 
 const { User } = require('../models');
 const { objectIsValid } = require('../utils');
@@ -69,8 +70,8 @@ const addUser = (user) => {
         const connection = mysql.createConnection(connectionOptions);
         connection.connect();
 
-        connection.query("INSERT INTO user (username, email, password, firstName, lastName, token) VALUES (?, ?, ?, ?, ?, ?)",
-            [newUser.username, newUser.email, newUser.password, newUser.firstName, newUser.lastName, newUser.token],
+        connection.query("INSERT INTO user (username, email, password, firstName, lastName) VALUES (?, ?, ?, ?, ?)",
+            [newUser.username, newUser.email, newUser.password, newUser.firstName, newUser.lastName],
             (err, result) => {
                 if (err) {
                     console.error(err);
@@ -170,7 +171,7 @@ const loginUser = ({ username, password }) => {
                 }
 
                 const id = user.id;
-                const token = jwt.sign({ id }, 'ChickenBreast', {
+                const token = jwt.sign({ id }, dotenv.parsed.SECRET_WORD, {
                     expiresIn: 60 * 60
                 });
 
@@ -228,7 +229,7 @@ const signupUser = ({ username, email, password, repeatPassword, firstName, last
             await addUser(user);
 
             const id = user.id;
-            const token = jwt.sign({ id }, 'ChickenBreast', {
+            const token = jwt.sign({ id }, dotenv.parsed.SECRET_WORD, {
                 expiresIn: 60 * 60
             });
 
