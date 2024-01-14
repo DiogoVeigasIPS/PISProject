@@ -8,6 +8,7 @@ const { userController } = require('../controllers');
 
 const router = express.Router();
 
+router.get('/auth', userController.isLoggedIn);
 router.get('', userController.readUsers);
 router.get('/:id', userController.readUser);
 router.post('', userController.addUser);
