@@ -38,28 +38,24 @@ router.get('/ingredient/details/:id', async (req, res) => {
 router.get('/ingredient/edit/:id', async (req, res) => {
     const id = req.params.id;
     const ingredient = (await ingredientActions.getIngredient(id)).responseMessage;
-
-    res.render('backIngredientCreateDelete', { ingredient: ingredient });
+    console.log(ingredient);
+    res.render('backIngredientCreateEdit', { ingredient: ingredient });
 });
 
-router.get('/ingredient/create/:id', async (req, res) => {
-    const id = req.params.id;
-    const ingredient = (await ingredientActions.getIngredient(id)).responseMessage;
-
-    res.render('backIngredientCreateDelete', { ingredient: ingredient });
+router.get('/ingredient/create/', async (req, res) => {
+    res.render('backIngredientCreateEdit');
 });
 
-// In your admin.js or wherever you define your routes
-router.delete('/ingredients/delete/:id', async (req, res) => {
+
+router.delete('/ingredient/:id', async (req, res) => {
     const id = req.params.id;
     try {
-        await ingredientActions.deleteIngredient(id).responseMessage;;
+        await ingredientActions.deleteIngredient(id).responseMessage;
         res.sendStatus(204); // Successfully deleted
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Failed to delete ingredient.' });
-    }
-
+    }  
 });
 
 

@@ -16,6 +16,7 @@ const app = express();
 // Body parser.
 app.use(bodyParser.json());
 app.use(express.static(__dirname + '/static'));
+app.use(express.static(__dirname, + '/app/admin'));
 app.use(express.urlencoded({ extended: true }));
 
 // Mustache and views.

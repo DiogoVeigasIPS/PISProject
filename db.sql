@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS recipe_ingredient(
     quantity VARCHAR(50),
     PRIMARY KEY (recipe_id, ingredient_id),
     FOREIGN KEY (recipe_id) references recipe(id),
-    FOREIGN KEY (ingredient_id) references ingredient(id)
+    FOREIGN KEY (ingredient_id) references ingredient(id)  ON DELETE CASCADE
 );
 
 DROP TABLE IF EXISTS recipe_list;

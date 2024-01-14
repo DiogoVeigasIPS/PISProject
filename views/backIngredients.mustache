@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="/js/auxIngredients.js"></script>
     <title>Ingredient Table</title>
 </head>
 <body>
@@ -25,12 +26,12 @@
     </section>
     <div class="container mt-5">
         <h2>Ingredients</h2>
-        <table class="table text-center">
+        <a class="btn btn-primary mt-1 mb-3" href="ingredient/create/{{id}}" role="button">Create new ingredient</a>
+        <table class="table justify-content-center">
             <thead>
-                <tr>
+                <tr class="text-center">
                     <th><a href = "?sort=id">#</a></th>
                     <th><a href = "?sort=name">Name</a></th>
-                    <th>Description</th>
                     <th>Image</th>
                     <th>Actions</th>
                 </tr>
@@ -38,24 +39,17 @@
             <tbody>
                 {{#ingredients}}
                 <tr>
-                    <th>{{id}}</th>
-                    <td>{{name}}</td>
-                    <td>
-                        {{#description}}
-                            {{description}}
-                        {{/description}}
-                        {{^description}}
-                            Not provided
-                        {{/description}}
-                    </td>
-                    <td>
+                    <td class="text-center align-middle">{{id}}</td>
+                    <td class="text-center align-middle">{{name}}</td>
+                    <td class="text-center align-middle">
                         <img src="{{image}}" alt="Ingredient Image" class="img-thumbnail" style="max-width: 100px;">
-                    </td>                    
-                    <td class="d-flex justify-content-center align-items-center">
+                    </td >                    
+                    <td class="text-center align-middle">
                         <a href="ingredient/details/{{id}}" class="mr-2"><i class="bi bi-eye-fill h3"></i></a>
                         <a href="ingredient/edit/{{id}}" class="mr-2"><i class="bi bi-pencil-fill text-warning h3"></i></a>
-                        <a href="#"class="mr-2" onclick="deleteIngredient({{id}})">
-                        <i class="bi bi-trash3 text-danger h3"></i></a>
+                        <a href="#" class="mr-2" onclick="backDeleteIngredient('{{id}}')">
+                            <i class="bi bi-trash3 text-danger h3"></i>
+                        </a>
                     </td>
                 </tr>
                 {{/ingredients}}
@@ -71,6 +65,5 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.17.0/font/bootstrap-icons.css"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="path/to/deleteIngredient.js"></script>
  </body>
 </html>
