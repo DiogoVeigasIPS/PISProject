@@ -226,7 +226,7 @@ const signupUser = ({ username, email, password, repeatPassword, firstName, last
             });
 
             await addUser(user);
-            
+
             const id = user.id;
             const token = jwt.sign({ id }, 'ChickenBreast', {
                 expiresIn: 60 * 60

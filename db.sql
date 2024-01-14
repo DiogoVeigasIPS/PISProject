@@ -10,14 +10,9 @@ CREATE TABLE IF NOT EXISTS `user` (
 	`password` VARCHAR(255) NOT NULL,
     email VARCHAR(60) NOT NULL UNIQUE,
     firstName VARCHAR(15) NOT NULL,
-    lastName VARCHAR(15) NOT NULL
+    lastName VARCHAR(15) NOT NULL,
+    is_admin TINYINT(1) NOT NULL DEFAULT 0
 );
-
-/* DROP TABLE IF EXISTS author;
-CREATE TABLE IF NOT EXISTS author(
-	id int primary key,
-	foreign key (id) references `user`(id)
-); */
 
 DROP TABLE IF EXISTS difficulty;
 CREATE TABLE IF NOT EXISTS difficulty(

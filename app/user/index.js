@@ -13,19 +13,19 @@ router.get('/me', (req, res) => {
 })
 
 router.post('/signup', async (req, res) => {
-    try{
+    try {
         const signup = await userActions.signupUser(req.body);
         res.send(signup);
-    }catch(error){
+    } catch (error) {
         res.send(error);
     }
 });
 
 router.post('/login', async (req, res) => {
-    try{
+    try {
         const login = await userActions.loginUser(req.body);
         res.send(login);
-    }catch(error){
+    } catch (error) {
         res.send(error);
     }
 });
