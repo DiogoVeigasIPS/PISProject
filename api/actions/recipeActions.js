@@ -4,7 +4,7 @@
  */
 const mysql = require('mysql2');
 const async = require('async');
-const connectionOptions = require('./connectionOptions.json');
+const connectionOptions = require('./connectionOptions');
 
 const { Recipe, Category, Author, Area, Difficulty, Ingredient, IngredientInRecipe, PartialRecipe } = require('../models');
 const { objectIsValid } = require('../utils');

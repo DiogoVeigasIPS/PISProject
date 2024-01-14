@@ -16,13 +16,25 @@ To expedite the setup process, ensure Node.js is installed, and follow these ste
 ```bash
 npm install
 npm start
-```
 
-### Quick Start
+### Quick Start - Debugging
 For debuggin purposes, the following command might suit you best:
 ```bash
 npm run dev
 ```
+
+### .env file
+At the root directory, it is expected to exist an .env file with the following values:
+```bash
+PORT=8081
+
+HOST=localhost
+USER=root
+PASSWORD=root
+DATABASE=pis_project
+SECRET_WORD=ChickenBreast
+```
+In the case you intend to change them, do it through the .env file.
 
 ## Database
 The data base used in this project is MySQL, because of that, you must have MySQl Workbench or any other way of running MySQL scripts and run the ```db.sql``` file.

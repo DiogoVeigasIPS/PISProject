@@ -5,7 +5,7 @@
 const axios = require('axios');
 const mysql = require('mysql2');
 const mysqlPromise = require('mysql2/promise');
-const connectionOptions = require('./connectionOptions.json');
+const connectionOptions = require('./connectionOptions');
 
 const { Category, Area, Ingredient, Recipe, IngredientInRecipe } = require('../models');
 const { getAreas, truncateAreas, addAreas } = require('./areaActions');

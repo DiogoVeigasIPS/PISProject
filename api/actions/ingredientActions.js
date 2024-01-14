@@ -3,7 +3,7 @@
  * Purpose: Aggregates all actions for the Ingredient entity.
  */
 const mysql = require('mysql2');
-const connectionOptions = require('./connectionOptions.json');
+const connectionOptions = require('./connectionOptions');
 
 const { Ingredient } = require('../models');
 const { objectIsValid } = require('../utils');

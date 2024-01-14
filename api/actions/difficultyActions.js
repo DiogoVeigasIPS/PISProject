@@ -3,7 +3,7 @@
  * Purpose: Aggregates all actions for the Difficulty entity.
  */
 const mysql = require('mysql2');
-const connectionOptions = require('./connectionOptions.json');
+const connectionOptions = require('./connectionOptions');
 
 const { Difficulty } = require('../models');
 const { objectIsValid } = require('../utils');

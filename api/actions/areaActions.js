@@ -3,7 +3,7 @@
  * Purpose: Aggregates all actions for the Area entity.
  */
 const mysql = require('mysql2');
-const connectionOptions = require('./connectionOptions.json');
+const connectionOptions = require('./connectionOptions');
 
 const { Area } = require('../models');
 const { objectIsValid } = require('../utils');
