@@ -18,6 +18,7 @@ const getIngredients = (queryOptions = null, connection = null) => {
         if (queryOptions) {
             queryString += queryOptions.stringSearch ? " WHERE name LIKE ?" : "";
             queryString += queryOptions.isRandom ? " ORDER BY RAND()" : "";
+            queryString += queryOptions.order ? ` ORDER BY ${queryOptions.order} ${queryOptions.by}` : "";
             queryString += queryOptions.maxResults ? " LIMIT ?" : "";
 
             if (queryOptions.stringSearch) {

@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS recipe_ingredient(
     quantity VARCHAR(50),
     PRIMARY KEY (recipe_id, ingredient_id),
     FOREIGN KEY (recipe_id) references recipe(id),
-    FOREIGN KEY (ingredient_id) references ingredient(id)
+    FOREIGN KEY (ingredient_id) references ingredient(id)  ON DELETE CASCADE
 );
 
 DROP TABLE IF EXISTS recipe_list;
@@ -100,85 +100,6 @@ CREATE TABLE IF NOT EXISTS recipe_list_item (
     FOREIGN KEY (recipe_id) REFERENCES recipe(id)
 );
 
--- Fixed Atributes
-INSERT IGNORE INTO `user` (username, email, `password`, firstName, lastName)
-VALUES ('System', 'system@example.com', 'system_password', 'System', 'User');
-/*
-INSERT IGNORE INTO author (id) VALUES (1);  -- Assuming 1 is the ID of the user created above
-*/
-INSERT IGNORE INTO difficulty (`name`) values
-('Beginner'), 
-('Cook'), 
-('Chef');
-
-INSERT IGNORE INTO `area` (`name`) VALUES
-('American'), 
-('British'), 
-('Canadian'), 
-('Chinese'), 
-('Croatian'), 
-('Dutch'), 
-('Egyptian'), 
-('Filipino'), 
-('French'), 
-('Greek'), 
-('Indian'), 
-('Irish'), 
-('Italian'), 
-('Jamaican'), 
-('Japanese'), 
-('Kenyan'), 
-('Malaysian'), 
-('Mexican'), 
-('Moroccan'), 
-('Polish'), 
-('Portuguese'), 
-('Russian'), 
-('Spanish'), 
-('Thai'), 
-('Tunisian'), 
-('Turkish'), 
-('Unknown'), 
-('Vietnamese');
-
-INSERT IGNORE INTO category (`name`, `description`, image)
-VALUES
-    ('Beef', 'Beef is a culinary delight derived from cattle, known for its rich flavor and nutritional value.', 'beef_image.jpg'),
-    ('Chicken', 'Chicken, a domesticated fowl, is a versatile meat enjoyed worldwide for its lean protein and mild taste.', 'chicken_image.jpg'),
-    ('Fish', 'Fish is a diverse group of aquatic animals. It is a popular choice for a healthy and delicious meal.', 'fish_image.jpg'),
-    ('Salad', 'Salads are refreshing and nutritious dishes typically consisting of a mixture of vegetables, fruits, and other ingredients.', 'salad_image.jpg');
-
-INSERT IGNORE INTO recipe (external_id, `name`, area_id, author_id, image, description, category_id)
-VALUES
-(101, 'Sushi Rolls', 15, 1, 'https://www.themealdb.com/images/media/meals/g046bb1663960946.jpg/preview', 'Steps:\n1. Prepare the rice vinegar-seasoned rice. \n2. Place a nori sheet on a bamboo rolling mat.\n3. Spread a thin layer of prepared rice on the nori sheet.\n4. Add sliced avocado along one edge of the rice.\n5. Roll the sushi tightly and cut into bite-sized pieces.', 3),
-(102, 'Mediterranean Salad', 18, 1, 'https://www.themealdb.com/images/media/meals/wvqpwt1468339226.jpg/preview', 'Steps:\n1. Cook the farfalle pasta according to package instructions.\n2. In a large bowl, combine cherry tomatoes, olives, mozzarella balls, tuna, and cooked farfalle.\n3. Drizzle olive oil over the salad and toss gently to combine.\n4. Garnish with fresh basil before serving.', 4);
-
-INSERT IGNORE INTO ingredient (`name`, `description`, image)
-VALUES
-('Nori Sheets', 'Seaweed sheets for sushi rolls', 'http://image.example'),
-('Avocado', 'Fresh avocado for sushi rolls', 'http://image.example'),
-('Rice Vinegar', 'Seasoned rice vinegar for sushi rice', 'http://image.example'),
-('Cherry Tomatoes', 'Fresh cherry tomatoes for the salad', 'http://image.example'),
-('Olives', 'Kalamata olives for the salad', 'http://image.example'),
-('Olive Oil', 'Extra virgin olive oil for the salad', 'http://image.example'),
-('Mozzarella balls','Small balls made of mozzarella cheese', 'http://image.example'),
-('Tuna','Strong flavored fish cought in the ocean, mostly in the altantic', 'http://image.example'),
-('Basil','Fresh basil is used a lot to make salad and as a side condiment to a lot of mediterranean dishes', 'http://image.example'),
-('Farfalle', 'Small pasta in the shape of little bowties used a lot in mediterranean and especially in italian dishes', 'http://image.example');
-
-INSERT IGNORE INTO recipe_ingredient (recipe_id, ingredient_id, quantity)
-VALUES
-(1, 1, '5 sheets'),       -- Sushi Rolls with 5 Nori sheets
-(1, 2, '2'),              -- 2 avocados
-(1, 3, '100ml'),          -- 100ml rice vinegar
-(2, 4, '1 cup'),         -- Mediterranean Salad with 1 cup cherry tomatoes
-(2, 5, '1 cup'),         -- 1 cup olives
-(2, 6, '2 tablespoons'), -- 2 tablespoons olive oil
-(2, 7, '200g'), -- 200g of Mozzarella
-(2, 8, '200g'), -- 200g of tuna
-(2, 9, '1 bunch'), -- 1 bunch of basil
-(2, 10 , '350g'); -- 350g of farfalle
-
 -- Views
 DROP VIEW IF EXISTS search_recipes;
 CREATE VIEW search_recipes AS
@@ -196,7 +117,7 @@ SELECT
         'description', c.description,
         'image', c.image
     ) AS category,
-    r.description AS description,
+    COALESCE(r.description, 'Not provided') AS description, -- Handle NULL description
     r.preparation_description AS preparationDescription,
     JSON_OBJECT(
         'id', a.id,
@@ -261,10 +182,6 @@ SELECT * FROM search_recipes WHERE area_id = 15;
 SELECT * FROM search_recipes ORDER BY RAND();
 SELECT * FROM search_recipes LIMIT 1;
 
--- Recipe list
-insert into recipe_list(`name`, user_id) values ("Piteu do veigas", 1);
-insert into recipe_list_item(list_id, recipe_id) values (1, 1);
-insert into recipe_list_item(list_id, recipe_id) values (1, 2);
 
 select rl.name, r.name from recipe_list rl
 join recipe_list_item rli on rl.id = rli.list_id
