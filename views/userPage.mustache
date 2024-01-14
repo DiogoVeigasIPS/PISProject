@@ -4,54 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>{{title}}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/userPage.css">
 </head>
 <body>
     {{>navbar}}
 
     <div class="container content border p-3">
         <div class="row">
-            <div class="col-md-6">
-                <img src="{{recipe.image}}" class="img-fluid mb-4" alt="{{recipe.name}} Image">
+            <div class="col-md-3">
+                <h2>{{user.firstName}} {{user.lastName}}</h2>
+                <hr class="w-75">
+                <img src="{{user.image}}" class="border rounded square-image" alt="{{user.firstName}} {{user.lastName}} Image">
+                <hr class="w-75">
+                <p><strong>Username:</strong> {{user.username}}</p>
+                <p><strong>Email:</strong> {{user.email}}</p>
+                <hr class="w-75">
+                <button class="btn btn-primary" id="updateButton">Update Profile</button>
             </div>
-            <div class="col-md-6">
-                <h2>{{recipe.name}}</h2>
-                <p><strong>Category:</strong> {{recipe.category.name}}</p>
-                <p><strong>Area:</strong> {{recipe.area.name}}</p>
-                <p><strong>Preparation Time:</strong> {{recipe.preparationTime}}</p>
-                <p><strong>Difficulty:</strong> {{recipe.difficulty.name}}</p>
-                <p><strong>Author:</strong> {{recipe.author.username}}</p>
-                <p><strong>Cost:</strong> {{recipe.cost}}</p>
-                <p><strong>Description:</strong> {{recipe.description}}</p>
-            </div>
-        </div>
-
-        <div class="row mt-4">
-            <div class="col">
-                <h3>Preparation</h3>
-                <p>{{recipe.preparationDescription}}</p>
-            </div>
-        </div>
-
-        <div class="row mt-4">
-            <div class="col">
-                <h3>Ingredients</h3>
-                <div class="row">
-                    {{#recipe.ingredients}}
-                    <div class="col-md-4 mb-3">
-                        <div class="list-group-item">
-                            <div class="row align-items-center border">
-                                <div class="col-md-4">
-                                    <img src="{{ingredient.image}}" class="img-fluid" alt="{{ingredient.name}} Image">
-                                </div>
-                                <div class="col-md-8">
-                                    <strong>{{ingredient.name}}</strong>
-                                    <p>{{quantity}}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {{/recipe.ingredients}}
-                </div>
+            <div class="col-md-9">
+                <h1>Lists:</h1>
             </div>
         </div>
     </div>

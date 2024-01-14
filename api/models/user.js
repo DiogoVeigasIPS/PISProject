@@ -15,7 +15,7 @@ class User {
      * @param {string} userData.password - The password of a user.
      * @param {string} userData.firstName - The first name of a user.
      * @param {string} userData.lastName - The last name of a user.
-     * @param {string} userData.token - The token of a user.
+     * @param {string} userData.image - The image of a user.
      */
     constructor(userData, id = userData.id) {
         this.id = id ?? null;
@@ -24,7 +24,7 @@ class User {
         this.password = userData.password;
         this.firstName = userData.firstName;
         this.lastName = userData.lastName;
-        this.token = userData.token;
+        this.image = userData.image ?? null;
     }
 }
 

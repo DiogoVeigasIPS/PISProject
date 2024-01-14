@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS `user` (
     email VARCHAR(60) NOT NULL UNIQUE,
     firstName VARCHAR(15) NOT NULL,
     lastName VARCHAR(15) NOT NULL,
+    `image` TEXT NULL,
     is_admin TINYINT(1) NOT NULL DEFAULT 0
 );
 
@@ -25,7 +26,7 @@ CREATE TABLE IF NOT EXISTS category (
     id INT PRIMARY KEY AUTO_INCREMENT,
     `name` VARCHAR(50) NOT NULL UNIQUE,
     `description` TEXT,
-    image VARCHAR(120) NOT NULL 
+    image TEXT NOT NULL 
 );
 
 DROP TABLE IF EXISTS `area`;
@@ -39,7 +40,7 @@ CREATE TABLE IF NOT EXISTS recipe(
 	id INT PRIMARY KEY AUTO_INCREMENT,
     external_id int unique,
     `name` VARCHAR(200) NOT NULL UNIQUE,
-    image VARCHAR(120) NOT NULL,
+    image TEXT NOT NULL,
 	description TEXT,
 	preparation_description TEXT NOT NULL,
     area_id int NOT NULL,
@@ -59,7 +60,7 @@ CREATE TABLE IF NOT EXISTS ingredient (
     id INT PRIMARY KEY AUTO_INCREMENT,
     `name` VARCHAR(50) NOT NULL UNIQUE,
     `description` TEXT,
-    `image` VARCHAR (120)
+    `image` TEXT
 );
 
 -- Many to Many tables

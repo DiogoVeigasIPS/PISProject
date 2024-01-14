@@ -5,11 +5,16 @@
 const express = require('express');
 const { recipeActions, areaActions, categoryActions, difficultyActions, userActions } = require('../../api/actions');
 const { IngredientInRecipe, Ingredient, Category, Area, Difficulty, Recipe, Author } = require('../../api/models');
+const { getUser } = require('../../api/actions/userActions');
 
 const router = express.Router();
 
-router.get('/me', (req, res) => {
-    res.render('userPage');
+router.get('/me/:id', async (req, res) => {
+    const id = req.params.id;
+    const user = (await getUser(id)).responseMessage;
+    
+    user.image = user.image == null ? '/img/chefProfilePicture.png' : user.image;
+    res.render('userPage', {user: user});
 })
 
 router.post('/signup', async (req, res) => {
@@ -85,8 +90,8 @@ router.get('/add-recipe', async (req, res) => {
 });
 
 // Details Page
-router.get('/recipe', async (req, res) => {
-    const queryId = req.query.id;
+router.get('/recipe/:id', async (req, res) => {
+    const queryId = req.params.id;
     const id = queryId && !isNaN(queryId) ? parseInt(queryId) : null;
 
     if (id !== null) {
