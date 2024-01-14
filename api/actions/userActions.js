@@ -70,8 +70,8 @@ const addUser = (user) => {
         const connection = mysql.createConnection(connectionOptions);
         connection.connect();
 
-        connection.query("INSERT INTO user (username, email, password, firstName, lastName) VALUES (?, ?, ?, ?, ?)",
-            [newUser.username, newUser.email, newUser.password, newUser.firstName, newUser.lastName],
+        connection.query("INSERT INTO user (username, email, password, firstName, lastName, image) VALUES (?, ?, ?, ?, ?, ?)",
+            [newUser.username, newUser.email, newUser.password, newUser.firstName, newUser.lastName, newUser.image],
             (err, result) => {
                 if (err) {
                     console.error(err);
@@ -99,8 +99,8 @@ const editUser = (id, user) => {
         const connection = mysql.createConnection(connectionOptions);
         connection.connect();
 
-        connection.query("UPDATE user SET username = ?, email = ?, password = ?, firstName = ?, lastName = ?, token = ? WHERE id = ?",
-            [newUser.username, newUser.email, newUser.password, newUser.firstName, newUser.lastName, newUser.token, id],
+        connection.query("UPDATE user SET username = ?, email = ?, password = ?, firstName = ?, lastName = ?, image = ? WHERE id = ?",
+            [newUser.username, newUser.email, newUser.password, newUser.firstName, newUser.lastName, newUser.image, id],
             (err, result) => {
                 if (err) {
                     console.error(err);
@@ -109,8 +109,8 @@ const editUser = (id, user) => {
                 }
 
                 if (result.affectedRows > 0) {
-                    const editedUser = { id, ...newUser };
-                    resolve({ statusCode: 200, responseMessage: editedUser });
+                    newUser.id = id;
+                    resolve({ statusCode: 200, responseMessage: newUser });
                 } else {
                     reject({ statusCode: 404, responseMessage: 'User not found.' });
                 }
@@ -175,7 +175,7 @@ const loginUser = ({ username, password }) => {
                     expiresIn: 60 * 60
                 });
 
-                const response = { auth: true, token: token };
+                const response = { auth: true, token: token, id: id };
                 resolve({ statusCode: 200, responseMessage: response });
             } catch (error) {
                 console.error(error);
@@ -233,7 +233,7 @@ const signupUser = ({ username, email, password, repeatPassword, firstName, last
                 expiresIn: 60 * 60
             });
 
-            const response = { auth: true, token: token };
+            const response = { auth: true, token: token, id: id };
             resolve({ statusCode: 200, responseMessage: response });
         } catch (error) {
             console.error(error);
