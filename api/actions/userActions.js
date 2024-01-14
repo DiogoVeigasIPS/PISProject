@@ -4,6 +4,7 @@
  */
 const bcrypt = require('bcrypt');
 const mysql = require('mysql2');
+const jwt = require('jsonwebtoken');
 const connectionOptions = require('./connectionOptions.json');
 
 const { User } = require('../models');
@@ -168,7 +169,13 @@ const loginUser = ({ username, password }) => {
                     return;
                 }
 
-                resolve({ statusCode: 200, responseMessage: 'User logged in successfully' });
+                const id = user.id;
+                const token = jwt.sign({ id }, 'ChickenBreast', {
+                    expiresIn: 60 * 60
+                });
+
+                const response = { auth: true, token: token };
+                resolve({ statusCode: 200, responseMessage: response });
             } catch (error) {
                 console.error(error);
                 reject({ statusCode: 500, responseMessage: 'Something went wrong.' });
@@ -209,17 +216,24 @@ const signupUser = ({ username, email, password, repeatPassword, firstName, last
         try {
             const hashedPassword = await bcrypt.hash(password, 10);
 
-            await addUser(
-                new User({
-                    username: username,
-                    email: email,
-                    password: hashedPassword,
-                    firstName: firstName,
-                    lastName: lastName,
-                    token: null
-                })
-            );
-            resolve({ statusCode: 200, responseMessage: 'User signed up successfully' });
+            const user = new User({
+                username: username,
+                email: email,
+                password: hashedPassword,
+                firstName: firstName,
+                lastName: lastName,
+                token: null
+            });
+
+            await addUser(user);
+
+            const id = user.id;
+            const token = jwt.sign({ id }, 'ChickenBreast', {
+                expiresIn: 60 * 60
+            });
+
+            const response = { auth: true, token: token };
+            resolve({ statusCode: 200, responseMessage: response });
         } catch (error) {
             console.error(error);
             reject({ statusCode: 500, responseMessage: 'Something went wrong.' });
