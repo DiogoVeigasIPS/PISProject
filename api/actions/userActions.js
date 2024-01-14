@@ -4,6 +4,7 @@
  */
 const bcrypt = require('bcrypt');
 const mysql = require('mysql2');
+const jwt = require('jsonwebtoken');
 const connectionOptions = require('./connectionOptions.json');
 
 const { User } = require('../models');
@@ -168,7 +169,13 @@ const loginUser = ({ username, password }) => {
                     return;
                 }
 
-                resolve({ statusCode: 200, responseMessage: 'User logged in successfully' });
+                const id = user.id;
+                const token = jwt.sign({ id }, 'ChickenBreast', {
+                    expiresIn: 60 * 60
+                });
+                
+                const response = { auth: true, token: token };
+                resolve({ statusCode: 200, responseMessage: response });
             } catch (error) {
                 console.error(error);
                 reject({ statusCode: 500, responseMessage: 'Something went wrong.' });

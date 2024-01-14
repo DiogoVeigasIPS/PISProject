@@ -8,6 +8,10 @@ const { IngredientInRecipe, Ingredient, Category, Area, Difficulty, Recipe, Auth
 
 const router = express.Router();
 
+router.get('/me', (req, res) => {
+    res.render('userPage');
+})
+
 router.post('/signup', async (req, res) => {
     try{
         const signup = await userActions.signupUser(req.body);
