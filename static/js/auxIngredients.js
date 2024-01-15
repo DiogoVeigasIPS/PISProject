@@ -36,3 +36,48 @@ document.addEventListener('DOMContentLoaded', function () {
         imagePreview.src = imageUrl;
     });    
 });
+
+const ingredientForm = document.querySelector('#ingredientForm');
+ingredientForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const name = ingredientForm.querySelector('input[name="name"]').value;
+    const description = ingredientForm.querySelector('textarea[name="description"]').value;
+    const image = ingredientForm.querySelector('input[name="image"]').value;
+
+    const options = {
+        method: "POST",
+        body: JSON.stringify({ name, description, image}),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    };
+
+    try {
+        console.log("Before fetch");
+        const response = await fetch("http://localhost:8081/admin/ingredient/create/", options);
+        console.log("After fetch");
+
+        let responseData = null;
+        const errorDiv = ingredientForm.querySelector('#ingredientError');
+
+        if (response.headers.get("content-type") !== "application/json; charset=utf-8") {
+            // Show error
+            errorDiv.innerHTML = await response.text();
+            errorDiv.classList.remove('d-none');
+            console.log("if")
+        } else {
+            // Ingredient added
+            errorDiv.classList.add('d-none');
+            responseData = await response.json();
+            console.log("else");
+            console.log(responseData);
+            if (responseData && responseData.statusCode === 200) {
+                console.log("extra if")
+                location.href = "http://localhost:8081/admin/ingredients";
+            }        
+        }
+    } catch (error) {
+        console.error("Error during ingredient addition:", error);
+    }
+});

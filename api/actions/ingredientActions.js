@@ -77,16 +77,23 @@ const getIngredient = (id) => {
 }
 
 const addIngredient = (ingredient) => {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         const newIngredient = new Ingredient(ingredient);
 
         if (!objectIsValid(newIngredient)) {
-            reject({ statusCode: 400, responseMessage: 'Invalid Body.' });
+            reject({ statusCode: 404, responseMessage: 'Invalid Body.' });
             return;
         }
 
         const connection = mysql.createConnection(connectionOptions);
         connection.connect();
+
+        const isDuplicate = await checkDuplicateIngredient(connection, ingredient.name);
+
+        if(isDuplicate){
+            reject({ statusCode: 404, responseMessage: 'Ingredient name already in use.' });
+            return;
+        }
 
         connection.query("INSERT INTO ingredient (name, description, image) VALUES (?, ?, ?)",
             [newIngredient.name, newIngredient.description, newIngredient.image],
@@ -217,6 +224,18 @@ const addIngredients = (ingredients) => {
     })
 }
 
+const checkDuplicateIngredient = async (connection, name) => {
+    return new Promise((resolve, reject) => {
+        connection.query("SELECT * FROM ingredient WHERE name = ?", [name], (err, result) => {
+            if (err) {
+                console.error(err);
+                reject(false);
+                return;
+            }
+            resolve(result.length > 0);
+        });
+    });
+}
 module.exports.getIngredients = getIngredients;
 module.exports.getIngredient = getIngredient;
 module.exports.addIngredient = addIngredient;
