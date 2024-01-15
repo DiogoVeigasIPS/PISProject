@@ -8,7 +8,7 @@ const connectionOptions = require('./connectionOptions');
 const { Category } = require('../models');
 const { objectIsValid } = require('../utils');
 
-const getCategories = (queryOptions = null, connection = null) => {
+const getCategories = (queryOptions = null) => {
     return new Promise((resolve, reject) => {
         var queryString = "SELECT * FROM category";
         const queryParams = [];

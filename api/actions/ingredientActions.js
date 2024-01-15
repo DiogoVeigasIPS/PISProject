@@ -8,7 +8,7 @@ const connectionOptions = require('./connectionOptions');
 const { Ingredient } = require('../models');
 const { objectIsValid } = require('../utils');
 
-const getIngredients = (queryOptions = null, connection = null) => {
+const getIngredients = (queryOptions = null) => {
     return new Promise((resolve, reject) => {
         const baseQueryString = "SELECT * FROM ingredient";
         let queryString = baseQueryString;
