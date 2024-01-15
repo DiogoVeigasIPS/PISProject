@@ -31,53 +31,49 @@ document.addEventListener('DOMContentLoaded', function () {
     const imageInput = document.getElementById('image');
     const imagePreview = document.getElementById('imagePreview');
 
-    imageInput.addEventListener('input', () => {
-        const imageUrl = imageInput.value.trim();
-        imagePreview.src = imageUrl;
-    });    
+    if(imageInput){
+        imageInput.addEventListener('input', () => {
+            const imageUrl = imageInput.value.trim();
+            imagePreview.src = imageUrl;
+        });
+    }
 });
 
 const ingredientForm = document.querySelector('#ingredientForm');
-ingredientForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
+if (ingredientForm) {
+    ingredientForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-    const name = ingredientForm.querySelector('input[name="name"]').value;
-    const description = ingredientForm.querySelector('textarea[name="description"]').value;
-    const image = ingredientForm.querySelector('input[name="image"]').value;
+        const name = ingredientForm.querySelector('input[name="name"]').value;
+        const description = ingredientForm.querySelector('textarea[name="description"]').value;
+        const image = ingredientForm.querySelector('input[name="image"]').value;
 
-    const options = {
-        method: "POST",
-        body: JSON.stringify({ name, description, image}),
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    };
+        const options = {
+            method: "POST",
+            body: JSON.stringify({ name, description, image }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        };
 
-    try {
-        console.log("Before fetch");
-        const response = await fetch("http://localhost:8081/admin/ingredient/create/", options);
-        console.log("After fetch");
+        try {
+            const response = await fetch("http://localhost:8081/admin/ingredient/create/", options);
 
-        let responseData = null;
-        const errorDiv = ingredientForm.querySelector('#ingredientError');
+            let responseData = null;
+            const errorDiv = ingredientForm.querySelector('#ingredientError');
 
-        if (response.headers.get("content-type") !== "application/json; charset=utf-8") {
-            // Show error
-            errorDiv.innerHTML = await response.text();
-            errorDiv.classList.remove('d-none');
-            console.log("if")
-        } else {
-            // Ingredient added
-            errorDiv.classList.add('d-none');
             responseData = await response.json();
-            console.log("else");
-            console.log(responseData);
-            if (responseData && responseData.statusCode === 200) {
-                console.log("extra if")
+
+            if (responseData?.statusCode === 200) {
+                errorDiv.classList.add('d-none');
                 location.href = "http://localhost:8081/admin/ingredients";
-            }        
+            } else {
+                errorDiv.classList.remove('d-none');
+                errorDiv.innerHTML = responseData.responseMessage;
+            }
+
+        } catch (error) {
+            console.error("Error during ingredient addition:", error);
         }
-    } catch (error) {
-        console.error("Error during ingredient addition:", error);
-    }
-});
+    });
+}

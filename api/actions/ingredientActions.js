@@ -93,6 +93,11 @@ const addIngredient = (ingredient) => {
             (err, result) => {
                 if (err) {
                     console.error(err);
+
+                    if(err.sqlMessage.startsWith('Duplicate entry')){
+                        return reject({ statusCode: 400, responseMessage: 'Name is duplicate.' });
+                    }
+
                     reject({ statusCode: 400, responseMessage: err });
                     return;
                 }
