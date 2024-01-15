@@ -187,6 +187,15 @@ select rl.name, r.name from recipe_list rl
 join recipe_list_item rli on rl.id = rli.list_id
 join recipe r on rli.recipe_id = r.id;
 
+DROP VIEW IF EXISTS partial_ingredients;
+CREATE VIEW partial_ingredients AS
+SELECT
+    id as id,
+    `name`as `name`,
+    `image` as `image`
+from ingredient ;
+
+
 /* delete from recipe_list_item;
 delete from recipe_ingredient;
 delete from recipe; */

@@ -46,7 +46,6 @@ router.get('/ingredient/create/', async (req, res) => {
     res.render('backIngredientCreateEdit');
 });
 
-
 router.delete('/ingredient/:id', async (req, res) => {
     const id = req.params.id;
     try {
@@ -58,5 +57,14 @@ router.delete('/ingredient/:id', async (req, res) => {
     }  
 });
 
+router.post('/ingredient/create/', async (req, res) => {
+        try {        
+            const ingredient = await ingredientActions.addIngredient(req.body);
+            res.send(ingredient);
+        } catch (error) {
+            res.send(error);
+        }
+    
+});
 
 module.exports = router;
