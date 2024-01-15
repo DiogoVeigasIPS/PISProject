@@ -1,15 +1,16 @@
 const jwt = require('jsonwebtoken');
 
 function verifyJWT(req, res, next) {
-    const token = req.headers['x-access-token'];
+    const token = req.headers['x-access-token'] || req.query.token;
+    
     if (!token)
-        return res.status(401).json({ auth: false, message: 'No token provided.' });
+        return res.redirect('/auth');
 
     jwt.verify(token, 'ChickenBreast', function (err, decoded) {
         if (err)
-            return res.status(500).json({ auth: false, message: 'Failed to authenticate token.' });
-        
-        console.log(decoded)
+            return res.redirect('/auth');
+
+        //console.log(decoded)
         req.userId = decoded.id;
         next();
     });

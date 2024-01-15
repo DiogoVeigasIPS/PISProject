@@ -226,14 +226,13 @@ const signupUser = ({ username, email, password, repeatPassword, firstName, last
                 token: null
             });
 
-            await addUser(user);
+            const addedUser = (await addUser(user)).responseMessage;
 
-            const id = user.id;
-            const token = jwt.sign({ id }, dotenv.parsed.SECRET_WORD, {
+            const token = jwt.sign({ id: addedUser.id }, dotenv.parsed.SECRET_WORD, {
                 expiresIn: 60 * 60
             });
 
-            const response = { auth: true, token: token, id: id };
+            const response = { auth: true, token: token, id: addedUser.id };
             resolve({ statusCode: 200, responseMessage: response });
         } catch (error) {
             console.error(error);
