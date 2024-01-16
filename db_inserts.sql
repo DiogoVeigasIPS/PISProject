@@ -1,9 +1,5 @@
 use pis_project;
 
--- user
-
-INSERT INTO `user` VALUES (1,'System','system_password',NULL,'system@example.com','System','User');
-
 -- area
 
 INSERT INTO `area` VALUES (1,'American'),(2,'British'),(3,'Canadian'),(4,'Chinese'),(5,'Croatian'),(6,'Dutch'),(7,'Egyptian'),(8,'Filipino'),(9,'French'),(10,'Greek'),(11,'Indian'),(12,'Irish'),(13,'Italian'),(14,'Jamaican'),(15,'Japanese'),(16,'Kenyan'),(17,'Malaysian'),(18,'Mexican'),(19,'Moroccan'),(20,'Polish'),(21,'Portuguese'),(22,'Russian'),(23,'Spanish'),(24,'Thai'),(25,'Tunisian'),(26,'Turkish'),(27,'Unknown'),(28,'Vietnamese');
