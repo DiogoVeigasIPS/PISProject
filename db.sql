@@ -190,6 +190,10 @@ SELECT
     `image` as `image`
 from ingredient ;
 
+-- difficulty
+
+INSERT INTO `difficulty` ('name') VALUES ('Beginner'), ('Cook'), ('Chef');
+
 -- user
 
 INSERT INTO `user` (username, `password`, email, firstName, lastName, image, isAdmin) 
