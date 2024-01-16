@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS `user` (
     firstName VARCHAR(15) NOT NULL,
     lastName VARCHAR(15) NOT NULL,
     `image` TEXT NULL,
-    is_admin TINYINT(1) NOT NULL DEFAULT 0
+    isAdmin TINYINT(1) NOT NULL DEFAULT 0
 );
 
 DROP TABLE IF EXISTS difficulty;
