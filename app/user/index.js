@@ -4,6 +4,8 @@
  */
 const express = require('express');
 const session = require('express-session');
+let dotenv = require('dotenv').config()
+
 const { recipeActions, areaActions, categoryActions, difficultyActions, userActions } = require('../../api/actions');
 const { IngredientInRecipe, Ingredient, Category, Area, Difficulty, Recipe, Author } = require('../../api/models');
 const { getUser } = require('../../api/actions/userActions');
@@ -12,7 +14,7 @@ const { verifyJWT } = require('../../api/jsonWebToken');
 const router = express.Router();
 
 router.use(session({
-    secret: 'your-secret-key',
+    secret: dotenv.parsed.SECRET_WORD,
     resave: true,
     saveUninitialized: true
 }));
@@ -31,6 +33,7 @@ router.get('/try-auth', verifyJWT, async (req, res, next) => {
 
 router.get('/me', async (req, res) => {
     const id = req.session.userId;
+    delete req.session.userId;
     
     if (id == null) {
         res.render('unauthorized');
@@ -43,8 +46,6 @@ router.get('/me', async (req, res) => {
         res.render('unauthorized');
         return;
     }
-
-    delete req.session.userId;
 
     user.image = user.image == null ? '/img/chefProfilePicture.png' : user.image;
     res.render('userPage', { user: user });
