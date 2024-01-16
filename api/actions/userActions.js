@@ -77,7 +77,7 @@ const addUser = (user) => {
             [newUser.username, newUser.email, newUser.password, newUser.firstName, newUser.lastName, newUser.image],
             (err, result) => {
                 if (err) {
-                    if(err.sqlMessage.startsWith('Duplicate entry')){
+                    if (err.sqlMessage.startsWith('Duplicate entry')) {
                         return reject({ statusCode: 400, responseMessage: 'Username or email is duplicate.' });
                     }
 
@@ -179,12 +179,7 @@ const loginUser = ({ username, password }) => {
                     return;
                 }
 
-                const id = user.id;
-                const token = jwt.sign({ id }, dotenv.parsed.SECRET_WORD, {
-                    expiresIn: 60 * 60
-                });
-
-                const response = { auth: true, token: token, id: id };
+                const response = getToken(user);
                 resolve({ statusCode: 200, responseMessage: response });
             } catch (error) {
                 console.error(error);
@@ -228,11 +223,7 @@ const signupUser = ({ username, email, password, repeatPassword, firstName, last
 
             const addedUser = (await addUser(user)).responseMessage;
 
-            const token = jwt.sign({ id: addedUser.id }, dotenv.parsed.SECRET_WORD, {
-                expiresIn: 60 * 60
-            });
-
-            const response = { auth: true, token: token, id: addedUser.id };
+            const response = getToken(addedUser);
             resolve({ statusCode: 200, responseMessage: response });
         } catch (error) {
             console.error(error);
@@ -242,6 +233,14 @@ const signupUser = ({ username, email, password, repeatPassword, firstName, last
         }
     });
 };
+
+const getToken = (user) => {
+    const token = jwt.sign({ id: user.id, isAdmin: user.isAdmin }, dotenv.parsed.SECRET_WORD, {
+        expiresIn: 60 * 60
+    });
+
+    return { auth: true, token: token, id: user.id, isAdmin: user.isAdmin };
+}
 
 const isLoggedIn = (token) => {
     return new Promise((resolve, reject) => {
