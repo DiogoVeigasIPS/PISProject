@@ -38,7 +38,7 @@ router.get('/ingredient/details/:id', async (req, res) => {
 router.get('/ingredient/edit/:id', async (req, res) => {
     const id = req.params.id;
     const ingredient = (await ingredientActions.getIngredient(id)).responseMessage;
-    console.log(ingredient);
+    //console.log(ingredient);
     res.render('backIngredientCreateEdit', { ingredient: ingredient });
 });
 
