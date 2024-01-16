@@ -27,18 +27,6 @@ const backDeleteIngredient = async (id) => {
     }
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-    const imageInput = document.getElementById('image');
-    const imagePreview = document.getElementById('imagePreview');
-
-    if(imageInput){
-        imageInput.addEventListener('input', () => {
-            const imageUrl = imageInput.value.trim();
-            imagePreview.src = imageUrl;
-        });
-    }
-});
-
 const ingredientForm = document.querySelector('#ingredientForm');
 if (ingredientForm) {
     ingredientForm.addEventListener('submit', async (e) => {

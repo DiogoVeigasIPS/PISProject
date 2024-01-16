@@ -4,14 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <script src="/js/auxIngredients.js" defer></script>
+    <script src="/js/imagePreview.js"></script>
     <title>{{title}}</title>
 </head>
-{{>backnavbar}}
-
+<body onLoad="imagePreview('image', 'imagePreview') ">
+    {{>backnavbar}}
     <section class="py-4 content d-flex justify-content-center align-items-center">
         <div class="container">
             <div class="row justify-content-center">
-                <div class="col-md-6">
+                <div class="col-3">
+                </div>
+                <div class="col-6">
                     <!-- Card for Login Form -->
                     <div class="card" id="ingredientCard">
                         <div class="card-body">
@@ -31,13 +34,15 @@
                                 <div class="mb-3">
                                     <label for="image" class="form-label">Image URL</label>
                                     <input type="text" class="form-control" id="image" name="image" value="{{ingredient.image}}">
-                                    <img id="imagePreview" src="{{ingredient.image}}" alt="Image Preview" style="max-width: 100px; margin-top: 5px;">
                                 </div>
                                 <div class="mb-3 alert alert-danger d-none" id="ingredientError"></div>
                                 <button type="submit" class="btn btn-primary">Submit Ingredient</button>
                             </form>
                         </div>
                     </div>
+                </div>
+                <div class="col-3 d-flex align-items-center">
+                    <img id="imagePreview" src="{{ingredient.image}}" alt="" class="img-fluid">
                 </div>
             </div>
         </div>
