@@ -9,57 +9,95 @@
 </head>
 <body>
     {{>backNavbar}}
-    <section class="py-4">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6 mx-auto">
-                    <form action="/admin/ingredients" method="get">
-                        <div class="input-group">
-                            <input type="text" class="form-control" name="name" placeholder="Search for ingredients...">
-                            <button class="btn btn-primary" type="submit">Search</button>
+    <div class="content">
+        <section class="py-4">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6 mx-auto">
+                        <form action="/admin/ingredients" method="get">
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="name" placeholder="Search for ingredients...">
+                                <button class="btn btn-primary" type="submit">Search</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="container mt-5">
+            <h2>Ingredients</h2>
+            <a class="btn btn-primary mt-1 mb-3" href="ingredient/create/" role="button">Create new ingredient</a>
+            <table class="table justify-content-center">
+                <thead>
+                    <tr class="text-center">
+                        <th><a href = "?sort=id">#</a></th>
+                        <th><a href = "?sort=name">Name</a></th>
+                        <th>Image</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#ingredients}}
+                    <tr>
+                        <td class="text-center align-middle">{{id}}</td>
+                        <td class="text-center align-middle">{{name}}</td>
+                        <td class="text-center align-middle">
+                            <img src="{{image}}" alt="Ingredient Image" class="img-thumbnail" style="max-width: 100px;">
+                        </td >                    
+                        <td class="text-center align-middle">
+                            <a href="javascript:openIngredientDetailsModal({{id}});" class="mr-2"><i class="bi bi-eye-fill h3"></i></a>
+                            <a href="ingredient/edit/{{id}}" class="mr-2"><i class="bi bi-pencil-fill text-warning h3"></i></a>
+                            <a href="#" class="mr-2" onclick="backDeleteIngredient('{{id}}')">
+                                <i class="bi bi-trash3 text-danger h3"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {{/ingredients}}
+                    {{^ingredients}}
+                        <tr>
+                            <td colspan="4">No ingredients available at the moment.</td>
+                        </tr>
+                    {{/ingredients}}
+                </tbody>
+            </table>
+        </div>
+
+        
+
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ingredientDetailsModal">
+            Launch demo modal
+        </button>
+
+        <!-- Ingredient details modal -->
+        <div class="modal fade" id="ingredientDetailsModal" tabindex="-1" aria-labelledby="ingredientDetailsModal" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Ingredient Details</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <img src="" id="ingredientImage" class="img-fluid mb-4" alt="">
                         </div>
-                    </form>
+                        <div class="col-md-6">
+                            <p><strong>Id:</strong> <span id="ingredientId"></span></p>
+                            <p><strong>Name:</strong> <span id="ingredientName"></span></p>
+                            <p><strong>Description:</strong> <span id="ingredientDescription"></span></p>
+                            <p><strong>Image URL:</strong> <span id="ingredientImageURL"></span></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                </div>
                 </div>
             </div>
         </div>
-    </section>
-    <div class="container mt-5">
-        <h2>Ingredients</h2>
-        <a class="btn btn-primary mt-1 mb-3" href="ingredient/create/" role="button">Create new ingredient</a>
-        <table class="table justify-content-center">
-            <thead>
-                <tr class="text-center">
-                    <th><a href = "?sort=id">#</a></th>
-                    <th><a href = "?sort=name">Name</a></th>
-                    <th>Image</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {{#ingredients}}
-                <tr>
-                    <td class="text-center align-middle">{{id}}</td>
-                    <td class="text-center align-middle">{{name}}</td>
-                    <td class="text-center align-middle">
-                        <img src="{{image}}" alt="Ingredient Image" class="img-thumbnail" style="max-width: 100px;">
-                    </td >                    
-                    <td class="text-center align-middle">
-                        <a href="ingredient/details/{{id}}" class="mr-2"><i class="bi bi-eye-fill h3"></i></a>
-                        <a href="ingredient/edit/{{id}}" class="mr-2"><i class="bi bi-pencil-fill text-warning h3"></i></a>
-                        <a href="#" class="mr-2" onclick="backDeleteIngredient('{{id}}')">
-                            <i class="bi bi-trash3 text-danger h3"></i>
-                        </a>
-                    </td>
-                </tr>
-                {{/ingredients}}
-                {{^ingredients}}
-                    <tr>
-                        <td colspan="4">No ingredients available at the moment.</td>
-                    </tr>
-                {{/ingredients}}
-            </tbody>
-        </table>
-        {{>footer}}
+
     </div>
+    {{>footer}}
  </body>
 </html>

@@ -65,3 +65,34 @@ if (ingredientForm) {
         }
     });
 }
+
+const openIngredientDetailsModal = async (id) => {
+    try {
+        const response = await fetch(`http://localhost:8081/api/ingredient/${id}`);
+
+        if(response.ok){
+            const responseData = await response.json();
+
+            const ingredientId = document.getElementById('ingredientId');
+            const ingredientName = document.getElementById('ingredientName');
+            const ingredientDescription = document.getElementById('ingredientDescription');
+            const ingredientImageURL = document.getElementById('ingredientImageURL');
+            const ingredientImage = document.getElementById('ingredientImage');
+
+            ingredientId.innerText = responseData.id;
+            ingredientName.innerText = responseData.name;
+            ingredientDescription.innerText = responseData.description ?? 'Not provided';
+            ingredientImageURL.innerText = responseData.image;
+
+            ingredientImage.src = responseData.image;
+            
+            const ingredientDetails = new bootstrap.Modal(document.getElementById('ingredientDetailsModal'));
+            ingredientDetails.show();
+        }
+
+    } catch (err) {
+        console.error(err)
+    }
+}
+
+
