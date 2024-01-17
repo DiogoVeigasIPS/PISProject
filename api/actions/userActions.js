@@ -10,6 +10,7 @@ const connectionOptions = require('./connectionOptions');
 
 const { User } = require('../models');
 const { objectIsValid } = require('../utils');
+const { getJWT } = require('../jsonWebToken');
 
 const getUsers = () => {
     return new Promise((resolve, reject) => {
@@ -179,7 +180,7 @@ const loginUser = ({ username, password }) => {
                     return;
                 }
 
-                const response = getToken(user);
+                const response = getJWT(user);
                 resolve({ statusCode: 200, responseMessage: response });
             } catch (error) {
                 console.error(error);
@@ -223,7 +224,7 @@ const signupUser = ({ username, email, password, repeatPassword, firstName, last
 
             const addedUser = (await addUser(user)).responseMessage;
 
-            const response = getToken(addedUser);
+            const response = getJWT(addedUser);
             resolve({ statusCode: 200, responseMessage: response });
         } catch (error) {
             console.error(error);
@@ -234,33 +235,6 @@ const signupUser = ({ username, email, password, repeatPassword, firstName, last
     });
 };
 
-const getToken = (user) => {
-    const token = jwt.sign({ id: user.id, isAdmin: user.isAdmin }, dotenv.parsed.SECRET_WORD, {
-        expiresIn: 60 * 60
-    });
-
-    return { auth: true, token: token, id: user.id, isAdmin: user.isAdmin };
-}
-
-const isLoggedIn = (token) => {
-    return new Promise((resolve, reject) => {
-        if (!token) {
-            const response = { auth: false, message: 'No token provided.' };
-            reject({ statusCode: 500, responseMessage: response });
-        }
-
-        jwt.verify(token, dotenv.parsed.SECRET_WORD, function (err, decoded) {
-            if (err) {
-                const response = { auth: false, id: null }
-                reject({ statusCode: 500, responseMessage: response });
-            }
-
-            const response = { auth: true, id: decoded.id }
-            resolve({ statusCode: 200, responseMessage: response });
-        });
-    })
-}
-
 module.exports.getUsers = getUsers;
 module.exports.getUser = getUser;
 module.exports.addUser = addUser;
@@ -268,5 +242,3 @@ module.exports.editUser = editUser;
 module.exports.deleteUser = deleteUser;
 module.exports.loginUser = loginUser;
 module.exports.signupUser = signupUser;
-module.exports.isLoggedIn = isLoggedIn;
-
