@@ -152,6 +152,20 @@ const showToast = (message, isError = false) => {
     bootstrapToast.show();
 }
 
+function addSortQueryParam(sortBy) {
+    const currentURL = window.location.href;
+    const separator = currentURL.includes('?') ? '&' : '?';
+
+    const sortParam = `sort=${encodeURIComponent(sortBy)}`;
+
+    const newURL = currentURL.includes('sort=') ?
+        currentURL.replace(/(sort=)[^&]*/, `$1${encodeURIComponent(sortBy)}`) :
+        currentURL + `${separator}${sortParam}`;
+
+    history.pushState({ path: newURL }, '', newURL);
+    location.reload();
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     const searchInput = document.getElementById('searchInput');
     const formSearch = document.getElementById('formSearch');
@@ -187,7 +201,13 @@ document.addEventListener('DOMContentLoaded', function () {
         // Update the URL if the search input is not empty
         if (filter !== '') {
             const currentURL = window.location.href;
-            const newURL = currentURL.split('?')[0] + `?name=${encodeURIComponent(filter)}`;
+            const separator = currentURL.includes('?') ? '&' : '?';
+            const newURL = currentURL.split(separator)[0] + `${separator}name=${encodeURIComponent(filter)}`;
+            history.pushState({ path: newURL }, '', newURL);
+        } else {
+            const currentURL = window.location.href;
+            const separator = currentURL.includes('?') ? '&' : '';
+            const newURL = currentURL.split(separator)[0];
             history.pushState({ path: newURL }, '', newURL);
         }
     }

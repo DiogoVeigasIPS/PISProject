@@ -10,29 +10,27 @@
 <body>
     {{>backNavbar}}
     <div class="content">
-        <section class="py-4">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-6 mx-auto">
-                        <form id="formSearch" action="/admin/ingredients" method="get">
-                            <div class="input-group">
-                                <input id="searchInput" type="text" class="form-control" name="name" placeholder="Search for ingredients...">
-                                <button class="btn btn-primary" type="submit">Search</button>
-                            </div>
-                        </form>
-                    </div>
+        <div class="container mt-5">
+            <h1 class="mb-4">Ingredients</h1>
+            <div class="row">
+                <div class="col-3">
+                    <a class="btn btn-primary mt-1 mb-3" href="ingredient/create/" role="button">Create new ingredient</a>
+                </div>
+                <div class="col-9">
+                    <form id="formSearch" action="/admin/ingredients" method="get">
+                        <div class="input-group">
+                            <input id="searchInput" type="text" class="form-control" name="name" placeholder="Search for ingredients...">
+                            <button class="btn btn-primary" type="submit">Search</button>
+                        </div>
+                    </form>
                 </div>
             </div>
-        </section>
-        <div class="container mt-5">
-            <h2>Ingredients</h2>
-            <a class="btn btn-primary mt-1 mb-3" href="ingredient/create/" role="button">Create new ingredient</a>
             <div class="table-responsive" style="max-height: 25rem; overflow-y: auto;">
                 <table class="table justify-content-center" id="ingredientsTable">
                     <thead>
                         <tr class="text-center">
-                            <th><a href = "?sort=id">#</a></th>
-                            <th><a href = "?sort=name">Name</a></th>
+                            <th><a href = "javascript:addSortQueryParam('id')">#</a></th>
+                            <th><a href = "javascript:addSortQueryParam('name')">Name</a></th>
                             <th>Image</th>
                             <th>Actions</th>
                         </tr>
