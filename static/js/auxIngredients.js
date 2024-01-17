@@ -70,7 +70,7 @@ const openIngredientDetailsModal = async (id) => {
     try {
         const response = await fetch(`http://localhost:8081/api/ingredient/${id}`);
 
-        if(response.ok){
+        if (response.ok) {
             const responseData = await response.json();
 
             const ingredientId = document.getElementById('ingredientId');
@@ -85,7 +85,7 @@ const openIngredientDetailsModal = async (id) => {
             ingredientImageURL.innerText = responseData.image;
 
             ingredientImage.src = responseData.image;
-            
+
             const ingredientDetails = new bootstrap.Modal(document.getElementById('ingredientDetailsModal'));
             ingredientDetails.show();
         }
@@ -94,5 +94,111 @@ const openIngredientDetailsModal = async (id) => {
         console.error(err)
     }
 }
+
+const openDeleteModal = (id, name) => {
+    const deleteModalName = document.getElementById('deleteModalName');
+    deleteModalName.innerText = name;
+
+    const confirmDeletion = document.getElementById('confirmDeletion');
+
+    confirmDeletion.onclick = async () => {
+        try {
+            const response = await fetch(`http://localhost:8081/api/ingredient/${id}`, { method: "DELETE" })
+            const responseText = await response.text();
+
+            if (response.status != 200) {
+                showToast(responseText, true)
+                return;
+            }
+
+            const ingredientsTable = document.getElementById('ingredientsTable');
+            const rows = Array.from(ingredientsTable.querySelectorAll('tbody tr'));
+
+            const filteredRows = rows.filter(row => {
+                const tdValue = row.querySelector('td').textContent.trim();
+                return tdValue === id;
+            });
+            ingredientsTable.querySelector('tbody').removeChild(filteredRows[0]);
+
+            showToast(responseText, false)
+        } catch (err) {
+            console.error(err)
+        }
+    }
+
+    const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+    deleteModal.show();
+}
+
+const showToast = (message, isError = false) => {
+    const toast = document.getElementById('toast');
+    const bootstrapToast = bootstrap.Toast.getOrCreateInstance(toast);
+
+    const toastBody = document.getElementById('toastBody');
+    toastBody.innerText = message;
+
+    if (!isError) {
+        if (toastBody.classList.contains('text-danger')) {
+            toastBody.classList.remove('text-danger')
+        }
+        toastBody.classList.add('text-success');
+    } else {
+        if (toastBody.classList.contains('text-success')) {
+            toastBody.classList.remove('text-success')
+        }
+        toastBody.classList.add('text-danger');
+    }
+
+    bootstrapToast.show();
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.getElementById('searchInput');
+    const formSearch = document.getElementById('formSearch');
+
+    formSearch.addEventListener('submit', function (e) {
+        e.preventDefault();
+        filterTable();
+    });
+
+    searchInput.addEventListener('input', function () {
+        filterTable();
+    });
+
+    function filterTable() {
+        const filter = searchInput.value.toLowerCase();
+        const rows = document.querySelectorAll('#ingredientsTable tbody tr');
+
+        rows.forEach(function (row) {
+            const columns = row.getElementsByTagName('td');
+            let shouldHide = true;
+
+            for (let i = 0; i < columns.length; i++) {
+                const columnText = columns[i].textContent.toLowerCase();
+                if (columnText.includes(filter)) {
+                    shouldHide = false;
+                    break;
+                }
+            }
+
+            row.style.display = shouldHide ? 'none' : '';
+        });
+
+        // Update the URL if the search input is not empty
+        if (filter !== '') {
+            const currentURL = window.location.href;
+            const newURL = currentURL.split('?')[0] + `?name=${encodeURIComponent(filter)}`;
+            history.pushState({ path: newURL }, '', newURL);
+        }
+    }
+
+    // Initialize the search input with the value from the URL parameter
+    const urlSearchParams = new URLSearchParams(window.location.search);
+    const nameParam = urlSearchParams.get('name');
+    if (nameParam !== null) {
+        searchInput.value = decodeURIComponent(nameParam);
+        filterTable();
+    }
+});
 
 

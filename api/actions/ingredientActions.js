@@ -151,6 +151,9 @@ const deleteIngredient = (id) => {
         connection.query("DELETE FROM ingredient WHERE id = ?", [id], (err, result) => {
             if (err) {
                 console.error(err);
+                if(err.sqlMessage.includes('a foreign key constraint fails')){
+                    return reject({ statusCode: 422, responseMessage: 'That ingredient is being used in other recipe.' });
+                }
                 reject({ statusCode: 400, responseMessage: err });
                 return;
             }
