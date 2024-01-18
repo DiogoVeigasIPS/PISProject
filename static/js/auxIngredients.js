@@ -219,6 +219,27 @@ document.addEventListener('DOMContentLoaded', function () {
         searchInput.value = decodeURIComponent(nameParam);
         filterTable();
     }
+
+    // Function to copy the link to the clipboard
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text)
+            .then(function () {
+                showToast('Link copied to clipboard!');
+            })
+            .catch(function (err) {
+                console.error('Unable to copy text to clipboard', err);
+            });
+    }
+
+    // Event listener for the copy link button
+    document.getElementById('copyLink').addEventListener('click', function () {
+        var ingredientId = document.getElementById('ingredientId').innerText;
+        var link = `http://localhost:8081/admin/ingredient/details/${ingredientId}`;
+
+        copyToClipboard(link);
+
+        showToast('Link copied to clipboard!');
+    });
 });
 
 
