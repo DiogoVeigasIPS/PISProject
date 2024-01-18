@@ -16,6 +16,7 @@ class User {
      * @param {string} userData.firstName - The first name of a user.
      * @param {string} userData.lastName - The last name of a user.
      * @param {string} userData.image - The image of a user.
+     * @param {string} userData.isAdmin - The flag than identifies if a user is admin.
      */
     constructor(userData, id = userData.id) {
         this.id = id ?? null;
@@ -25,6 +26,7 @@ class User {
         this.firstName = userData.firstName;
         this.lastName = userData.lastName;
         this.image = userData.image ?? null;
+        this.isAdmin = userData.isAdmin ?? false;
     }
 }
 

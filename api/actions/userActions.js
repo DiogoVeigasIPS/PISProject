@@ -10,6 +10,7 @@ const connectionOptions = require('./connectionOptions');
 
 const { User } = require('../models');
 const { objectIsValid } = require('../utils');
+const { getJWT } = require('../jsonWebToken');
 
 const getUsers = () => {
     return new Promise((resolve, reject) => {
@@ -59,7 +60,7 @@ const getUser = (id) => {
 }
 
 const addUser = (user) => {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         const newUser = new User(user);
 
         if (!objectIsValid(newUser)) {
@@ -70,11 +71,17 @@ const addUser = (user) => {
         const connection = mysql.createConnection(connectionOptions);
         connection.connect();
 
+        const hashedPassword = await bcrypt.hash(newUser.password, 10);
+        newUser.password = hashedPassword;
+
         connection.query("INSERT INTO user (username, email, password, firstName, lastName, image) VALUES (?, ?, ?, ?, ?, ?)",
             [newUser.username, newUser.email, newUser.password, newUser.firstName, newUser.lastName, newUser.image],
             (err, result) => {
                 if (err) {
-                    console.error(err);
+                    if (err.sqlMessage.startsWith('Duplicate entry')) {
+                        return reject({ statusCode: 400, responseMessage: 'Username or email is duplicate.' });
+                    }
+
                     reject({ statusCode: 400, responseMessage: err });
                     return;
                 }
@@ -88,7 +95,7 @@ const addUser = (user) => {
 }
 
 const editUser = (id, user) => {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         const newUser = new User(user);
 
         if (!objectIsValid(newUser)) {
@@ -99,8 +106,11 @@ const editUser = (id, user) => {
         const connection = mysql.createConnection(connectionOptions);
         connection.connect();
 
-        connection.query("UPDATE user SET username = ?, email = ?, password = ?, firstName = ?, lastName = ?, image = ? WHERE id = ?",
-            [newUser.username, newUser.email, newUser.password, newUser.firstName, newUser.lastName, newUser.image, id],
+        const hashedPassword = await bcrypt.hash(newUser.password, 10);
+        newUser.password = hashedPassword;
+
+        connection.query("UPDATE user SET username = ?, email = ?, password = ?, firstName = ?, lastName = ?, image = ?, isAdmin = ? WHERE id = ?",
+            [newUser.username, newUser.email, newUser.password, newUser.firstName, newUser.lastName, newUser.image, id, newUser.isAdmin ? 1 : 0],
             (err, result) => {
                 if (err) {
                     console.error(err);
@@ -170,12 +180,7 @@ const loginUser = ({ username, password }) => {
                     return;
                 }
 
-                const id = user.id;
-                const token = jwt.sign({ id }, dotenv.parsed.SECRET_WORD, {
-                    expiresIn: 60 * 60
-                });
-
-                const response = { auth: true, token: token, id: id };
+                const response = getJWT(user);
                 resolve({ statusCode: 200, responseMessage: response });
             } catch (error) {
                 console.error(error);
@@ -191,13 +196,6 @@ const signupUser = ({ username, email, password, repeatPassword, firstName, last
     return new Promise(async (resolve, reject) => {
         const connection = mysql.createConnection(connectionOptions);
         connection.connect();
-
-        const isDuplicate = await checkDuplicateUser(connection, username, email);
-
-        if (isDuplicate) {
-            reject({ statusCode: 404, responseMessage: 'Username or Email already in use.' });
-            return;
-        }
 
         if (password.length < 4) {
             reject({ statusCode: 404, responseMessage: 'Password is too small.' });
@@ -215,67 +213,27 @@ const signupUser = ({ username, email, password, repeatPassword, firstName, last
         }
 
         try {
-            const hashedPassword = await bcrypt.hash(password, 10);
-
             const user = new User({
                 username: username,
                 email: email,
-                password: hashedPassword,
+                password: password,
                 firstName: firstName,
                 lastName: lastName,
                 token: null
             });
 
-            await addUser(user);
+            const addedUser = (await addUser(user)).responseMessage;
 
-            const id = user.id;
-            const token = jwt.sign({ id }, dotenv.parsed.SECRET_WORD, {
-                expiresIn: 60 * 60
-            });
-
-            const response = { auth: true, token: token, id: id };
+            const response = getJWT(addedUser);
             resolve({ statusCode: 200, responseMessage: response });
         } catch (error) {
             console.error(error);
-            reject({ statusCode: 500, responseMessage: 'Something went wrong.' });
+            reject({ statusCode: error.statusCode, responseMessage: error.responseMessage });
         } finally {
             connection.end();
         }
     });
 };
-
-const checkDuplicateUser = async (connection, username, email) => {
-    return new Promise((resolve, reject) => {
-        connection.query("SELECT * FROM user WHERE username = ? OR email = ?", [username, email], (err, result) => {
-            if (err) {
-                console.error(err);
-                reject(false);
-                return;
-            }
-
-            resolve(result.length > 0);
-        });
-    });
-}
-
-const isLoggedIn = (token) => {
-    return new Promise((resolve, reject) => {
-        if (!token) {
-            const response = { auth: false, message: 'No token provided.' };
-            reject({ statusCode: 500, responseMessage: response });
-        }
-
-        jwt.verify(token, dotenv.parsed.SECRET_WORD, function (err, decoded) {
-            if (err) {
-                const response = { auth: false, id: null }
-                reject({ statusCode: 500, responseMessage: response });
-            }
-
-            const response = { auth: true, id: decoded.id }
-            resolve({ statusCode: 200, responseMessage: response });
-        });
-    })
-}
 
 module.exports.getUsers = getUsers;
 module.exports.getUser = getUser;
@@ -284,5 +242,3 @@ module.exports.editUser = editUser;
 module.exports.deleteUser = deleteUser;
 module.exports.loginUser = loginUser;
 module.exports.signupUser = signupUser;
-module.exports.isLoggedIn = isLoggedIn;
-

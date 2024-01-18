@@ -4,62 +4,175 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <script src="/js/auxIngredients.js"></script>
+    <script defer src="/js/auxIngredients.js"></script>
+    <script defer src="/js/imagePreview.js"></script>
     <title>Ingredient Table</title>
 </head>
-<body>
+<body onLoad="imagePreview('ingredientImageInputForm', 'imagePreview'); updateSearchBar()">
     {{>backNavbar}}
-    <section class="py-4">
-        <div class="container">
+    <div class="content">
+        <div class="container mt-5">
+            <h1 class="mb-4">Ingredients</h1>
             <div class="row">
-                <div class="col-md-6 mx-auto">
-                    <form action="/admin/ingredients" method="get">
+                <div class="col-3">
+                    <a class="btn btn-primary mt-1 mb-3" href="javascript:openAddIngredientModal()" role="button">Create new ingredient</a>
+                </div>
+                <div class="col-9">
+                    <form id="formSearch" action="/admin/ingredients" method="get">
                         <div class="input-group">
-                            <input type="text" class="form-control" name="name" placeholder="Search for ingredients...">
+                            <input id="searchInput" type="text" class="form-control" name="name" placeholder="Search for ingredients...">
                             <button class="btn btn-primary" type="submit">Search</button>
                         </div>
                     </form>
                 </div>
             </div>
+            <div class="table-responsive" style="max-height: 25rem; overflow-y: auto;">
+                <table class="table justify-content-center" id="ingredientsTable">
+                    <thead>
+                        <tr class="text-center">
+                            <th><a id="idSort" href="javascript:void(0);">#</a></th>
+                            <th><a id="nameSort" href="javascript:void(0);">Name</a></th>
+                            <th>Image</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#ingredients}}
+                        <tr>
+                            <td class="text-center align-middle">{{id}}</td>
+                            <td class="text-center align-middle">{{name}}</td>
+                            <td class="text-center align-middle">
+                                <img src="{{image}}" alt="Ingredient Image" class="img-thumbnail" style="max-width: 100px;">
+                            </td >                    
+                            <td class="text-center align-middle">
+                                <a href="javascript:openIngredientDetailsModal({{id}});" class="mr-2"><i class="bi bi-eye-fill h3"></i></a>
+                                <a href="javascript:openEditIngredientModal({{id}})" class="mr-2"><i class="bi bi-pencil-fill text-warning h3"></i></a>
+                                <a href="javascript:openDeleteModal('{{id}}', '{{name}}')" class="mr-2">
+                                    <i class="bi bi-trash3 text-danger h3"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {{/ingredients}}
+                        {{^ingredients}}
+                            <tr>
+                                <td colspan="4">No ingredients available at the moment.</td>
+                            </tr>
+                        {{/ingredients}}
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </section>
-    <div class="container mt-5">
-        <h2>Ingredients</h2>
-        <a class="btn btn-primary mt-1 mb-3" href="ingredient/create/" role="button">Create new ingredient</a>
-        <table class="table justify-content-center">
-            <thead>
-                <tr class="text-center">
-                    <th><a href = "?sort=id">#</a></th>
-                    <th><a href = "?sort=name">Name</a></th>
-                    <th>Image</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {{#ingredients}}
-                <tr>
-                    <td class="text-center align-middle">{{id}}</td>
-                    <td class="text-center align-middle">{{name}}</td>
-                    <td class="text-center align-middle">
-                        <img src="{{image}}" alt="Ingredient Image" class="img-thumbnail" style="max-width: 100px;">
-                    </td >                    
-                    <td class="text-center align-middle">
-                        <a href="ingredient/details/{{id}}" class="mr-2"><i class="bi bi-eye-fill h3"></i></a>
-                        <a href="ingredient/edit/{{id}}" class="mr-2"><i class="bi bi-pencil-fill text-warning h3"></i></a>
-                        <a href="#" class="mr-2" onclick="backDeleteIngredient('{{id}}')">
-                            <i class="bi bi-trash3 text-danger h3"></i>
-                        </a>
-                    </td>
-                </tr>
-                {{/ingredients}}
-                {{^ingredients}}
-                    <tr>
-                        <td colspan="4">No ingredients available at the moment.</td>
-                    </tr>
-                {{/ingredients}}
-            </tbody>
-        </table>
-        {{>footer}}
+
+        <!-- Ingredient details modal -->
+        <div class="modal fade" id="ingredientDetailsModal" tabindex="-1" aria-labelledby="ingredientDetailsModal" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5">Ingredient Details</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <img src="" id="ingredientImage" class="img-fluid mb-4" alt="">
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Id:</strong> <span id="ingredientId"></span></p>
+                                <p><strong>Name:</strong> <span id="ingredientName"></span></p>
+                                <p><strong>Description:</strong> <span id="ingredientDescription"></span></p>
+                                <p><strong>Image URL:</strong> <span id="ingredientImageURL"></span></p>
+                                <p>Share this ingredient: <a href="javascript:void(0);" id="copyLink">Copy Link</a></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ingredient form modal -->
+        <div class="modal fade" id="ingredientFormModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="ingredientFormModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5"><span id="activityTitle">Add an ingredient</span></h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row justify-content-center">
+                            <div class="col-3">
+                            </div>
+                            <div class="col-6">
+                                <!-- Card for Login Form -->
+                                <div class="card" id="ingredientCard">
+                                    <div class="card-body">
+                                        <form id="ingredientForm" action="/ingredient/create/" method="post" class="needs-validation">
+                                            <div class="mb-3">
+                                                <label for="ingredientNameForm"  class="form-label">Name</label>
+                                                <input type="text" class="form-control" id="ingredientNameForm" name="ingredientNameForm" placeholder="Enter the ingredient's name" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="ingredientDescriptionForm" class="form-label">Description</label>
+                                                <textarea type="text" class="form-control" id="ingredientDescriptionForm" name="ingredientDescriptionForm" placeholder="Enter the ingredient's description"></textarea>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="ingredientImageInputForm" class="form-label">Image URL</label>
+                                                <input type="url" class="form-control" id="ingredientImageInputForm" name="ingredientImageInputForm" placeholder="Enter the ingredient's image">
+                                            </div>
+                                            <div class="mb-3 alert alert-danger d-none" id="ingredientError"></div>
+                                            <button type="submit" class="btn btn-primary" id="submitIngredientButton">Submit Ingredient</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-3 d-flex align-items-center">
+                                <img id="imagePreview" src="{{ingredient.image}}" alt="" class="img-fluid">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete modal -->
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModal" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5">Confirm delete</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Are you sure you want to delete <span id="deleteModalName"></span>?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-danger" id="confirmDeletion" data-bs-dismiss="modal">Confirm</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        {{! Notification toast }}
+        <div class="toast-container position-fixed bottom-0 end-0 p-3">
+            <div id="toast" class="toast align-items-end end-0" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header">
+                    <strong class="me-auto">System</strong>
+                    <small>Just now</small>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body" id="toastBody">
+                    Hello, world! This is a toast message.
+                </div>
+            </div>
+        </div>
+
     </div>
+    {{>footer}}
  </body>
 </html>

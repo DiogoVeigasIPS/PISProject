@@ -1,18 +1,29 @@
 const jwt = require('jsonwebtoken');
+let dotenv = require('dotenv').config()
 
 function verifyJWT(req, res, next) {
-    const token = req.headers['x-access-token'];
+    const token = req.headers['x-access-token'] || req.query.token;
+    
     if (!token)
-        return res.status(401).json({ auth: false, message: 'No token provided.' });
+        return res.redirect('/auth');
 
-    jwt.verify(token, 'ChickenBreast', function (err, decoded) {
+    jwt.verify(token, dotenv.parsed.SECRET_WORD, function (err, decoded) {
         if (err)
-            return res.status(500).json({ auth: false, message: 'Failed to authenticate token.' });
-        
-        console.log(decoded)
+            return res.redirect('/auth');
+
+        //console.log(decoded)
         req.userId = decoded.id;
         next();
     });
 }
 
+const getJWT = (user) => {
+    const token = jwt.sign({ id: user.id, isAdmin: user.isAdmin }, dotenv.parsed.SECRET_WORD, {
+        expiresIn: 60 * 60
+    });
+
+    return { auth: true, token: token, id: user.id, isAdmin: user.isAdmin };
+}
+
 module.exports.verifyJWT = verifyJWT;
+module.exports.getJWT = getJWT;

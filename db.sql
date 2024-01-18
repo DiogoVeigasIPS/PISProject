@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS `user` (
     firstName VARCHAR(15) NOT NULL,
     lastName VARCHAR(15) NOT NULL,
     `image` TEXT NULL,
-    is_admin TINYINT(1) NOT NULL DEFAULT 0
+    isAdmin BOOL NOT NULL DEFAULT 0
 );
 
 DROP TABLE IF EXISTS difficulty;
@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS recipe_ingredient(
     quantity VARCHAR(50),
     PRIMARY KEY (recipe_id, ingredient_id),
     FOREIGN KEY (recipe_id) references recipe(id),
-    FOREIGN KEY (ingredient_id) references ingredient(id)  ON DELETE CASCADE
+    FOREIGN KEY (ingredient_id) references ingredient(id)
 );
 
 DROP TABLE IF EXISTS recipe_list;
@@ -176,16 +176,11 @@ SELECT
     LEFT JOIN difficulty d ON r.difficulty_id = d.id;
 
 -- Query the view
-SELECT * FROM search_recipes WHERE name like 'Sushi%';
+/* SELECT * FROM search_recipes WHERE name like 'Sushi%';
 SELECT * FROM search_recipes WHERE category_id = 4;
 SELECT * FROM search_recipes WHERE area_id = 15;
 SELECT * FROM search_recipes ORDER BY RAND();
-SELECT * FROM search_recipes LIMIT 1;
-
-
-select rl.name, r.name from recipe_list rl
-join recipe_list_item rli on rl.id = rli.list_id
-join recipe r on rli.recipe_id = r.id;
+SELECT * FROM search_recipes LIMIT 1; */
 
 DROP VIEW IF EXISTS partial_ingredients;
 CREATE VIEW partial_ingredients AS
@@ -193,9 +188,13 @@ SELECT
     id as id,
     `name`as `name`,
     `image` as `image`
-from ingredient ;
+from ingredient;
 
+-- difficulty
 
-/* delete from recipe_list_item;
-delete from recipe_ingredient;
-delete from recipe; */
+INSERT INTO `difficulty` ('name') VALUES ('Beginner'), ('Cook'), ('Chef');
+
+-- user
+
+INSERT INTO `user` (username, `password`, email, firstName, lastName, image, isAdmin) 
+VALUES ('diogoveigas', '$2b$10$l6uOhFiBJu0METRSPseae.IgXRJbrCxeL6MOkydpM9Dom.kn2dCuC', 'diogo@admin.com', 'Diogo', 'Veigas', 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fimage.myanimelist.net%2Fui%2F_3fYL8i6Q-n-155t3dn_4lSUHsq7btWTlmgH6uHajdH5TTQ7Kt5AmXxYAAHY3pSv&f=1&nofb=1&ipt=96f562e13e7959d030f7e93415b7827f1dc348b4230345758b0e9ba25801e869&ipo=images', 1);

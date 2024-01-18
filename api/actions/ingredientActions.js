@@ -10,7 +10,8 @@ const { objectIsValid } = require('../utils');
 
 const getIngredients = (queryOptions = null) => {
     return new Promise((resolve, reject) => {
-        const baseQueryString = "SELECT * FROM ingredient";
+        const baseQueryString = !queryOptions?.isPartial ? "SELECT * FROM ingredient" : 
+        "SELECT * FROM partial_ingredients";
         let queryString = baseQueryString;
 
         const queryParams = [];
@@ -18,11 +19,14 @@ const getIngredients = (queryOptions = null) => {
         if (queryOptions) {
             queryString += queryOptions.stringSearch ? " WHERE name LIKE ?" : "";
             queryString += queryOptions.isRandom ? " ORDER BY RAND()" : "";
-            queryString += queryOptions.order ? ` ORDER BY ${queryOptions.order} ${queryOptions.by}` : "";
+            queryString += queryOptions.orderBy ? " ORDER BY ?? asc" : "";
             queryString += queryOptions.maxResults ? " LIMIT ?" : "";
 
             if (queryOptions.stringSearch) {
                 queryParams.push(`%${queryOptions.stringSearch}%`);
+            }
+            if (queryOptions.orderBy) {
+                queryParams.push(queryOptions.orderBy);
             }
             if (queryOptions.maxResults) {
                 queryParams.push(queryOptions.maxResults);
@@ -95,7 +99,7 @@ const addIngredient = (ingredient) => {
                     console.error(err);
 
                     if(err.sqlMessage.startsWith('Duplicate entry')){
-                        return reject({ statusCode: 400, responseMessage: 'Name is duplicate.' });
+                        return reject({ statusCode: 422, responseMessage: 'Name is duplicate.' });
                     }
 
                     reject({ statusCode: 400, responseMessage: err });
@@ -127,6 +131,11 @@ const editIngredient = (id, ingredient) => {
             (err, result) => {
                 if (err) {
                     console.error(err);
+
+                    if(err.sqlMessage.startsWith('Duplicate entry')){
+                        return reject({ statusCode: 422, responseMessage: 'Name is duplicate.' });
+                    }
+
                     reject({ statusCode: 400, responseMessage: err });
                     return;
                 }
@@ -151,6 +160,9 @@ const deleteIngredient = (id) => {
         connection.query("DELETE FROM ingredient WHERE id = ?", [id], (err, result) => {
             if (err) {
                 console.error(err);
+                if(err.sqlMessage.includes('a foreign key constraint fails')){
+                    return reject({ statusCode: 422, responseMessage: 'That ingredient is being used in other recipe.' });
+                }
                 reject({ statusCode: 400, responseMessage: err });
                 return;
             }

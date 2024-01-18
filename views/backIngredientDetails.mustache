@@ -3,22 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script defer src="/js/auxIngredients.js"></script>
+    <script defer src="/js/imagePreview.js"></script>
     <title>{{title}}</title>
 </head>
-<body>
+<body onLoad="imagePreview('ingredientImageInputForm', 'imagePreview')">
     {{>backnavbar}}
 
     <div class="container content border p-3">
         <div class="row">
             <div class="col-md-6">
-                <img src="{{ingredient.image}}" class="img-fluid mb-4" alt="{{ingredient.name}} Image">
+                <img id="ingredientImagePreviewDetails" src="{{ingredient.image}}" class="img-fluid mb-4" alt="{{ingredient.name}} Image">
             </div>
             <div class="col-md-6">
                 <h2>{{recipe.name}}</h2>
                 <p><strong>Id:</strong> {{ingredient.id}}</p>
-                <p><strong>Name:</strong> {{ingredient.name}}</p>
-                <p><strong>Description:</strong> {{ingredient.description}}</p>
-                <p><strong>Image URL:</strong> {{ingredient.image}}</p>
+                <p><strong>Name:</strong> <span id="ingredientNameDetails">{{ingredient.name}}</span></p>
+                <p><strong>Description:</strong> <span id="ingredientDescriptionDetails">{{ingredient.description}}</span></p>
+                <p><strong>Image URL:</strong> <span id="ingredientImageUrlDetails">{{ingredient.image}}</span></p>
+                <p><a class="btn btn-primary mt-1 mb-3" href="javascript:openEditIngredientModal({{ingredient.id}}, true)" role="button">Edit {{ingredient.name}}</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ingredient form modal -->
+    <div class="modal fade" id="ingredientFormModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="ingredientFormModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5"><span id="activityTitle">Add an ingredient</span></h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row justify-content-center">
+                        <div class="col-3">
+                        </div>
+                        <div class="col-6">
+                            <!-- Card for Login Form -->
+                            <div class="card" id="ingredientCard">
+                                <div class="card-body">
+                                    <form id="ingredientForm" action="/ingredient/create/" method="post" class="needs-validation">
+                                        <div class="mb-3">
+                                            <label for="ingredientNameForm"  class="form-label">Name</label>
+                                            <input type="text" class="form-control" id="ingredientNameForm" name="ingredientNameForm" placeholder="Enter the ingredient's name" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="ingredientDescriptionForm" class="form-label">Description</label>
+                                            <textarea type="text" class="form-control" id="ingredientDescriptionForm" name="ingredientDescriptionForm" placeholder="Enter the ingredient's description"></textarea>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="ingredientImageInputForm" class="form-label">Image URL</label>
+                                            <input type="url" class="form-control" id="ingredientImageInputForm" name="ingredientImageInputForm" placeholder="Enter the ingredient's image">
+                                        </div>
+                                        <div class="mb-3 alert alert-danger d-none" id="ingredientError"></div>
+                                        <button type="submit" class="btn btn-primary" id="submitIngredientButton">Submit Ingredient</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3 d-flex align-items-center">
+                            <img id="imagePreview" src="{{ingredient.image}}" alt="" class="img-fluid">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{! Notification toast }}
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="toast" class="toast align-items-end end-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">System</strong>
+                <small>Just now</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="toastBody">
+                Hello, world! This is a toast message.
             </div>
         </div>
     </div>
