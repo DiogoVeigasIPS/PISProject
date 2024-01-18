@@ -4,17 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <script src="/js/auxIngredients.js"></script>
+    <script defer src="/js/auxIngredients.js"></script>
+    <script defer src="/js/imagePreview.js"></script>
     <title>Ingredient Table</title>
 </head>
-<body>
+<body onLoad="imagePreview('ingredientImageInputForm', 'imagePreview')">
     {{>backNavbar}}
     <div class="content">
         <div class="container mt-5">
             <h1 class="mb-4">Ingredients</h1>
             <div class="row">
                 <div class="col-3">
-                    <a class="btn btn-primary mt-1 mb-3" href="ingredient/create/" role="button">Create new ingredient</a>
+                    <a class="btn btn-primary mt-1 mb-3" href="javascript:openAddIngredientModal()" role="button">Create new ingredient</a>
                 </div>
                 <div class="col-9">
                     <form id="formSearch" action="/admin/ingredients" method="get">
@@ -45,7 +46,7 @@
                             </td >                    
                             <td class="text-center align-middle">
                                 <a href="javascript:openIngredientDetailsModal({{id}});" class="mr-2"><i class="bi bi-eye-fill h3"></i></a>
-                                <a href="ingredient/edit/{{id}}" class="mr-2"><i class="bi bi-pencil-fill text-warning h3"></i></a>
+                                <a href="javascript:openEditIngredientModal({{id}})" class="mr-2"><i class="bi bi-pencil-fill text-warning h3"></i></a>
                                 <a href="javascript:openDeleteModal('{{id}}', '{{name}}')" class="mr-2">
                                     <i class="bi bi-trash3 text-danger h3"></i>
                                 </a>
@@ -81,6 +82,53 @@
                                 <p><strong>Description:</strong> <span id="ingredientDescription"></span></p>
                                 <p><strong>Image URL:</strong> <span id="ingredientImageURL"></span></p>
                                 <p>Share this ingredient: <a href="javascript:void(0);" id="copyLink">Copy Link</a></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ingredient form modal -->
+        <div class="modal fade" id="ingredientFormModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="ingredientFormModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5"><span id="activityTitle">Add an ingredient</span></h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row justify-content-center">
+                            <div class="col-3">
+                            </div>
+                            <div class="col-6">
+                                <!-- Card for Login Form -->
+                                <div class="card" id="ingredientCard">
+                                    <div class="card-body">
+                                        <form id="ingredientForm" action="/ingredient/create/" method="post" class="needs-validation">
+                                            <div class="mb-3">
+                                                <label for="ingredientNameForm"  class="form-label">Name</label>
+                                                <input type="text" class="form-control" id="ingredientNameForm" name="ingredientNameForm" placeholder="Enter the ingredient's name" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="ingredientDescriptionForm" class="form-label">Description</label>
+                                                <textarea type="text" class="form-control" id="ingredientDescriptionForm" name="ingredientDescriptionForm" placeholder="Enter the ingredient's description"></textarea>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="ingredientImageInputForm" class="form-label">Image URL</label>
+                                                <input type="url" class="form-control" id="ingredientImageInputForm" name="ingredientImageInputForm" placeholder="Enter the ingredient's image">
+                                            </div>
+                                            <div class="mb-3 alert alert-danger d-none" id="ingredientError"></div>
+                                            <button type="submit" class="btn btn-primary" id="submitIngredientButton">Submit Ingredient</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-3 d-flex align-items-center">
+                                <img id="imagePreview" src="{{ingredient.image}}" alt="" class="img-fluid">
                             </div>
                         </div>
                     </div>
