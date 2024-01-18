@@ -170,12 +170,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const searchInput = document.getElementById('searchInput');
     const formSearch = document.getElementById('formSearch');
 
-    formSearch.addEventListener('submit', function (e) {
+    formSearch?.addEventListener('submit', function (e) {
         e.preventDefault();
         filterTable();
     });
 
-    searchInput.addEventListener('input', function () {
+    searchInput?.addEventListener('input', function () {
         filterTable();
     });
 
