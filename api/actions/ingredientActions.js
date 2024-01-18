@@ -10,7 +10,8 @@ const { objectIsValid } = require('../utils');
 
 const getIngredients = (queryOptions = null) => {
     return new Promise((resolve, reject) => {
-        const baseQueryString = "SELECT * FROM ingredient";
+        const baseQueryString = !queryOptions?.isPartial ? "SELECT * FROM ingredient" : 
+        "SELECT * FROM partial_ingredients";
         let queryString = baseQueryString;
 
         const queryParams = [];
@@ -18,11 +19,14 @@ const getIngredients = (queryOptions = null) => {
         if (queryOptions) {
             queryString += queryOptions.stringSearch ? " WHERE name LIKE ?" : "";
             queryString += queryOptions.isRandom ? " ORDER BY RAND()" : "";
-            queryString += queryOptions.order ? ` ORDER BY ${queryOptions.order} ${queryOptions.by}` : "";
+            queryString += queryOptions.orderBy ? " ORDER BY ?? asc" : "";
             queryString += queryOptions.maxResults ? " LIMIT ?" : "";
 
             if (queryOptions.stringSearch) {
                 queryParams.push(`%${queryOptions.stringSearch}%`);
+            }
+            if (queryOptions.orderBy) {
+                queryParams.push(queryOptions.orderBy);
             }
             if (queryOptions.maxResults) {
                 queryParams.push(queryOptions.maxResults);

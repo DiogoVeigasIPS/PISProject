@@ -10,11 +10,15 @@ const readIngredients = (req, res) => {
     const stringSearch = query.name ? query.name : null;
     const maxResults = query.max && !isNaN(query.max) ? parseInt(query.max) : null;
     const isRandom = query.random && query.random.toLowerCase() === 'true';
+    const orderBy = query.order ?? null;
+    const isPartial = query.partial && query.partial.toLowerCase() === 'true';
 
     const queryOptions = {
         stringSearch: stringSearch,
         maxResults: maxResults,
-        isRandom: isRandom
+        isRandom: isRandom,
+        orderBy: orderBy,
+        isPartial: isPartial
     }
 
     handlePromise(ingredientActions.getIngredients(queryOptions), res);

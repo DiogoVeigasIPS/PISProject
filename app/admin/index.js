@@ -14,17 +14,17 @@ router.get('', async (req, res) => {
 
 router.get('/ingredients', async (req, res) => {
     const stringSearch = req.query.name || null;
-    const order = req.query.sort || null;
-    const by = req.query.by == 'asc' ? 'desc' : 'asc';
+    const orderBy = req.query.order ?? null;
+
     const queryOptions = {
         stringSearch: stringSearch,
-        order: order,
-        by: by
+        orderBy: orderBy,
+        isPartial: true
     };
 
     const ingredients = (await ingredientActions.getIngredients(queryOptions)).responseMessage;
 
-    res.render('backIngredients', { ingredients: ingredients, title: 'Ingredients'  });
+    res.render('backIngredients', { ingredients: ingredients, title: 'Ingredients' });
 });
 
 
@@ -32,7 +32,7 @@ router.get('/ingredient/details/:id', async (req, res) => {
     const id = req.params.id;
     const ingredient = (await ingredientActions.getIngredient(id)).responseMessage;
 
-    res.render('backIngredientDetails', { ingredient: ingredient, title: ingredient.name + ' details'  });
+    res.render('backIngredientDetails', { ingredient: ingredient, title: ingredient.name + ' details' });
 });
 
 module.exports = router;

@@ -267,16 +267,27 @@ document.addEventListener('DOMContentLoaded', function () {
     const searchInput = document.getElementById('searchInput');
     const formSearch = document.getElementById('formSearch');
 
+    const idSort = document.getElementById('idSort');
+    const nameSort = document.getElementById('nameSort');
+
     formSearch?.addEventListener('submit', function (e) {
         e.preventDefault();
-        filterTable();
+        filterTable(searchInput.value);
     });
 
     searchInput?.addEventListener('input', function () {
         filterTable(searchInput.value);
     });
 
-    const filterTable = async (stringSearch) => {
+    idSort.onclick = () => {
+        filterTable(searchInput.value, "");
+    }
+
+    nameSort.onclick = () => {
+        filterTable(searchInput.value, 'name');
+    }
+
+    const filterTable = async (stringSearch, order) => {
 
         const searchParams = new URLSearchParams(window.location.search);
 
@@ -286,11 +297,20 @@ document.addEventListener('DOMContentLoaded', function () {
             searchParams.delete('name');
         }
 
+        if (order?.trim() !== "") {
+            searchParams.set('order', order);
+        } else {
+            searchParams.delete('order');
+        }
+
         const newURL = `${window.location.pathname}?${searchParams.toString()}`;
         history.pushState(null, '', newURL);
 
         try {
-            const response = await fetch(`http://localhost:8081/api/ingredient?name=${stringSearch}`);
+            const url = !order ? `http://localhost:8081/api/ingredient?name=${stringSearch}` :
+            `http://localhost:8081/api/ingredient?name=${stringSearch}&order=${order}`;
+
+            const response = await fetch(url);
 
             if (response.ok) {
                 const responseData = await response.json();

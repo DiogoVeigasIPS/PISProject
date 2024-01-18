@@ -188,7 +188,7 @@ SELECT
     id as id,
     `name`as `name`,
     `image` as `image`
-from ingredient ;
+from ingredient;
 
 -- difficulty
 
