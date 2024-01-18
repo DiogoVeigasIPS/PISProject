@@ -109,6 +109,8 @@ const openAddIngredientModal = async () => {
 }
 
 const openEditIngredientModal = async (id, inDetailsPage = false) => {
+    const ingredientDetails = new bootstrap.Modal(document.getElementById('ingredientFormModal'));
+    
     const ingredientNameForm = document.getElementById('ingredientNameForm');
     const ingredientDescriptionForm = document.getElementById('ingredientDescriptionForm');
     const ingredientImageInputForm = document.getElementById('ingredientImageInputForm');
@@ -157,7 +159,19 @@ const openEditIngredientModal = async (id, inDetailsPage = false) => {
             if (response.ok) {
                 const responseData = await response.json();
                 errorDiv.classList.add('d-none');
-                location.href = "http://localhost:8081/admin/ingredients";
+                
+                const trs = [...document.querySelectorAll('#ingredientsTable tbody tr')];
+                const tr = trs.find(row => {
+                    const idColumn = row.querySelector('td');
+                    return idColumn.innerText.trim() == id;
+                });
+
+                const columns = tr.querySelectorAll('td');
+                columns[1].innerText = responseData.name;
+                columns[2].src = responseData.image;
+
+                ingredientDetails.hide();
+                showToast(`${responseData.name} edited successfully!`);
             } else {
                 const responseData = await response.text();
                 errorDiv.classList.remove('d-none');
@@ -165,11 +179,10 @@ const openEditIngredientModal = async (id, inDetailsPage = false) => {
             }
 
         } catch (error) {
-            console.error("Error during ingredient addition:", error);
+            console.error("Error during ingredient edition:", error);
         }
     };
 
-    const ingredientDetails = new bootstrap.Modal(document.getElementById('ingredientFormModal'));
     ingredientDetails.show();
 }
 
