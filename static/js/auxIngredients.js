@@ -65,13 +65,13 @@ const openAddIngredientModal = async () => {
 
         try {
             const response = await fetch("http://localhost:8081/api/ingredient", options);
-            
+
             const errorDiv = ingredientForm.querySelector('#ingredientError');
 
             if (response.ok) {
                 const responseData = await response.json();
                 errorDiv.classList.add('d-none');
-                
+
                 // Create a new table row using JavaScript
                 const newIngredientRow = document.createElement('tr');
                 newIngredientRow.innerHTML = `
@@ -110,7 +110,7 @@ const openAddIngredientModal = async () => {
 
 const openEditIngredientModal = async (id, inDetailsPage = false) => {
     const ingredientDetails = new bootstrap.Modal(document.getElementById('ingredientFormModal'));
-    
+
     const ingredientNameForm = document.getElementById('ingredientNameForm');
     const ingredientDescriptionForm = document.getElementById('ingredientDescriptionForm');
     const ingredientImageInputForm = document.getElementById('ingredientImageInputForm');
@@ -159,16 +159,27 @@ const openEditIngredientModal = async (id, inDetailsPage = false) => {
             if (response.ok) {
                 const responseData = await response.json();
                 errorDiv.classList.add('d-none');
-                
-                const trs = [...document.querySelectorAll('#ingredientsTable tbody tr')];
-                const tr = trs.find(row => {
-                    const idColumn = row.querySelector('td');
-                    return idColumn.innerText.trim() == id;
-                });
 
-                const columns = tr.querySelectorAll('td');
-                columns[1].innerText = responseData.name;
-                columns[2].src = responseData.image;
+                if(!inDetailsPage){
+                    const trs = [...document.querySelectorAll('#ingredientsTable tbody tr')];
+                    const tr = trs.find(row => {
+                        const idColumn = row.querySelector('td');
+                        return idColumn.innerText.trim() == id;
+                    });
+    
+                    const columns = tr.querySelectorAll('td');
+                    columns[1].innerText = responseData.name;
+                    columns[2].src = responseData.image;
+                }else{
+                    const ingredientNameDetails = document.getElementById('ingredientNameDetails');
+                    const ingredientDescriptionDetails = document.getElementById('ingredientDescriptionDetails');
+                    const ingredientImageUrlDetails = document.getElementById('ingredientImageUrlDetails');
+                    const ingredientImagePreviewDetails = document.getElementById('ingredientImagePreviewDetails');
+
+                    ingredientNameDetails.innerText = responseData.name;
+                    ingredientDescriptionDetails.innerText = responseData.description;
+                    ingredientImageUrlDetails.innerText = ingredientImagePreviewDetails.src = responseData.image;
+                }
 
                 ingredientDetails.hide();
                 showToast(`${responseData.name} edited successfully!`);
@@ -243,18 +254,13 @@ const showToast = (message, isError = false) => {
     bootstrapToast.show();
 }
 
-function addSortQueryParam(sortBy) {
-    const currentURL = window.location.href;
-    const separator = currentURL.includes('?') ? '&' : '?';
+const updateSearchBar = () => {
+    const searchInput = document.getElementById('searchInput');
 
-    const sortParam = `sort=${encodeURIComponent(sortBy)}`;
-
-    const newURL = currentURL.includes('sort=') ?
-        currentURL.replace(/(sort=)[^&]*/, `$1${encodeURIComponent(sortBy)}`) :
-        currentURL + `${separator}${sortParam}`;
-
-    history.pushState({ path: newURL }, '', newURL);
-    location.reload();
+    const urlSearchParams = new URLSearchParams(window.location.search);
+    const nameParam = urlSearchParams.get('name');
+    
+    searchInput.value = nameParam || '';
 }
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -267,49 +273,53 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     searchInput?.addEventListener('input', function () {
-        filterTable();
+        filterTable(searchInput.value);
     });
 
-    function filterTable() {
-        const filter = searchInput.value.toLowerCase();
-        const rows = document.querySelectorAll('#ingredientsTable tbody tr');
+    const filterTable = async (stringSearch) => {
 
-        rows.forEach(function (row) {
-            const columns = row.getElementsByTagName('td');
-            let shouldHide = true;
+        const searchParams = new URLSearchParams(window.location.search);
 
-            for (let i = 0; i < columns.length; i++) {
-                const columnText = columns[i].textContent.toLowerCase();
-                if (columnText.includes(filter)) {
-                    shouldHide = false;
-                    break;
-                }
-            }
-
-            row.style.display = shouldHide ? 'none' : '';
-        });
-
-        // Update the URL if the search input is not empty
-        if (filter !== '') {
-            const currentURL = window.location.href;
-            const separator = currentURL.includes('?') ? '&' : '?';
-            const newURL = currentURL.split(separator)[0] + `${separator}name=${encodeURIComponent(filter)}`;
-            history.pushState({ path: newURL }, '', newURL);
+        if (stringSearch.trim() !== "") {
+            searchParams.set('name', stringSearch);
         } else {
-            const currentURL = window.location.href;
-            const separator = currentURL.includes('?') ? '&' : '';
-            const newURL = currentURL.split(separator)[0];
-            history.pushState({ path: newURL }, '', newURL);
+            searchParams.delete('name');
         }
-    }
 
-    // Initialize the search input with the value from the URL parameter
-    const urlSearchParams = new URLSearchParams(window.location.search);
-    const nameParam = urlSearchParams.get('name');
-    if (nameParam !== null) {
-        searchInput.value = decodeURIComponent(nameParam);
-        filterTable();
-    }
+        const newURL = `${window.location.pathname}?${searchParams.toString()}`;
+        history.pushState(null, '', newURL);
+
+        try {
+            const response = await fetch(`http://localhost:8081/api/ingredient?name=${stringSearch}`);
+
+            if (response.ok) {
+                const responseData = await response.json();
+
+                const tbody = document.querySelector('#ingredientsTable tbody');
+                tbody.innerHTML = "";
+                responseData.forEach(r => {
+                    const newIngredientRow = document.createElement('tr');
+                    newIngredientRow.innerHTML = `
+                    <td class="text-center align-middle">${r.id}</td>
+                    <td class="text-center align-middle">${r.name}</td>
+                    <td class="text-center align-middle">
+                        <img src="${r.image}" alt="Ingredient Image" class="img-thumbnail" style="max-width: 100px;">
+                    </td>
+                    <td class="text-center align-middle">
+                        <a href="javascript:openIngredientDetailsModal(${r.id});" class="mr-2"><i class="bi bi-eye-fill h3"></i></a>
+                        <a href="javascript:openEditIngredientModal(${r.id})" class="mr-2"><i class="bi bi-pencil-fill text-warning h3"></i></a>
+                        <a href="javascript:openDeleteModal('${r.id}', '${r.name}')" class="mr-2">
+                            <i class="bi bi-trash3 text-danger h3"></i>
+                        </a>
+                    </td>
+                `;
+                    tbody.appendChild(newIngredientRow);
+                })
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    };
 
     // Function to copy the link to the clipboard
     function copyToClipboard(text) {

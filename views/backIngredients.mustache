@@ -8,7 +8,7 @@
     <script defer src="/js/imagePreview.js"></script>
     <title>Ingredient Table</title>
 </head>
-<body onLoad="imagePreview('ingredientImageInputForm', 'imagePreview')">
+<body onLoad="imagePreview('ingredientImageInputForm', 'imagePreview'); updateSearchBar()">
     {{>backNavbar}}
     <div class="content">
         <div class="container mt-5">
@@ -30,8 +30,8 @@
                 <table class="table justify-content-center" id="ingredientsTable">
                     <thead>
                         <tr class="text-center">
-                            <th><a href = "javascript:addSortQueryParam('id')">#</a></th>
-                            <th><a href = "javascript:addSortQueryParam('name')">Name</a></th>
+                            <th><a href = "">#</a></th>
+                            <th><a href = "">Name</a></th>
                             <th>Image</th>
                             <th>Actions</th>
                         </tr>
