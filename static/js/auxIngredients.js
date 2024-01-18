@@ -33,6 +33,8 @@ const openIngredientDetailsModal = async (id) => {
 }
 
 const openAddIngredientModal = async () => {
+    const ingredientDetails = new bootstrap.Modal(document.getElementById('ingredientFormModal'));
+
     const ingredientNameForm = document.getElementById('ingredientNameForm');
     const ingredientDescriptionForm = document.getElementById('ingredientDescriptionForm');
     const ingredientImageInputForm = document.getElementById('ingredientImageInputForm');
@@ -42,7 +44,6 @@ const openAddIngredientModal = async () => {
 
     const submitIngredientButton = document.getElementById('submitIngredientButton');
     submitIngredientButton.innerText = 'Add Ingredient';
-
     const activityTitle = document.getElementById('activityTitle');
     activityTitle.innerText = 'Add an ingredient';
 
@@ -70,8 +71,30 @@ const openAddIngredientModal = async () => {
             if (response.ok) {
                 const responseData = await response.json();
                 errorDiv.classList.add('d-none');
-                // Add through DOM
-                location.href = "http://localhost:8081/admin/ingredients";
+                
+                // Create a new table row using JavaScript
+                const newIngredientRow = document.createElement('tr');
+                newIngredientRow.innerHTML = `
+                    <td class="text-center align-middle">${responseData.id}</td>
+                    <td class="text-center align-middle">${responseData.name}</td>
+                    <td class="text-center align-middle">
+                        <img src="${responseData.image}" alt="Ingredient Image" class="img-thumbnail" style="max-width: 100px;">
+                    </td>
+                    <td class="text-center align-middle">
+                        <a href="javascript:openIngredientDetailsModal(${responseData.id});" class="mr-2"><i class="bi bi-eye-fill h3"></i></a>
+                        <a href="javascript:openEditIngredientModal(${responseData.id})" class="mr-2"><i class="bi bi-pencil-fill text-warning h3"></i></a>
+                        <a href="javascript:openDeleteModal('${responseData.id}', '${responseData.name}')" class="mr-2">
+                            <i class="bi bi-trash3 text-danger h3"></i>
+                        </a>
+                    </td>
+                `;
+
+                // Append the new row to the table
+                const tbody = document.querySelector('#ingredientsTable tbody');
+                tbody.appendChild(newIngredientRow);
+
+                ingredientDetails.hide();
+                showToast("Ingredient added successfully!");
             } else {
                 const responseData = await response.text();
                 errorDiv.classList.remove('d-none');
@@ -82,12 +105,10 @@ const openAddIngredientModal = async () => {
             console.error("Error during ingredient addition:", error);
         }
     };
-
-    const ingredientDetails = new bootstrap.Modal(document.getElementById('ingredientFormModal'));
     ingredientDetails.show();
 }
 
-const openEditIngredientModal = async (id) => {
+const openEditIngredientModal = async (id, inDetailsPage = false) => {
     const ingredientNameForm = document.getElementById('ingredientNameForm');
     const ingredientDescriptionForm = document.getElementById('ingredientDescriptionForm');
     const ingredientImageInputForm = document.getElementById('ingredientImageInputForm');
@@ -289,7 +310,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Event listener for the copy link button
-    document.getElementById('copyLink').addEventListener('click', function () {
+    document.getElementById('copyLink')?.addEventListener('click', function () {
         var ingredientId = document.getElementById('ingredientId').innerText;
         var link = `http://localhost:8081/admin/ingredient/details/${ingredientId}`;
 
