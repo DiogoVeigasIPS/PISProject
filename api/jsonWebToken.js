@@ -13,6 +13,7 @@ function verifyJWT(req, res, next) {
 
         //console.log(decoded)
         req.userId = decoded.id;
+        req.isAdmin = decoded.isAdmin;
         next();
     });
 }

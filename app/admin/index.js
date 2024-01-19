@@ -3,16 +3,42 @@
  * Purpose: Manages the application's admin part workflow.
  */
 const express = require('express');
+const session = require('express-session');
+let dotenv = require('dotenv').config()
+
 const { recipeActions, ingredientActions } = require('../../api/actions');
+const { verifyJWT } = require('../../api/jsonWebToken');
 
 const router = express.Router();
 
-router.get('', async (req, res) => {
+router.use(session({
+    secret: dotenv.parsed.SECRET_WORD,
+    resave: true,
+    saveUninitialized: true
+}));
+
+router.get('/recipes', verifyJWT, async (req, res) => {
+    const id = req.userId;
+    const isAdmin = req.isAdmin;
+
+    if (id == null || !isAdmin) {
+        res.render('unauthorized');
+        return;
+    }
+
     const recipes = (await recipeActions.getRecipes()).responseMessage;
     res.render('backRecipes', { recipes: recipes, title: 'Recipes' });
 });
 
-router.get('/ingredients', async (req, res) => {
+router.get('/ingredients', verifyJWT, async (req, res) => {
+    const id = req.userId;
+    const isAdmin = req.isAdmin;
+
+    if (id == null || !isAdmin) {
+        res.render('unauthorized');
+        return;
+    }
+
     const stringSearch = req.query.name || null;
     const orderBy = req.query.order ?? null;
 
