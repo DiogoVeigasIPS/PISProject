@@ -7,19 +7,20 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/userPage.css">
     <script src="/js/userPage.js" defer></script>
+    <script src="/js/redirects/me.js"></script>
 </head>
 <body>
     {{>navbar}}
 
-    <div class="container content border p-3">
+    <div id="container" class="container content border p-3 d-none">
         <div class="row">
             <div class="col-md-3">
-                <h2>{{user.firstName}} {{user.lastName}}</h2>
+                <h2 id="userFullName">{{user.firstName}} {{user.lastName}}</h2>
                 <hr class="w-75">
-                <img src="{{user.image}}" class="border rounded square-image" alt="{{user.firstName}} {{user.lastName}} Image">
+                <img id="userImage" src="{{user.image}}" class="border rounded square-image" alt="{{user.firstName}} {{user.lastName}} Image">
                 <hr class="w-75">
-                <p><strong>Username:</strong> {{user.username}}</p>
-                <p><strong>Email:</strong> {{user.email}}</p>
+                <p><strong>Username:</strong> <span id="userName">{{user.username}}</span></p>
+                <p><strong>Email:</strong> <span id="userEmail">{{user.email}}</span></p>
                 <hr class="w-75">
                 <button class="btn btn-primary" id="updateButton">Update Profile</button>
                 <button class="btn btn-danger" id="logoutButton">Logout</button>

@@ -3,52 +3,19 @@
  * Purpose: Manages the application's basic user workflow.
  */
 const express = require('express');
-const session = require('express-session');
 let dotenv = require('dotenv').config()
 
 const { recipeActions, areaActions, categoryActions, difficultyActions, userActions } = require('../../api/actions');
 const { IngredientInRecipe, Ingredient, Category, Area, Difficulty, Recipe, Author } = require('../../api/models');
-const { getUser } = require('../../api/actions/userActions');
-const { verifyJWT } = require('../../api/jsonWebToken');
 
 const router = express.Router();
 
-router.use(session({
-    secret: dotenv.parsed.SECRET_WORD,
-    resave: true,
-    saveUninitialized: true
-}));
-
-router.get('/try-auth', verifyJWT, async (req, res) => {
-    const id = req.userId;
-
-    if (id == null) {
-        res.redirect('/auth');
-        return;
-    }
-    
-    req.session.userId = id;
-    res.redirect('/me');
+router.get('/auth', (req, res) => {
+    res.render('auth');
 });
 
 router.get('/me', async (req, res) => {
-    const id = req.session.userId;
-    delete req.session.userId;
-    
-    if (id == null) {
-        res.render('unauthorized');
-        return;
-    }
-    
-    const user = (await getUser(id)).responseMessage;
-
-    if (!user) {
-        res.render('unauthorized');
-        return;
-    }
-
-    user.image = user.image == null ? '/img/chefProfilePicture.png' : user.image;
-    res.render('userPage', { user: user, title: user.lastName + "' profile" });
+    res.render('userPage',);
 });
 
 router.post('/signup', async (req, res) => {
@@ -140,11 +107,6 @@ router.get('/recipe/:id', async (req, res) => {
     } else {
         res.render('notFound', { title: "Page Not Found" });
     }
-});
-
-// Auth Page
-router.get('/auth', (req, res) => {
-    res.render('auth', { title: "Auth" });
 });
 
 router.get('/categories', async (req, res) => {

@@ -38,7 +38,7 @@ loginForm.addEventListener('submit', async (e) => {
             errorDiv.classList.add('d-none');
             responseData = await response.json();
             localStorage.setItem('auth', responseData.token);
-            window.location = '/try-auth?token=' + responseData.token;
+            window.location = '/me';
         }
 
     } catch (error) {
@@ -80,7 +80,7 @@ signupForm.addEventListener('submit', async (e) => {
             errorDiv.classList.add('d-none');
             responseData = await response.json();
             localStorage.setItem('auth', responseData.token);
-            window.location = '/try-auth?token=' + responseData.token;
+            window.location = '/me';
         }
 
     } catch (error) {

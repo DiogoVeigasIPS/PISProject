@@ -235,6 +235,16 @@ const signupUser = ({ username, email, password, repeatPassword, firstName, last
     });
 };
 
+const userIsLoggedIn = (userId) => {
+    return new Promise((resolve, reject) => {
+        if (userId == null) {
+            return reject({ statusCode: 401, responseMessage: { auth: false } });
+        }
+
+        resolve({ statusCode: 200, responseMessage: { auth: true, id: userId } });
+    });
+}
+
 module.exports.getUsers = getUsers;
 module.exports.getUser = getUser;
 module.exports.addUser = addUser;
@@ -242,3 +252,4 @@ module.exports.editUser = editUser;
 module.exports.deleteUser = deleteUser;
 module.exports.loginUser = loginUser;
 module.exports.signupUser = signupUser;
+module.exports.userIsLoggedIn = userIsLoggedIn;
