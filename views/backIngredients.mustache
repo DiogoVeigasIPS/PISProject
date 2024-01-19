@@ -9,10 +9,10 @@
     <script src="/js/redirects/backoffice.js"></script>
     <title>Ingredients List</title>
 </head>
-<body onLoad="imagePreview('ingredientImageInputForm', 'imagePreview'); updateSearchBar()">
+<body id="container" class="d-none" onLoad="imagePreview('ingredientImageInputForm', 'imagePreview'); updateSearchBar()">
     {{>backNavbar}}
-    {{>navbar}}
-    <div id="container" class="content d-none">
+
+    <div class="content">
         <div class="container mt-5">
             <h1 class="mb-4">Ingredients</h1>
             <div class="row">

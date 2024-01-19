@@ -5,16 +5,15 @@
 const express = require('express');
 
 const { recipeActions, ingredientActions } = require('../../api/actions');
-const { verifyJWT } = require('../../api/jsonWebToken');
 
 const router = express.Router();
 
-router.get('/recipes', verifyJWT, async (req, res) => {
+router.get('/recipes', async (req, res) => {
     const recipes = (await recipeActions.getRecipes()).responseMessage;
     res.render('backRecipes', { recipes: recipes, title: 'Recipes' });
 });
 
-router.get('/ingredients', verifyJWT, async (req, res) => {
+router.get('/ingredients', async (req, res) => {
     const stringSearch = req.query.name || null;
     const orderBy = req.query.order ?? null;
 

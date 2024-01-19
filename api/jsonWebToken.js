@@ -4,6 +4,8 @@ let dotenv = require('dotenv').config()
 function verifyJWT(req, res, next) {
     const token = req.headers['x-access-token'];
     
+    if(token == null) return;
+
     jwt.verify(token, dotenv.parsed.SECRET_WORD, function (err, decoded) {
         if(err){
            console.error(err); 
