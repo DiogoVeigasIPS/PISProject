@@ -165,22 +165,40 @@ SELECT
     r.name AS name,
     r.image AS image,
     r.external_id AS idProvider,
-    c.id AS category_id,
-    a.id AS area_id,
-    u.id AS author_id,
-    d.id AS difficulty_id
+    r.id AS category_id,
+    r.id AS area_id,
+    r.id AS author_id,
+    r.id AS difficulty_id
+    FROM recipe r;
+
+DROP VIEW IF EXISTS partial_named_search_recipes;
+CREATE VIEW partial_named_search_recipes AS
+SELECT
+    r.id AS id,
+    r.name AS name,
+    r.image AS image,
+    r.external_id AS idProvider,
+    JSON_OBJECT(
+        'id', c.id,
+        'name', c.name
+    ) AS category,
+    JSON_OBJECT(
+        'id', d.id,
+        'name', IFNULL(d.name, 'Not provided')
+    ) AS difficulty,
+    JSON_OBJECT(
+        'id', u.id,
+        'username', u.username
+    ) AS author,
+    JSON_OBJECT(
+        'id', a.id,
+        'name', a.name
+    ) AS area
     FROM recipe r
     JOIN area a ON r.area_id = a.id
     LEFT JOIN `user` u ON r.author_id = u.id
     LEFT JOIN category c ON r.category_id = c.id
     LEFT JOIN difficulty d ON r.difficulty_id = d.id;
-
--- Query the view
-/* SELECT * FROM search_recipes WHERE name like 'Sushi%';
-SELECT * FROM search_recipes WHERE category_id = 4;
-SELECT * FROM search_recipes WHERE area_id = 15;
-SELECT * FROM search_recipes ORDER BY RAND();
-SELECT * FROM search_recipes LIMIT 1; */
 
 DROP VIEW IF EXISTS partial_ingredients;
 CREATE VIEW partial_ingredients AS

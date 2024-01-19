@@ -12,6 +12,7 @@ const readRecipes = (req, res) => {
     const isRandom = query.random && query.random.toLowerCase() === 'true';
     const stringSearch = query.name ? query.name : null;
     const isPartial = query.partial && query.partial.toLowerCase() === 'true';
+    const isNamed = query.named && query.named.toLowerCase() === 'true';
     const area = query.area && !isNaN(query.area) ? parseInt(query.area) : null;
     const category = query.category && !isNaN(query.category) ? parseInt(query.category) : null;
 
@@ -20,6 +21,7 @@ const readRecipes = (req, res) => {
         isRandom: isRandom,
         stringSearch: stringSearch,
         isPartial: isPartial,
+        isNamed: isNamed,
         area: area,
         category: category
     }
