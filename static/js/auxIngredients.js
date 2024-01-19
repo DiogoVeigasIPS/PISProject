@@ -287,7 +287,7 @@ document.addEventListener('DOMContentLoaded', function () {
         filterTable(searchInput.value, 'name');
     }
 
-    const filterTable = async (stringSearch, order) => {
+    const filterTable = async (stringSearch, order = "") => {
 
         const searchParams = new URLSearchParams(window.location.search);
 

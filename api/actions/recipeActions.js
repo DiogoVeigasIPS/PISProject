@@ -15,7 +15,10 @@ const { getUser } = require('./userActions');
 
 const getRecipes = (queryOptions = null) => {
     return new Promise((resolve, reject) => {
-        const baseQueryString = queryOptions?.isPartial ? 'SELECT * FROM partial_search_recipes WHERE 1=1' : 'SELECT * FROM search_recipes WHERE 1=1';
+        const baseQueryString = queryOptions?.isPartial ? 
+        queryOptions?.isNamed ? 'SELECT * FROM partial_named_search_recipes WHERE 1=1' :
+        'SELECT * FROM partial_search_recipes WHERE 1=1' : 
+        'SELECT * FROM search_recipes WHERE 1=1';
         let queryString = baseQueryString;
 
         const queryValues = [];
@@ -37,6 +40,8 @@ const getRecipes = (queryOptions = null) => {
 
         if (queryOptions?.isRandom) {
             queryString += ' ORDER BY RAND()';
+        }else{
+            queryString += ' ORDER BY id';
         }
 
         if (queryOptions?.maxResults) {

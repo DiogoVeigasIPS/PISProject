@@ -19,7 +19,7 @@ router.use(session({
     saveUninitialized: true
 }));
 
-router.get('/try-auth', verifyJWT, async (req, res, next) => {
+router.get('/try-auth', verifyJWT, async (req, res) => {
     const id = req.userId;
 
     if (id == null) {
@@ -48,7 +48,7 @@ router.get('/me', async (req, res) => {
     }
 
     user.image = user.image == null ? '/img/chefProfilePicture.png' : user.image;
-    res.render('userPage', { user: user });
+    res.render('userPage', { user: user, title: user.lastName + "' profile" });
 });
 
 router.post('/signup', async (req, res) => {
