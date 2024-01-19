@@ -1,14 +1,3 @@
-const redirectAccount = () => {
-    const token = localStorage.getItem('auth');
-
-    if (!token) {
-        window.location.href = '/auth';
-        return;
-    }
-
-    window.location = '/try-auth?token=' + token;
-};
-
 const redirect = (page = '/auth') => {
     const token = localStorage.getItem('auth');
 
