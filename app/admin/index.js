@@ -22,7 +22,7 @@ router.get('/recipes', verifyJWT, async (req, res) => {
     const isAdmin = req.isAdmin;
 
     if (id == null || !isAdmin) {
-        res.render('unauthorized');
+        res.redirect('/unauthorized');
         return;
     }
 
@@ -35,7 +35,7 @@ router.get('/ingredients', verifyJWT, async (req, res) => {
     const isAdmin = req.isAdmin;
 
     if (id == null || !isAdmin) {
-        res.render('unauthorized');
+        res.redirect('/unauthorized');
         return;
     }
 
