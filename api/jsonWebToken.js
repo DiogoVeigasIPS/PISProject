@@ -2,18 +2,18 @@ const jwt = require('jsonwebtoken');
 let dotenv = require('dotenv').config()
 
 function verifyJWT(req, res, next) {
-    const token = req.headers['x-access-token'] || req.query.token;
+    const token = req.headers['x-access-token'];
     
-    if (!token)
-        return res.redirect('/auth');
+    if(token == null) return;
 
     jwt.verify(token, dotenv.parsed.SECRET_WORD, function (err, decoded) {
-        if (err)
-            return res.redirect('/auth');
+        if(err){
+           console.error(err); 
+        }
 
         //console.log(decoded)
-        req.userId = decoded.id;
-        req.isAdmin = decoded.isAdmin;
+        req.userId = decoded?.id;
+        req.isAdmin = decoded?.isAdmin;
         next();
     });
 }

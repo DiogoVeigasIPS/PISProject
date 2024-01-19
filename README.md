@@ -32,6 +32,7 @@ HOST=localhost
 USER=root
 PASSWORD=root
 DATABASE=pis_project
+DATABASE_PORT=3306
 SECRET_WORD=ChickenBreast
 ```
 In the case you intend to change them, do it through the .env file.

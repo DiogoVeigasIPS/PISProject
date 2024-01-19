@@ -279,10 +279,12 @@ document.addEventListener('DOMContentLoaded', function () {
         filterTable(searchInput.value);
     });
 
-    idSort.onclick = () => {
-        filterTable(searchInput.value, "");
-    }
+    if(idSort != null)
+        idSort.onclick = () => {
+            filterTable(searchInput.value, "");
+        }
 
+    if(nameSort != null)
     nameSort.onclick = () => {
         filterTable(searchInput.value, 'name');
     }
@@ -355,7 +357,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Event listener for the copy link button
     document.getElementById('copyLink')?.addEventListener('click', function () {
         var ingredientId = document.getElementById('ingredientId').innerText;
-        var link = `http://localhost:8081/admin/ingredient/details/${ingredientId}`;
+        var link = `http://localhost:8081/admin/ingredient/${ingredientId}`;
 
         copyToClipboard(link);
 
