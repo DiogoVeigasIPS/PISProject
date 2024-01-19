@@ -9,6 +9,7 @@
             window.location.href = '/me';
         }else{
             document.getElementById('container').classList.remove('d-none');
+            document.getElementById('footer').classList.remove('d-none');
         }
     } catch (err) {
         console.error(err);

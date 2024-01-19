@@ -3,7 +3,6 @@
  * Purpose: Manages the application's basic user workflow.
  */
 const express = require('express');
-let dotenv = require('dotenv').config()
 
 const { recipeActions, areaActions, categoryActions, difficultyActions, userActions } = require('../../api/actions');
 const { IngredientInRecipe, Ingredient, Category, Area, Difficulty, Recipe, Author } = require('../../api/models');
@@ -16,24 +15,6 @@ router.get('/auth', (req, res) => {
 
 router.get('/me', async (req, res) => {
     res.render('userPage',);
-});
-
-router.post('/signup', async (req, res) => {
-    try {
-        const signup = await userActions.signupUser(req.body);
-        res.send(signup);
-    } catch (error) {
-        res.send(error);
-    }
-});
-
-router.post('/login', async (req, res) => {
-    try {
-        const login = await userActions.loginUser(req.body);
-        res.send(login);
-    } catch (error) {
-        res.send(error);
-    }
 });
 
 router.post('/submit-recipe', async (req, res) => {
