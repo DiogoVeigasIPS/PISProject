@@ -11,7 +11,6 @@
         }
 
         const responseData = await response.json();
-        console.log(responseData)
         const responseUser = await fetch(`http://localhost:8081/api/user/${responseData.id}`);
 
         if(responseUser.status == 200){
@@ -28,7 +27,6 @@
             document.title = `${responseUserData.lastName}' profile`;
 
             document.getElementById('container').classList.remove('d-none');
-            document.getElementById('footer').classList.remove('d-none');
         }
 
     } catch (err) {

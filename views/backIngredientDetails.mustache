@@ -5,12 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <script defer src="/js/auxIngredients.js"></script>
     <script defer src="/js/imagePreview.js"></script>
-    <title>{{title}}</title>
+    <script src="/js/redirects/backoffice.js"></script>
+    <title>Ingredient details</title>
 </head>
 <body onLoad="imagePreview('ingredientImageInputForm', 'imagePreview')">
     {{>backnavbar}}
+    {{>navbar}}
 
-    <div class="container content border p-3">
+    <div id="container" class="container content border p-3 d-none">
         <div class="row">
             <div class="col-md-6">
                 <img id="ingredientImagePreviewDetails" src="{{ingredient.image}}" class="img-fluid mb-4" alt="{{ingredient.name}} Image">

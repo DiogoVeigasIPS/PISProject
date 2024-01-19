@@ -38,7 +38,8 @@ const signupUser = (req, res) => {
 
 const userIsLoggedIn = (req, res) => {
     const id = req.userId;
-    handlePromise(userActions.userIsLoggedIn(id), res);
+    const isAdmin = req.isAdmin;
+    handlePromise(userActions.userIsLoggedIn(id, isAdmin), res);
 };
 
 module.exports.readUsers = readUsers;

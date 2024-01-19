@@ -235,13 +235,13 @@ const signupUser = ({ username, email, password, repeatPassword, firstName, last
     });
 };
 
-const userIsLoggedIn = (userId) => {
+const userIsLoggedIn = (userId, isAdmin) => {
     return new Promise((resolve, reject) => {
         if (userId == null) {
             return reject({ statusCode: 401, responseMessage: { auth: false } });
         }
 
-        resolve({ statusCode: 200, responseMessage: { auth: true, id: userId } });
+        resolve({ statusCode: 200, responseMessage: { auth: true, id: userId, isAdmin: isAdmin } });
     });
 }
 

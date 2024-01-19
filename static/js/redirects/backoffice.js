@@ -5,10 +5,14 @@
             headers: { 'x-access-token': token }
         });
 
-        if (response.status == 200) {
-            window.location.href = '/me';
-        }else{
+        const responseData = await response.json();
+
+        if (response.status == 200 && responseData.isAdmin) {
             document.getElementById('container').classList.remove('d-none');
+            document.getElementById('navbar').classList.add('d-none');
+            document.getElementById('backNavbar').classList.remove('d-none');
+        }else{
+            window.location.href = '/unauthorized';
         }
     } catch (err) {
         console.error(err);
