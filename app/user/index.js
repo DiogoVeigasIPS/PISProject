@@ -79,8 +79,9 @@ router.get('/recipe/:id', async (req, res) => {
     if (id !== null) {
         try {
             var recipe = await recipeActions.getRecipe(id);
+            const preparedRecipe = prepareRecipe(recipe.responseMessage);
 
-            res.render('recipe', { recipe: prepareRecipe(recipe.responseMessage), title: "My Cuisine Pal" });
+            res.render('recipe', { recipe: preparedRecipe, title: `My Cuisine Pal - ${preparedRecipe.name}` });
         } catch (error) {
             console.error(error);
             res.render('notFound', { title: "Page Not Found" });
@@ -160,10 +161,10 @@ module.exports = router;
 const prepareRecipe = (recipe) => {
     const defaultValue = "Not provided";
 
-    if (recipe.author == null) {
+    if (recipe.author?.username == null) {
         recipe.author = { username: defaultValue }
     }
-    if (recipe.difficulty == null) {
+    if (recipe.difficulty?.name == null) {
         recipe.difficulty = { name: defaultValue }
     }
 

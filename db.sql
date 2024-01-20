@@ -117,7 +117,7 @@ SELECT
         'description', c.description,
         'image', c.image
     ) AS category,
-    COALESCE(r.description, 'Not provided') AS description, -- Handle NULL description
+    r.description AS description,
     r.preparation_description AS preparationDescription,
     JSON_OBJECT(
         'id', a.id,
