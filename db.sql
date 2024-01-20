@@ -210,7 +210,7 @@ from ingredient;
 
 -- difficulty
 
-INSERT INTO `difficulty` ('name') VALUES ('Beginner'), ('Cook'), ('Chef');
+INSERT INTO `difficulty` (`name`) VALUES ('Beginner'), ('Cook'), ('Chef');
 
 -- user
 
