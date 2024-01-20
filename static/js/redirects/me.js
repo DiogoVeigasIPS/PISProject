@@ -20,7 +20,7 @@
             const userName = document.getElementById('userName');
             const userEmail = document.getElementById('userEmail');
 
-            userFullName.innerText = responseUserData.firstName + responseUserData.lastName;
+            userFullName.innerText = `${responseUserData.firstName} ${responseUserData.lastName}`;
             userImage.src = responseUserData.image ?? '/img/chefProfilePicture.png';
             userName.innerText = responseUserData.username;
             userEmail.innerText = responseUserData.email;
