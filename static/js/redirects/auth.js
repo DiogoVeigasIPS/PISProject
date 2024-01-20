@@ -1,7 +1,7 @@
 (async () => {
     try {
         const token = localStorage.getItem('auth');
-        const response = await fetch("http://localhost:8081/api/user/logged-in", {
+        const response = await fetch("http://localhost:8081/api/user/loggedIn", {
             headers: { 'x-access-token': token }
         });
 

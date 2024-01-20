@@ -9,7 +9,7 @@ const { verifyJWT } = require('../jsonWebToken');
 
 const router = express.Router();
 
-router.get('/logged-in', verifyJWT, userController.userIsLoggedIn);
+router.get('/loggedIn', verifyJWT, userController.userIsLoggedIn);
 router.get('', userController.readUsers);
 router.get('/:id', userController.readUser);
 router.post('', userController.addUser);
