@@ -158,7 +158,7 @@ module.exports = router;
  * @returns {Recipe} - The processed recipe with no null values.
  */
 const prepareRecipe = (recipe) => {
-    const defaultValue = "Not provided";
+    const defaultValue = "Not Provided";
 
     if (recipe.author == null) {
         recipe.author = { username: defaultValue }

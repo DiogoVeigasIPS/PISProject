@@ -9,7 +9,15 @@ const { recipeActions, ingredientActions } = require('../../api/actions');
 const router = express.Router();
 
 router.get('/recipes', async (req, res) => {
-    const recipes = (await recipeActions.getRecipes()).responseMessage;
+
+    const orderBy = req.query.order ?? null;
+
+    const queryOptions = {
+        orderBy: orderBy,
+        isPartial: true,
+        isNamed: true,
+    };
+    const recipes = (await recipeActions.getRecipes(queryOptions)).responseMessage;
     res.render('backRecipes', { recipes: recipes, title: 'Recipes' });
 });
 
