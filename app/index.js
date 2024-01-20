@@ -9,7 +9,7 @@ const appRoutes = require('./user');
 const adminRoutes = require('./admin');
 
 router.get('/unauthorized', (req, res) => {
-    res.render('unauthorized');
+    res.status(401).render('unauthorized');
 })
 
 router.use('/admin', adminRoutes);

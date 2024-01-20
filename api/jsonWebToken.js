@@ -8,7 +8,7 @@ function verifyJWT(req, res, next) {
 
     jwt.verify(token, dotenv.parsed.SECRET_WORD, function (err, decoded) {
         if(err){
-           console.error(err); 
+           //console.error(err); 
         }
 
         //console.log(decoded)

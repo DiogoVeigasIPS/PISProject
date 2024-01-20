@@ -4,8 +4,6 @@
  */
 const bcrypt = require('bcrypt');
 const mysql = require('mysql2');
-const jwt = require('jsonwebtoken');
-let dotenv = require('dotenv').config()
 const connectionOptions = require('./connectionOptions');
 
 const { User } = require('../models');
@@ -245,6 +243,78 @@ const userIsLoggedIn = (userId, isAdmin) => {
     });
 }
 
+const getFavorites = (queryOptions = null, id) => {
+    return new Promise((resolve, reject) => {
+        const connection = mysql.createConnection(connectionOptions);
+        connection.connect();
+
+        const view = queryOptions?.isPartial
+            ? queryOptions?.isNamed
+                ? 'partial_named_search_recipes'
+                : 'partial_search_recipes'
+            : 'search_recipes';
+
+        const query = `SELECT * FROM ${view} sr JOIN favorite_recipe fr ON fr.recipe_id = sr.id WHERE user_id = ?`;
+
+        connection.query(query, [id], (err, result) => {
+            if (err) {
+                console.error(err);
+                reject({ statusCode: 500, responseMessage: err });
+                return;
+            }
+
+            resolve({ statusCode: 200, responseMessage: result });
+        });
+
+        connection.end();
+    })
+}
+
+const addFavorite = (id, recipe) => {
+    return new Promise((resolve, reject) => {
+        const connection = mysql.createConnection(connectionOptions);
+        connection.connect();
+
+        connection.query("INSERT INTO favorite_recipe VALUES (?, ?)", [id, recipe], (err, result) => {
+            if (err) {
+                console.error(err);
+                if(err.sqlMessage.startsWith('Duplicate entry')){
+                    return reject({ statusCode: 422, responseMessage: 'That recipe is already a favorite.' });
+                }
+                reject({ statusCode: 500, responseMessage: err });
+                return;
+            }
+
+            resolve({ statusCode: 201, responseMessage: 'Recipe favorited successfully.' });
+        });
+
+        connection.end();
+    })
+}
+
+const removeFavorite = (id, recipe) => {
+    return new Promise((resolve, reject) => {
+        const connection = mysql.createConnection(connectionOptions);
+        connection.connect();
+
+        connection.query("DELETE FROM favorite_recipe WHERE user_id = ? AND recipe_id = ?", [id, recipe], (err, result) => {
+            if (err) {
+                console.error(err);
+                reject({ statusCode: 500, responseMessage: err });
+                return;
+            }
+
+            if (result.affectedRows > 0) {
+                resolve({ statusCode: 200, responseMessage: 'Recipe unfavorited.' });
+            } else {
+                reject({ statusCode: 404, responseMessage: 'Recipe was not a favorite.' });
+            }
+        });
+
+        connection.end();
+    })
+}
+
 module.exports.getUsers = getUsers;
 module.exports.getUser = getUser;
 module.exports.addUser = addUser;
@@ -253,3 +323,6 @@ module.exports.deleteUser = deleteUser;
 module.exports.loginUser = loginUser;
 module.exports.signupUser = signupUser;
 module.exports.userIsLoggedIn = userIsLoggedIn;
+module.exports.getFavorites = getFavorites;
+module.exports.addFavorite = addFavorite;
+module.exports.removeFavorite = removeFavorite;

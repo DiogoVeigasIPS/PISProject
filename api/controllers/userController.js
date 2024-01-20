@@ -42,6 +42,35 @@ const userIsLoggedIn = (req, res) => {
     handlePromise(userActions.userIsLoggedIn(id, isAdmin), res);
 };
 
+const getFavorites = (req, res) => {
+    const id = req.params.id;
+
+    const query = req.query;
+    const isPartial = query.partial && query.partial.toLowerCase() === 'true';
+    const isNamed = query.named && query.named.toLowerCase() === 'true';
+    const maxResults = query.max && !isNaN(query.max) ? parseInt(query.max) : null;
+
+    const queryOptions = {
+        isPartial,
+        isNamed,
+        maxResults
+    }
+
+    handlePromise(userActions.getFavorites(queryOptions, id), res);
+}
+
+const addFavorite = (req, res) => {
+    const id = req.params.id;
+    const recipe = req.params.recipe_id;
+    handlePromise(userActions.addFavorite(id, recipe), res);
+}
+
+const removeFavorite = (req, res) => {
+    const id = req.params.id;
+    const recipe = req.params.recipe_id;
+    handlePromise(userActions.removeFavorite(id, recipe), res);
+}
+
 module.exports.readUsers = readUsers;
 module.exports.readUser = readUser;
 module.exports.addUser = addUser;
@@ -50,3 +79,6 @@ module.exports.deleteUser = deleteUser;
 module.exports.loginUser = loginUser;
 module.exports.signupUser = signupUser;
 module.exports.userIsLoggedIn = userIsLoggedIn;
+module.exports.getFavorites = getFavorites;
+module.exports.addFavorite = addFavorite;
+module.exports.removeFavorite = removeFavorite;

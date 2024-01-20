@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>{{title}}</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="/css/userPage.css">
-    <script src="/js/userPage.js" defer></script>
+    <script src="/js/showToast.js" defer></script>
     <script src="/js/redirects/me.js"></script>
 </head>
 <body>
@@ -15,7 +16,7 @@
     <div id="container" class="container content border p-3 d-none">
         <div class="row">
             <div class="col-md-3">
-                <h2 id="userFullName">{{user.firstName}} {{user.lastName}}</h2>
+                <h1 id="userFullName">{{user.firstName}} {{user.lastName}}</h1>
                 <hr class="w-75">
                 <img id="userImage" src="{{user.image}}" class="border rounded square-image" alt="{{user.firstName}} {{user.lastName}} Image">
                 <hr class="w-75">
@@ -26,7 +27,48 @@
                 <button class="btn btn-danger" id="logoutButton">Logout</button>
             </div>
             <div class="col-md-9">
-                <h1>Lists:</h1>
+                <h2 class="mb-4">Favorite Recipes:</h2>
+                <form id="formSearch" class="my-3">
+                    <div class="input-group">
+                        <input id="searchInput" type="text" class="form-control" name="name" placeholder="Search for ingredients...">
+                        <button class="btn btn-primary" type="submit">Search</button>
+                    </div>
+                </form>
+                <div class="row row-cols-1 row-cols-md-3 g-4" id="favorite-recipes-container">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{! Notification toast }}
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="toast" class="toast align-items-end end-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">System</strong>
+                <small>Just now</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="toastBody">
+                Hello, world! This is a toast message.
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Confirm delete</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to unfavorite <strong><span id="deleteModalName"></span></strong>?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeletion" data-bs-dismiss="modal">Confirm</button>
+                </div>
             </div>
         </div>
     </div>
