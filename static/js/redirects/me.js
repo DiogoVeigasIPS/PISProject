@@ -26,6 +26,8 @@
             userEmail.innerText = responseUserData.email;
             document.title = `${responseUserData.lastName}' profile`;
 
+            document.getElementById('searchInput').value = "";
+
             document.getElementById('container').classList.remove('d-none');
             addRecipes(responseUserData.id);
         }
@@ -87,7 +89,7 @@ const removeFavoriteRecipe = async (userId, recipeId, recipeName) => {
             const response = await fetch(`http://localhost:8081/api/user/${userId}/favoriteRecipe/${recipeId}`, {
                 method: "DELETE"
             });
-    
+
             const responseData = await response.text();
             if (response.ok) {
                 removeFavoriteRecipeDOM(recipeId);
@@ -110,3 +112,42 @@ const removeFavoriteRecipeDOM = (id) => {
     const parent = recipeCard.parentNode;
     parent.removeChild(recipeCard)
 }
+
+window.addEventListener('load', () => {
+    // Log out
+    const logoutButton = document.querySelector('#logoutButton');
+
+    logoutButton.addEventListener('click', () => {
+        localStorage.removeItem('auth');
+        window.location = '/auth';
+    })
+
+    // Dynamic search
+    const searchInput = document.getElementById('searchInput');
+    const formSearch = document.getElementById('formSearch');
+
+    formSearch?.addEventListener('submit', function (e) {
+        e.preventDefault();
+        filterRecipes(searchInput.value);
+    });
+
+    searchInput?.addEventListener('input', function () {
+        filterRecipes(searchInput.value);
+    });
+
+    const filterRecipes = (stringSearch) => {
+        const container = document.getElementById('favorite-recipes-container');
+        const recipeCards = container.querySelectorAll('.recipe-card');
+
+        recipeCards.forEach((recipeCard) => {
+            const recipeName = recipeCard.querySelector('.card-title').innerText.toLowerCase();
+            const shouldShow = recipeName.includes(stringSearch.toLowerCase());
+
+            if (shouldShow) {
+                recipeCard.parentElement.classList.remove('d-none');
+            } else {
+                recipeCard.parentElement.classList.add('d-none');
+            }
+        });
+    };
+})
