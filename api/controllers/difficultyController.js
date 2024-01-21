@@ -18,7 +18,7 @@ const addDifficulty = (req, res) => {
     const isAdmin = req.isAdmin;
 
     if (!isAdmin) {
-        return res.status(403).send('Not authorized.');
+        return res.status(403).send('Forbidden.');
     }
 
     handlePromise(difficultyActions.addDifficulty(req.body), res);
@@ -28,7 +28,7 @@ const editDifficulty = (req, res) => {
     const isAdmin = req.isAdmin;
 
     if (!isAdmin) {
-        return res.status(403).send('Not authorized.');
+        return res.status(403).send('Forbidden.');
     }
 
     const id = req.params.id;
@@ -39,7 +39,7 @@ const deleteDifficulty = (req, res) => {
     const isAdmin = req.isAdmin;
 
     if (!isAdmin) {
-        return res.status(403).send('Not authorized.');
+        return res.status(403).send('Forbidden.');
     }
     
     const id = req.params.id;
