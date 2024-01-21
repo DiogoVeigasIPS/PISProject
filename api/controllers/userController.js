@@ -40,9 +40,8 @@ const addUser = (req, res) => {
 const editUser = (req, res) => {
     const id = req.params.id;
     const isAdmin = req.isAdmin;
-    const userId = req.userId;
 
-    if (!isAdmin && !userId || userId != id) {
+    if (!isAdmin) {
         return res.status(403).send('Forbidden.');
     }
     
