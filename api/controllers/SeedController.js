@@ -11,7 +11,7 @@ const seedCategories = (req, res) => {
     const isAdmin = req.isAdmin;
 
     if (!isAdmin) {
-        return res.status(403).send('Not authorized.');
+        return res.status(403).send('Forbidden.');
     }
     
     const force = req.query.force === 'true';
@@ -22,7 +22,7 @@ const seedAreas = (req, res) => {
     const isAdmin = req.isAdmin;
 
     if (!isAdmin) {
-        return res.status(403).send('Not authorized.');
+        return res.status(403).send('Forbidden.');
     }
 
     const force = req.query.force === 'true';
@@ -33,7 +33,7 @@ const seedIngredients = (req, res) => {
     const isAdmin = req.isAdmin;
 
     if (!isAdmin) {
-        return res.status(403).send('Not authorized.');
+        return res.status(403).send('Forbidden.');
     }
 
     const force = req.query.force === 'true';
@@ -44,7 +44,7 @@ const seedRecipes = (req, res) => {
     const isAdmin = req.isAdmin;
 
     if (!isAdmin) {
-        return res.status(403).send('Not authorized.');
+        return res.status(403).send('Forbidden.');
     }
 
     const force = req.query.force === 'true';
@@ -55,7 +55,7 @@ const seedAll = (req, res) => {
     const isAdmin = req.isAdmin;
 
     if (!isAdmin) {
-        return res.status(403).send('Not authorized.');
+        return res.status(403).send('Forbidden.');
     }
     
     const force = req.query.force === 'true';

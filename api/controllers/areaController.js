@@ -18,7 +18,7 @@ const addArea = (req, res) => {
     const isAdmin = req.isAdmin;
 
     if (!isAdmin) {
-        return res.status(403).send('Not authorized.');
+        return res.status(403).send('Forbidden.');
     }
 
     handlePromise(areaActions.addArea(req.body), res);
@@ -28,7 +28,7 @@ const editArea = (req, res) => {
     const isAdmin = req.isAdmin;
 
     if (!isAdmin) {
-        return res.status(403).send('Not authorized.');
+        return res.status(403).send('Forbidden.');
     }
 
     const id = req.params.id;
@@ -39,7 +39,7 @@ const deleteArea = (req, res) => {
     const isAdmin = req.isAdmin;
 
     if (!isAdmin) {
-        return res.status(403).send('Not authorized.');
+        return res.status(403).send('Forbidden.');
     }
 
     const id = req.params.id;
@@ -50,7 +50,7 @@ const truncateAreas = (req, res) => {
     const isAdmin = req.isAdmin;
 
     if (!isAdmin) {
-        return res.status(403).send('Not authorized.');
+        return res.status(403).send('Forbidden.');
     }
 
     handlePromise(areaActions.truncateAreas(), res);
@@ -60,7 +60,7 @@ const addAreas = (req, res) => {
     const isAdmin = req.isAdmin;
 
     if (!isAdmin) {
-        return res.status(403).send('Not authorized.');
+        return res.status(403).send('Forbidden.');
     }
     
     handlePromise(areaActions.addAreas(req.body), res);

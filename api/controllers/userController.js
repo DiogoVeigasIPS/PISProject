@@ -27,7 +27,7 @@ const deleteUser = (req, res) => {
     const isAdmin = req.isAdmin;
 
     if (!isAdmin) {
-        return res.status(403).send('Not authorized.');
+        return res.status(403).send('Forbidden.');
     }
     
     const id = req.params.id;

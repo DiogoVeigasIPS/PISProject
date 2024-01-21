@@ -33,7 +33,7 @@ const addIngredient = (req, res) => {
     const isAdmin = req.isAdmin;
 
     if (!isAdmin) {
-        return res.status(403).send('Not authorized.');
+        return res.status(403).send('Forbidden.');
     }
 
     handlePromise(ingredientActions.addIngredient(req.body), res);
@@ -43,7 +43,7 @@ const editIngredient = (req, res) => {
     const isAdmin = req.isAdmin;
 
     if (!isAdmin) {
-        return res.status(403).send('Not authorized.');
+        return res.status(403).send('Forbidden.');
     }
 
     const id = req.params.id;
@@ -54,7 +54,7 @@ const deleteIngredient = (req, res) => {
     const isAdmin = req.isAdmin;
 
     if (!isAdmin) {
-        return res.status(403).send('Not authorized.');
+        return res.status(403).send('Forbidden.');
     }
 
     const id = req.params.id;
@@ -65,7 +65,7 @@ const truncateIngredients = (req, res) => {
     const isAdmin = req.isAdmin;
 
     if (!isAdmin) {
-        return res.status(403).send('Not authorized.');
+        return res.status(403).send('Forbidden.');
     }
 
     handlePromise(ingredientActions.truncateIngredients(), res);
@@ -75,7 +75,7 @@ const addIngredients = (req, res) => {
     const isAdmin = req.isAdmin;
 
     if (!isAdmin) {
-        return res.status(403).send('Not authorized.');
+        return res.status(403).send('Forbidden.');
     }
     
     handlePromise(ingredientActions.addIngredients(req.body), res);
