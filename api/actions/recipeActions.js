@@ -21,38 +21,41 @@ const getRecipes = (queryOptions = null) => {
         'SELECT * FROM search_recipes WHERE 1=1';
         let queryString = baseQueryString;
 
-        const queryValues = [];
+        const queryParams = [];
 
-        if (queryOptions?.category) {
-            queryString += ' AND category_id = ?';
-            queryValues.push(queryOptions.category);
-        }
+        if (queryOptions){
+            queryString += queryOptions.category ? " AND category_id = ?" : "";
+            queryString += queryOptions.area ? " AND area_id = ?" : "";
+            queryString += queryOptions.stringSearch ? " AND name LIKE ?" : "";
+            queryString += queryOptions.isRandom ? " ORDER BY RAND()" : "";
+            queryString += queryOptions.maxResults ? " LIMIT ?" : "";
+            queryString += queryOptions.orderBy ? " ORDER BY ?? asc" : "";
+            
+            if(!queryOptions.orderBy && !queryOptions.isRandom){
+                queryString += " ORDER BY id";
+            }
 
-        if (queryOptions?.area) {
-            queryString += ' AND area_id = ?';
-            queryValues.push(queryOptions.area);
-        }
-
-        if (queryOptions?.stringSearch) {
-            queryString += ' AND name LIKE ?';
-            queryValues.push(`%${queryOptions.stringSearch}%`);
-        }
-
-        if (queryOptions?.isRandom) {
-            queryString += ' ORDER BY RAND()';
-        }else{
-            queryString += ' ORDER BY id';
-        }
-
-        if (queryOptions?.maxResults) {
-            queryString += ' LIMIT ?';
-            queryValues.push(queryOptions.maxResults);
+            if (queryOptions.category) {
+                queryParams.push(queryOptions.category);
+            }
+            if (queryOptions.area) {
+                queryParams.push(queryOptions.area);
+            }
+            if (queryOptions.stringSearch) {
+                queryParams.push(`%${queryOptions.stringSearch}%`);
+            }
+            if (queryOptions.orderBy){
+                queryParams.push(queryOptions.orderBy);
+            }
+            if(queryOptions.maxResults){
+                queryParams.push(queryOptions.maxResults);
+            }
         }
 
         const connection = mysql.createConnection(connectionOptions);
         connection.connect();
 
-        connection.query(queryString, queryValues, (err, result) => {
+        connection.query(queryString, queryParams, (err, result) => {
             if (err) {
                 console.error(err);
                 reject({ statusCode: 500, responseMessage: err });
@@ -240,10 +243,13 @@ const deleteRecipe = (id) => {
         connection.query("DELETE FROM recipe WHERE id = ?", [id], (err, result) => {
             if (err) {
                 console.error(err);
+                if(err.sqlMessage.includes('a foreign key constraint fails')){
+                    return reject({ statusCode: 422, responseMessage: 'That recipe is being favorited.' });
+                }
                 reject({ statusCode: 400, responseMessage: err });
                 return;
             }
-
+            
             if (result.affectedRows > 0) {
                 resolve({ statusCode: 200, responseMessage: 'Recipe deleted sucessfully.' });
             } else {

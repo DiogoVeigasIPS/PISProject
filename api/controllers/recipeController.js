@@ -7,7 +7,7 @@ const { handlePromise } = require('../utils');
 
 const readRecipes = (req, res) => {
     const query = req.query;
-
+    const orderBy = query.order ?? null;
     const maxResults = query.max && !isNaN(query.max) ? parseInt(query.max) : null;
     const isRandom = query.random && query.random.toLowerCase() === 'true';
     const stringSearch = query.name ? query.name : null;
@@ -23,7 +23,8 @@ const readRecipes = (req, res) => {
         isPartial: isPartial,
         isNamed: isNamed,
         area: area,
-        category: category
+        category: category,
+        orderBy: orderBy
     }
 
     handlePromise(recipeActions.getRecipes(queryOptions), res);
