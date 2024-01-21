@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="/js/home.js"></script>
     <title>{{title}}</title>
 </head>
 <body>
@@ -41,6 +43,16 @@
     <hr class="container my-4">
 
     <div class="container content">
+        <h1 id="favorite-recipes-title" class="mb-3 d-none">
+            <i class="bi bi-star"></i>
+            Your last favorite recipes 
+        </h1>
+        <div id="favorite-recipes-container" class="row row-cols-1 row-cols-md-4 g-4 d-none" id="recipe-container">
+            {{! Automatic recipes }}
+        </div>
+
+        <hr id="favorite-recipes-line" class="my-4 d-none">
+
         <h1 class="mb-3">Recipes</h1>
         <div class="row row-cols-1 row-cols-md-4 g-4" id="recipe-container">
             {{#recipes}}
