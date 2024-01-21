@@ -25,24 +25,54 @@ const readCategory = (req, res) => {
 };
 
 const addCategory = (req, res) => {
+    const isAdmin = req.isAdmin;
+
+    if (!isAdmin) {
+        return res.status(403).send('Not authorized.');
+    }
+
     handlePromise(categoryActions.addCategory(req.body), res);
 };
 
 const editCategory = (req, res) => {
+    const isAdmin = req.isAdmin;
+
+    if (!isAdmin) {
+        return res.status(403).send('Not authorized.');
+    }
+
     const id = req.params.id;
     handlePromise(categoryActions.editCategory(id, req.body), res);
 };
 
 const deleteCategory = (req, res) => {
+    const isAdmin = req.isAdmin;
+
+    if (!isAdmin) {
+        return res.status(403).send('Not authorized.');
+    }
+
     const id = req.params.id;
     handlePromise(categoryActions.deleteCategory(id), res);
 };
 
 const truncateCategories = (req, res) => {
+    const isAdmin = req.isAdmin;
+
+    if (!isAdmin) {
+        return res.status(403).send('Not authorized.');
+    }
+
     handlePromise(categoryActions.truncateCategories(), res);
 };
 
 const addCategories = (req, res) => {
+    const isAdmin = req.isAdmin;
+
+    if (!isAdmin) {
+        return res.status(403).send('Not authorized.');
+    }
+    
     handlePromise(categoryActions.addCategories(req.body), res);
 };
 

@@ -4,14 +4,15 @@
  */
 const express = require('express');
 
+const { verifyJWT } = require('../jsonWebToken');
 const { difficultyController } = require('../controllers');
 
 const router = express.Router();
 
 router.get('', difficultyController.readDifficulties);
 router.get('/:id', difficultyController.readDifficulty);
-router.post('', difficultyController.addDifficulty);
-router.put('/:id', difficultyController.editDifficulty);
-router.delete('/:id', difficultyController.deleteDifficulty);
+router.post('', verifyJWT, difficultyController.addDifficulty);
+router.put('/:id', verifyJWT, difficultyController.editDifficulty);
+router.delete('/:id', verifyJWT, difficultyController.deleteDifficulty);
 
 module.exports = router;

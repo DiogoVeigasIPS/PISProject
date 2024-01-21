@@ -15,15 +15,33 @@ const readDifficulty = (req, res) => {
 };
 
 const addDifficulty = (req, res) => {
+    const isAdmin = req.isAdmin;
+
+    if (!isAdmin) {
+        return res.status(403).send('Not authorized.');
+    }
+
     handlePromise(difficultyActions.addDifficulty(req.body), res);
 };
 
 const editDifficulty = (req, res) => {
+    const isAdmin = req.isAdmin;
+
+    if (!isAdmin) {
+        return res.status(403).send('Not authorized.');
+    }
+
     const id = req.params.id;
     handlePromise(difficultyActions.editDifficulty(id, req.body), res);
 };
 
 const deleteDifficulty = (req, res) => {
+    const isAdmin = req.isAdmin;
+
+    if (!isAdmin) {
+        return res.status(403).send('Not authorized.');
+    }
+    
     const id = req.params.id;
     handlePromise(difficultyActions.deleteDifficulty(id), res);
 };

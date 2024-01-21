@@ -69,6 +69,12 @@ const deleteRecipe = (req, res) => {
 };
 
 const addIngredientToRecipe = (req, res) => {
+    const isAdmin = req.isAdmin;
+
+    if (!isAdmin) {
+        return res.status(403).send('Not authorized.');
+    }
+
     const recipe = req.params.id;
     const ingredient = req.params.ingredient_id;
     const quantity = req.body.quantity;
@@ -77,6 +83,12 @@ const addIngredientToRecipe = (req, res) => {
 };
 
 const editIngredientQuantityInRecipe = (req, res) => {
+    const isAdmin = req.isAdmin;
+
+    if (!isAdmin) {
+        return res.status(403).send('Not authorized.');
+    }
+
     const recipe = req.params.id;
     const ingredient = req.params.ingredient_id;
     const quantity = req.body.quantity;
@@ -85,6 +97,12 @@ const editIngredientQuantityInRecipe = (req, res) => {
 };
 
 const removeIngredientFromRecipe = (req, res) => {
+    const isAdmin = req.isAdmin;
+
+    if (!isAdmin) {
+        return res.status(403).send('Not authorized.');
+    }
+
     const recipe = req.params.id;
     const ingredient = req.params.ingredient_id;
 
@@ -92,14 +110,32 @@ const removeIngredientFromRecipe = (req, res) => {
 };
 
 const addRecipes = (req, res) => {
+    const isAdmin = req.isAdmin;
+
+    if (!isAdmin) {
+        return res.status(403).send('Not authorized.');
+    }
+
     handlePromise(recipeActions.addRecipes(req.body), res);
 };
 
 const truncateRecipes = (req, res) => {
+    const isAdmin = req.isAdmin;
+
+    if (!isAdmin) {
+        return res.status(403).send('Not authorized.');
+    }
+
     handlePromise(recipeActions.truncateRecipes(), res);
 };
 
 const setRecipeIngredients = (req, res) => {
+    const isAdmin = req.isAdmin;
+
+    if (!isAdmin) {
+        return res.status(403).send('Not authorized.');
+    }
+    
     const recipe = req.params.id;
     const ingredients = req.body;
     handlePromise(recipeActions.setRecipeIngredients(recipe, ingredients), res);

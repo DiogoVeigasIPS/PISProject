@@ -30,24 +30,54 @@ const readIngredient = (req, res) => {
 };
 
 const addIngredient = (req, res) => {
+    const isAdmin = req.isAdmin;
+
+    if (!isAdmin) {
+        return res.status(403).send('Not authorized.');
+    }
+
     handlePromise(ingredientActions.addIngredient(req.body), res);
 };
 
 const editIngredient = (req, res) => {
+    const isAdmin = req.isAdmin;
+
+    if (!isAdmin) {
+        return res.status(403).send('Not authorized.');
+    }
+
     const id = req.params.id;
     handlePromise(ingredientActions.editIngredient(id, req.body), res);
 };
 
 const deleteIngredient = (req, res) => {
+    const isAdmin = req.isAdmin;
+
+    if (!isAdmin) {
+        return res.status(403).send('Not authorized.');
+    }
+
     const id = req.params.id;
     handlePromise(ingredientActions.deleteIngredient(id), res);
 };
 
 const truncateIngredients = (req, res) => {
+    const isAdmin = req.isAdmin;
+
+    if (!isAdmin) {
+        return res.status(403).send('Not authorized.');
+    }
+
     handlePromise(ingredientActions.truncateIngredients(), res);
 };
 
 const addIngredients = (req, res) => {
+    const isAdmin = req.isAdmin;
+
+    if (!isAdmin) {
+        return res.status(403).send('Not authorized.');
+    }
+    
     handlePromise(ingredientActions.addIngredients(req.body), res);
 };
 
