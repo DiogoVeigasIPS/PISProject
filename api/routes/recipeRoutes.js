@@ -8,6 +8,8 @@ const { recipeController } = require('../controllers');
 
 const router = express.Router();
 
+router.post('/:id/setIngredients', recipeController.setRecipeIngredients);
+
 router.post('/:id/addIngredient/:ingredient_id', recipeController.addIngredientToRecipe);
 router.put('/:id/updateQuantity/:ingredient_id', recipeController.editIngredientQuantityInRecipe);
 router.delete('/:id/removeIngredient/:ingredient_id', recipeController.removeIngredientFromRecipe);

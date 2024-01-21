@@ -80,6 +80,12 @@ const truncateRecipes = (req, res) => {
     handlePromise(recipeActions.truncateRecipes(), res);
 };
 
+const setRecipeIngredients = (req, res) => {
+    const recipe = req.params.id;
+    const ingredients = req.body;
+    handlePromise(recipeActions.setRecipeIngredients(recipe, ingredients), res);
+};
+
 module.exports.readRecipes = readRecipes;
 module.exports.readRecipe = readRecipe;
 module.exports.addRecipe = addRecipe;
@@ -90,3 +96,4 @@ module.exports.editIngredientQuantityInRecipe = editIngredientQuantityInRecipe;
 module.exports.removeIngredientFromRecipe = removeIngredientFromRecipe;
 module.exports.addRecipes = addRecipes;
 module.exports.truncateRecipes = truncateRecipes;
+module.exports.setRecipeIngredients = setRecipeIngredients;

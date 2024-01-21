@@ -15,23 +15,23 @@ const { getUser } = require('./userActions');
 
 const getRecipes = (queryOptions = null) => {
     return new Promise((resolve, reject) => {
-        const baseQueryString = queryOptions?.isPartial ? 
-        queryOptions?.isNamed ? 'SELECT * FROM partial_named_search_recipes WHERE 1=1' :
-        'SELECT * FROM partial_search_recipes WHERE 1=1' : 
-        'SELECT * FROM search_recipes WHERE 1=1';
+        const baseQueryString = queryOptions?.isPartial ?
+            queryOptions?.isNamed ? 'SELECT * FROM partial_named_search_recipes WHERE 1=1' :
+                'SELECT * FROM partial_search_recipes WHERE 1=1' :
+            'SELECT * FROM search_recipes WHERE 1=1';
         let queryString = baseQueryString;
 
         const queryParams = [];
 
-        if (queryOptions){
+        if (queryOptions) {
             queryString += queryOptions.category ? " AND category_id = ?" : "";
             queryString += queryOptions.area ? " AND area_id = ?" : "";
             queryString += queryOptions.stringSearch ? " AND name LIKE ?" : "";
             queryString += queryOptions.isRandom ? " ORDER BY RAND()" : "";
             queryString += queryOptions.maxResults ? " LIMIT ?" : "";
             queryString += queryOptions.orderBy ? " ORDER BY ?? asc" : "";
-            
-            if(!queryOptions.orderBy && !queryOptions.isRandom){
+
+            if (!queryOptions.orderBy && !queryOptions.isRandom) {
                 queryString += " ORDER BY id";
             }
 
@@ -44,10 +44,10 @@ const getRecipes = (queryOptions = null) => {
             if (queryOptions.stringSearch) {
                 queryParams.push(`%${queryOptions.stringSearch}%`);
             }
-            if (queryOptions.orderBy){
+            if (queryOptions.orderBy) {
                 queryParams.push(queryOptions.orderBy);
             }
-            if(queryOptions.maxResults){
+            if (queryOptions.maxResults) {
                 queryParams.push(queryOptions.maxResults);
             }
         }
@@ -140,8 +140,8 @@ const addRecipe = async (recipe) => {
                                 console.error(err);
                                 connection.rollback(() => {
                                     connection.release();
-                                    
-                                    if(err.sqlMessage.startsWith('Duplicate entry')){
+
+                                    if (err.sqlMessage.startsWith('Duplicate entry')) {
                                         return reject({ statusCode: 422, responseMessage: 'Name is duplicate.' });
                                     }
 
@@ -186,7 +186,7 @@ const addRecipe = async (recipe) => {
                                     }
 
                                     connection.release();
-                                    
+
                                     //newRecipe.id = result.insertId;
                                     const addedRecipe = (await getRecipe(result.insertId)).responseMessage;
                                     resolve({ statusCode: 200, responseMessage: addedRecipe });
@@ -228,7 +228,7 @@ const editRecipe = (id, recipe) => {
                 if (err) {
                     console.error(err);
 
-                    if(err.sqlMessage.startsWith('Duplicate entry')){
+                    if (err.sqlMessage.startsWith('Duplicate entry')) {
                         return reject({ statusCode: 422, responseMessage: 'Name is duplicate.' });
                     }
 
@@ -236,13 +236,19 @@ const editRecipe = (id, recipe) => {
                     return;
                 }
 
-                if (result.affectedRows > 0) {
-                    //newRecipe.id = id;
-                    const edittedRecipe = (await getRecipe(id)).responseMessage;
-                    resolve({ statusCode: 200, responseMessage: edittedRecipe });
-                } else {
-                    reject({ statusCode: 404, responseMessage: 'Recipe not found.' });
+                if (result.affectedRows == 0) {
+                    return reject({ statusCode: 404, responseMessage: 'Recipe not found.' });
                 }
+
+                const response = (await setRecipeIngredients(id, newRecipe.ingredients));
+
+                if(response.statusCode != 201){
+                    return reject(response);
+                }
+
+                //newRecipe.id = id;
+                const edittedRecipe = (await getRecipe(id)).responseMessage;
+                resolve({ statusCode: 200, responseMessage: edittedRecipe });
             });
 
         connection.end();
@@ -257,13 +263,13 @@ const deleteRecipe = (id) => {
         connection.query("DELETE FROM recipe WHERE id = ?", [id], (err, result) => {
             if (err) {
                 console.error(err);
-                if(err.sqlMessage.includes('a foreign key constraint fails')){
+                if (err.sqlMessage.includes('a foreign key constraint fails')) {
                     return reject({ statusCode: 422, responseMessage: 'That recipe is being favorited.' });
                 }
                 reject({ statusCode: 400, responseMessage: err });
                 return;
             }
-            
+
             if (result.affectedRows > 0) {
                 resolve({ statusCode: 200, responseMessage: 'Recipe deleted sucessfully.' });
             } else {
@@ -486,6 +492,36 @@ const removeIngredientFromRecipe = (recipeId, ingredientId) => {
     });
 };
 
+const setRecipeIngredients = (recipeId, ingredients) => {
+    return new Promise((resolve, reject) => {
+        const multipleStatementsOptions = { ...connectionOptions };
+        multipleStatementsOptions.multipleStatements = true;
+
+        const connection = mysql.createConnection(multipleStatementsOptions);
+        connection.connect();
+
+        const deleteQuery = "DELETE FROM recipe_ingredient WHERE recipe_id = ?";
+        const insertQuery = "INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity) VALUES ?";
+
+
+        const processedIngredients = ingredients.map(i => {return {ingredientId: i.ingredient.id, quantity: i.quantity}});
+        const values = processedIngredients.map(({ ingredientId, quantity }) => [recipeId, ingredientId, quantity]);
+
+        // Combine delete and insert queries using ;
+        const combinedQuery = `${deleteQuery}; ${insertQuery}`;
+
+        connection.query(combinedQuery, [recipeId, values], (err, result) => {
+            if (err) {
+                console.error(err);
+                return reject({ statusCode: 500, responseMessage: 'Query error.' });
+            }
+            
+            resolve({ statusCode: 201, responseMessage: 'Ingredients added successfully.' });
+            connection.end();
+        });
+    });
+};
+
 module.exports.getRecipes = getRecipes;
 module.exports.getRecipe = getRecipe;
 module.exports.addRecipe = addRecipe;
@@ -496,6 +532,7 @@ module.exports.editIngredientQuantityInRecipe = editIngredientQuantityInRecipe;
 module.exports.removeIngredientFromRecipe = removeIngredientFromRecipe;
 module.exports.addRecipes = addRecipes;
 module.exports.truncateRecipes = truncateRecipes;
+module.exports.setRecipeIngredients = setRecipeIngredients;
 
 /**
  * [ingredientsAreDuplicate] - Checks for duplicated.
