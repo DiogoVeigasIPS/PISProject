@@ -49,7 +49,7 @@ router.post('/submit-recipe', async (req, res) => {
         const newRecipe = await recipeActions.addRecipe(recipe);
         res.redirect(`/recipe?id=${newRecipe.responseMessage.id}`);
     } catch (error) {
-        console.log(error)
+        console.error(error)
         res.status(500).send(error);
     }
 

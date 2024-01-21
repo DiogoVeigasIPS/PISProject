@@ -25,6 +25,23 @@ document.addEventListener('DOMContentLoaded', function () {
         xhr.send();
     });
 
+    // Just for tutorial
+    ingredientsInput.addEventListener('click', async () => {
+        const inputText = ingredientsInput.value.trim();
+        if (inputText == "") return;
+
+        try {
+            const response = await fetch(`http://localhost:8081/api/ingredient?name=${inputText}&max=8`);
+
+            if (response.ok) {
+                const responseData = await response.json();
+                updateSuggestions(responseData);
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    })
+
     const updateSuggestions = (suggestions) => {
         // Clear previous suggestions
         ingredientSuggestions.innerHTML = '';
@@ -53,10 +70,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const addSelectedIngredient = (ingredient, quantity = null) => {
         // Add the ingredient name to the set
         selectedIngredientNames.add(ingredient.name);
-    
+
         // Create a new table row for the selected ingredient
         const row = selectedIngredientsTable.insertRow();
-    
+
         // Add a cell with the image
         const cellImage = row.insertCell(0);
         const ingredientImage = document.createElement('img');
@@ -64,19 +81,19 @@ document.addEventListener('DOMContentLoaded', function () {
         ingredientImage.alt = ingredient.name;
         ingredientImage.style.width = '5rem';
         cellImage.appendChild(ingredientImage);
-    
+
         // Add a cell with the ingredient name
         const cellName = row.insertCell(1);
         cellName.textContent = ingredient.name;
         cellName.classList.add('align-middle'); // Bootstrap class to vertically align
-    
+
         // Add a hidden input with the ingredient ID
         const hiddenInput = document.createElement('input');
         hiddenInput.type = 'hidden';
         hiddenInput.name = `ingredientIds[]`;
         hiddenInput.value = ingredient.id;
         cellName.appendChild(hiddenInput);
-    
+
         // Add a cell with the input for quantity
         const cellQuantity = row.insertCell(2);
         cellQuantity.classList.add('align-middle');
@@ -88,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function () {
         quantityInput.required = true; // Make the quantity input required
         quantityInput.classList.add('form-control'); // Bootstrap classes
         cellQuantity.appendChild(quantityInput);
-    
+
         // Add a cell with the remove button
         const cellRemove = row.insertCell(3);
         cellRemove.classList.add('align-middle');
