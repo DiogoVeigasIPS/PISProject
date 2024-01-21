@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    const addSelectedIngredient = (ingredient) => {
+    const addSelectedIngredient = (ingredient, quantity = null) => {
         // Add the ingredient name to the set
         selectedIngredientNames.add(ingredient.name);
     
@@ -84,6 +84,7 @@ document.addEventListener('DOMContentLoaded', function () {
         quantityInput.type = 'text';
         quantityInput.name = 'quantities[]'; // Add the name attribute
         quantityInput.placeholder = 'Enter the quantity';
+        quantityInput.value = quantity ?? ""; // Adding or editing?
         quantityInput.required = true; // Make the quantity input required
         quantityInput.classList.add('form-control'); // Bootstrap classes
         cellQuantity.appendChild(quantityInput);
@@ -108,4 +109,7 @@ document.addEventListener('DOMContentLoaded', function () {
             ingredientSuggestions.innerHTML = '';
         }
     });
+
+    // Allow auxRecipes to use it
+    window.addSelectedIngredient = addSelectedIngredient;
 });

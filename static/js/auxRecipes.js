@@ -104,7 +104,6 @@ const openRecipeDetailsModal = async (id) => {
     }
 }
 
-
 const openAddRecipeModal = async () => {
     const recipeDetails = new bootstrap.Modal(document.getElementById('recipeFormModal'));
 
@@ -175,7 +174,6 @@ const openAddRecipeModal = async () => {
             if (response.ok) {
                 const responseData = await response.json();
                 errorDiv.classList.add('d-none');
-                console.log(responseData)
                 // Create a new table row using JavaScript
                 const newRecipeRow = document.createElement('tr');
 
@@ -220,6 +218,126 @@ const openAddRecipeModal = async () => {
     recipeDetails.show();
 }
 
+const openEditRecipeModal = async (id) => {
+    const recipeDetails = new bootstrap.Modal(document.getElementById('recipeFormModal'));
+
+    // Retrieve the necessary form elements
+    const recipeNameForm = document.getElementById('recipeNameForm');
+    const recipeCategoryForm = document.getElementById('recipeCategoryForm');
+    const recipeAreaForm = document.getElementById('recipeAreaForm');
+    const recipePreparationTimeForm = document.getElementById('recipePreparationTimeForm');
+    const recipeDifficultyForm = document.getElementById('recipeDifficultyForm');
+    const recipeCostForm = document.getElementById('recipeCostForm');
+    const imageInputForm = document.getElementById('image');
+    const recipeDescriptionForm = document.getElementById('recipeDescriptionForm');
+    const recipePreparationDescriptionForm = document.getElementById('recipePreparationDescription');
+
+    // Additional elements for ingredient manipulation
+    const selectedIngredients = document.querySelector('#selectedIngredients');
+    selectedIngredients.innerHTML = "";
+
+    // Set the activity title
+    const activityTitle = document.getElementById('activityTitle');
+    activityTitle.innerText = 'Edit Recipe';
+
+    try {
+        // Fetch recipe details using the provided recipe id
+        const response = await fetch(`http://localhost:8081/api/recipe/${id}`);
+        
+        if (response.ok) {
+            const responseData = await response.json();
+            
+            // Populate the form with existing recipe details
+            recipeNameForm.value = responseData.name;
+            recipeCategoryForm.value = responseData.category.id;
+            recipeAreaForm.value = responseData.area.id;
+            recipePreparationTimeForm.value = responseData.preparationTime;
+            recipeDifficultyForm.value = responseData.difficulty.id;
+            recipeCostForm.value = responseData.cost;
+            imageInputForm.value = responseData.image;
+            recipeDescriptionForm.value = responseData.description;
+            recipePreparationDescriptionForm.value = responseData.preparationDescription;
+
+            // Populate the selected ingredients section
+            responseData.ingredients.forEach((element) => {
+                addSelectedIngredient(element.ingredient, element.quantity);
+            });
+        }
+    } catch (err) {
+        console.error(err);
+    }
+
+    // Set up the form submission for recipe editing
+    const submitRecipeButton = document.getElementById('submitRecipeButton');
+    submitRecipeButton.innerText = 'Edit Recipe';
+
+    const recipeForm = document.querySelector('#recipeForm');
+    recipeForm.onsubmit = async (e) => {
+        e.preventDefault();
+
+        // Similar to the add recipe functionality, construct the recipe object
+        // based on the form values, including any changes made during editing
+
+        const recipe = {
+            name: recipeNameForm.value,
+            category: { id: recipeCategoryForm.value },
+            description: recipeDescriptionForm.value,
+            preparationDescription: recipePreparationDescriptionForm.value,
+            area: { id: recipeAreaForm.value },
+            image: imageInputForm.value,
+            preparationTime: recipePreparationTimeForm.value,
+            difficulty: { id: recipeDifficultyForm.value, name: null },
+            cost: recipeCostForm.value,
+            ingredients: getSelectedIngredients(),
+        };
+
+        const options = {
+            method: "PUT",
+            body: JSON.stringify(recipe),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        };
+
+        try {
+            // Make a PUT request to update the recipe
+            const response = await fetch(`http://localhost:8081/api/recipe/${id}`, options);
+
+            const errorDiv = recipeForm.querySelector('#recipeError');
+
+            if (response.ok) {
+                const responseData = await response.json();
+                errorDiv.classList.add('d-none');
+
+                // Update the existing row in the table with the edited recipe details
+                const trs = [...document.querySelectorAll('#recipesTable tbody tr')];
+                const tr = trs.find(row => {
+                    const idColumn = row.querySelector('td');
+                    return idColumn.innerText.trim() == id;
+                });
+
+                const columns = tr.querySelectorAll('td');
+                columns[1].innerText = responseData.name;
+                columns[2].src = responseData.image;
+                columns[3].innerText = responseData.category.name;
+                columns[4].innerText = responseData.area.name;
+                // Update other columns as needed
+
+                recipeDetails.hide();
+                showToast(`${responseData.name} edited successfully!`);
+            } else {
+                const responseData = await response.text();
+                errorDiv.classList.remove('d-none');
+                errorDiv.innerHTML = responseData;
+            }
+        } catch (error) {
+            console.error("Error during recipe edition:", error);
+        }
+    };
+
+    // Show the recipe edit modal
+    recipeDetails.show();
+}
 
 const openDeleteModal = (id, name) => {
     const deleteModalName = document.getElementById('deleteModalName');
