@@ -224,7 +224,7 @@ const editRecipe = (id, recipe) => {
             [newRecipe.name, newRecipe.description, newRecipe.image,
             newRecipe.preparationDescription, newRecipe.area.id, newRecipe.category.id, newRecipe.author.id,
             newRecipe.difficulty.id, newRecipe.preparationTime, newRecipe.cost, id],
-            (err, result) => {
+            async (err, result) => {
                 if (err) {
                     console.error(err);
 
@@ -237,8 +237,9 @@ const editRecipe = (id, recipe) => {
                 }
 
                 if (result.affectedRows > 0) {
-                    newRecipe.id = id;
-                    resolve({ statusCode: 200, responseMessage: newRecipe });
+                    //newRecipe.id = id;
+                    const edittedRecipe = (await getRecipe(id)).responseMessage;
+                    resolve({ statusCode: 200, responseMessage: edittedRecipe });
                 } else {
                     reject({ statusCode: 404, responseMessage: 'Recipe not found.' });
                 }

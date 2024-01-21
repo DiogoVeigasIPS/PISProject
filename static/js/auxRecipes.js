@@ -21,6 +21,7 @@ const openRecipeDetailsModal = async (id) => {
             const recipeIngredientsList = document.getElementById('recipeIngredientsList');
             const recipeImageURL = document.getElementById('recipeImageURL');
             const recipeDifficulty = document.getElementById('recipeDifficulty');
+            const recipeCost = document.getElementById('recipeCost');
 
             recipeId.innerText = responseData.id;
             recipeName.innerText = responseData.name;
@@ -30,6 +31,7 @@ const openRecipeDetailsModal = async (id) => {
             recipePreparation.innerText = responseData.preparationDescription ?? 'Not provided';
             recipeArea.innerText = responseData.area.name;
             recipeAuthor.innerText = responseData.author.username;
+            recipeCost.innerText = responseData.cost ?? 'Not provided';
 
 
             // Clear previous ingredients
@@ -104,6 +106,22 @@ const openRecipeDetailsModal = async (id) => {
     }
 }
 
+function getSelectedIngredients() {
+    const ingredients = [];
+
+    const quantities = document.getElementsByName('quantities[]');
+    const ingredientIds = document.getElementsByName('ingredientIds[]');
+
+    for (let i = 0; i < quantities.length; i++) {
+        ingredients.push({
+            ingredient: { id: ingredientIds[i].value },
+            quantity: quantities[i].value
+        });
+    }
+
+    return ingredients;
+}
+
 const openAddRecipeModal = async () => {
     const recipeDetails = new bootstrap.Modal(document.getElementById('recipeFormModal'));
 
@@ -133,23 +151,14 @@ const openAddRecipeModal = async () => {
         e.preventDefault();
 
         // Ingredient manipulation
-        const ingredients = [];
-        const quantities = document.getElementsByName('quantities[]');
-        const ingredientIds = document.getElementsByName('ingredientIds[]');
-
-        for (let i = 0; i < quantities.length; i++) {
-            ingredients.push({
-                ingredient: { id: ingredientIds[i].value },
-                quantity: quantities[i].value
-            });
-        }
+        const ingredients = getSelectedIngredients();
 
         const recipe = {
             name: recipeNameForm.value,
             category: { id: recipeCategoryForm.value },
             description: recipeDescriptionForm.value,
             preparationDescription: recipePreparationDescriptionForm.value,
-            area: { id: recipeAreaForm.value},
+            area: { id: recipeAreaForm.value },
             author: { id: window.userId },
             image: imageInputForm.value,
             preparationTime: recipePreparationTimeForm.value,
@@ -218,7 +227,7 @@ const openAddRecipeModal = async () => {
     recipeDetails.show();
 }
 
-const openEditRecipeModal = async (id) => {
+const openEditRecipeModal = async (id, inDetailsPage = false) => {
     const recipeDetails = new bootstrap.Modal(document.getElementById('recipeFormModal'));
 
     // Retrieve the necessary form elements
@@ -240,13 +249,14 @@ const openEditRecipeModal = async (id) => {
     const activityTitle = document.getElementById('activityTitle');
     activityTitle.innerText = 'Edit Recipe';
 
+    var author;
     try {
         // Fetch recipe details using the provided recipe id
         const response = await fetch(`http://localhost:8081/api/recipe/${id}`);
-        
+
         if (response.ok) {
             const responseData = await response.json();
-            
+
             // Populate the form with existing recipe details
             recipeNameForm.value = responseData.name;
             recipeCategoryForm.value = responseData.category.id;
@@ -257,6 +267,7 @@ const openEditRecipeModal = async (id) => {
             imageInputForm.value = responseData.image;
             recipeDescriptionForm.value = responseData.description;
             recipePreparationDescriptionForm.value = responseData.preparationDescription;
+            author = responseData.author;
 
             // Populate the selected ingredients section
             responseData.ingredients.forEach((element) => {
@@ -289,6 +300,7 @@ const openEditRecipeModal = async (id) => {
             difficulty: { id: recipeDifficultyForm.value, name: null },
             cost: recipeCostForm.value,
             ingredients: getSelectedIngredients(),
+            author
         };
 
         const options = {
@@ -309,19 +321,25 @@ const openEditRecipeModal = async (id) => {
                 const responseData = await response.json();
                 errorDiv.classList.add('d-none');
 
-                // Update the existing row in the table with the edited recipe details
-                const trs = [...document.querySelectorAll('#recipesTable tbody tr')];
-                const tr = trs.find(row => {
-                    const idColumn = row.querySelector('td');
-                    return idColumn.innerText.trim() == id;
-                });
+                if (!inDetailsPage) {
+                    // Update the existing row in the table with the edited recipe details
+                    const trs = [...document.querySelectorAll('#recipesTable tbody tr')];
+                    const tr = trs.find(row => {
+                        const idColumn = row.querySelector('td');
+                        return idColumn.innerText.trim() == id;
+                    });
 
-                const columns = tr.querySelectorAll('td');
-                columns[1].innerText = responseData.name;
-                columns[2].src = responseData.image;
-                columns[3].innerText = responseData.category.name;
-                columns[4].innerText = responseData.area.name;
-                // Update other columns as needed
+                    const columns = tr.querySelectorAll('td');
+                    columns[1].innerText = responseData.name;
+                    columns[2].src = responseData.image;
+                    columns[3].innerText = responseData.category.name;
+                    columns[4].innerText = responseData.area.name;
+                    columns[5].innerText = responseData.author.username;
+                    columns[6].innerText = responseData.difficulty.name;
+                    // Update other columns as needed
+                }else{
+                    // Get the ids and change the DOM from the details page
+                }
 
                 recipeDetails.hide();
                 showToast(`${responseData.name} edited successfully!`);
