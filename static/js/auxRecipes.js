@@ -159,7 +159,7 @@ const openAddRecipeModal = async () => {
             description: recipeDescriptionForm.value,
             preparationDescription: recipePreparationDescriptionForm.value,
             area: { id: recipeAreaForm.value },
-            author: { id: window.userId },
+            author: { id: null },
             image: imageInputForm.value,
             preparationTime: recipePreparationTimeForm.value,
             difficulty: { id: recipeDifficultyForm.value, name: null },
@@ -171,7 +171,8 @@ const openAddRecipeModal = async () => {
             method: "POST",
             body: JSON.stringify(recipe),
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'x-access-token': localStorage.getItem('auth')
             }
         };
 
@@ -307,7 +308,8 @@ const openEditRecipeModal = async (id, inDetailsPage = false) => {
             method: "PUT",
             body: JSON.stringify(recipe),
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'x-access-token': localStorage.getItem('auth')
             }
         };
 
@@ -337,7 +339,7 @@ const openEditRecipeModal = async (id, inDetailsPage = false) => {
                     columns[5].innerText = responseData.author.username;
                     columns[6].innerText = responseData.difficulty.name;
                     // Update other columns as needed
-                }else{
+                } else {
                     // Get the ids and change the DOM from the details page
                 }
 
@@ -365,7 +367,12 @@ const openDeleteModal = (id, name) => {
 
     confirmDeletion.onclick = async () => {
         try {
-            const response = await fetch(`http://localhost:8081/api/recipe/${id}`, { method: "DELETE" })
+            const response = await fetch(`http://localhost:8081/api/recipe/${id}`, {
+                method: "DELETE",
+                headers: {
+                    'x-access-token': localStorage.getItem('auth')
+                }
+            })
             const responseText = await response.text();
 
             if (response.status != 200) {

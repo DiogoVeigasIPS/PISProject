@@ -97,7 +97,7 @@ const getRecipe = (id) => {
     });
 }
 
-const addRecipe = async (recipe) => {
+const addRecipe = async (recipe, authorId) => {
     return new Promise(async (resolve, reject) => {
         try {
             //const processedRecipe = await processRecipeData(recipe);
@@ -131,7 +131,7 @@ const addRecipe = async (recipe) => {
                         const recipeValues = [
                             newRecipe.name, newRecipe.description, newRecipe.image,
                             newRecipe.preparationDescription, newRecipe.area.id, newRecipe.category.id,
-                            newRecipe.author ? newRecipe.author.id : null, newRecipe.difficulty.id,
+                            newRecipe.author ? authorId : null, newRecipe.difficulty.id,
                             newRecipe.preparation, newRecipe.cost
                         ];
 

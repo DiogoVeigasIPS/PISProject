@@ -36,15 +36,34 @@ const readRecipe = (req, res) => {
 };
 
 const addRecipe = (req, res) => {
-    handlePromise(recipeActions.addRecipe(req.body), res);
+    const userId = req.userId;
+    const isAdmin = req.isAdmin;
+
+    if (userId == null || !isAdmin) {
+        return res.status(403).send('Not authorized.');
+    }
+
+    handlePromise(recipeActions.addRecipe(req.body, userId), res);
 };
 
 const editRecipe = (req, res) => {
+    const isAdmin = req.isAdmin;
+
+    if (!isAdmin) {
+        return res.status(403).send('Not authorized.');
+    }
+
     const id = req.params.id;
     handlePromise(recipeActions.editRecipe(id, req.body), res);
 };
 
 const deleteRecipe = (req, res) => {
+    const isAdmin = req.isAdmin;
+
+    if (!isAdmin) {
+        return res.status(403).send('Not authorized.');
+    }
+
     const id = req.params.id;
     handlePromise(recipeActions.deleteRecipe(id), res);
 };

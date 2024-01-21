@@ -4,6 +4,7 @@
  */
 const express = require('express');
 
+const { verifyJWT } = require('../jsonWebToken');
 const { recipeController } = require('../controllers');
 
 const router = express.Router();
@@ -16,9 +17,9 @@ router.delete('/:id/removeIngredient/:ingredient_id', recipeController.removeIng
 
 router.get('', recipeController.readRecipes);
 router.get('/:id', recipeController.readRecipe);
-router.post('', recipeController.addRecipe);
-router.put('/:id', recipeController.editRecipe);
-router.delete('/:id', recipeController.deleteRecipe);
+router.post('', verifyJWT, recipeController.addRecipe);
+router.put('/:id', verifyJWT, recipeController.editRecipe);
+router.delete('/:id', verifyJWT, recipeController.deleteRecipe);
 
 router.post('/bulk', recipeController.addRecipes);
 router.delete('', recipeController.truncateRecipes);

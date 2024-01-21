@@ -1,5 +1,3 @@
-var userId;
-
 (async () => {
     try {
         const token = localStorage.getItem('auth');
@@ -12,7 +10,6 @@ var userId;
         if (response.status == 200 && responseData.isAdmin) {
             const container = document.getElementById('container');
             container?.classList.remove('d-none');
-            userId = responseData.id;
         }else{
             window.location.href = '/unauthorized';
         }
