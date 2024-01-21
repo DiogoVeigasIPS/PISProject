@@ -13,10 +13,20 @@ const appRouter = require('./app');
 
 const app = express();
 
+// Favicon
+app.use('/favicon.ico', express.static(__dirname + '/static/img/favicon/favicon.ico'));
+
 // Body parser.
 app.use(bodyParser.json());
+
+// Static
 app.use(express.static(__dirname + '/static'));
 app.use(express.urlencoded({ extended: true }));
+
+
+app.get('/favicon.ico', (req, res) => {
+    res.sendFile(__dirname + '/static/img/favicon/favicon.ico');
+});
 
 // Mustache and views.
 const VIEWS_PATH = './views';
