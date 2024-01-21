@@ -59,7 +59,8 @@ const openAddIngredientModal = async () => {
             method: "POST",
             body: JSON.stringify({ name, description, image }),
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'x-access-token': localStorage.getItem('auth')
             }
         };
 
@@ -147,7 +148,8 @@ const openEditIngredientModal = async (id, inDetailsPage = false) => {
             method: "PUT",
             body: JSON.stringify({ name, description, image }),
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'x-access-token': localStorage.getItem('auth')
             }
         };
 
@@ -160,17 +162,17 @@ const openEditIngredientModal = async (id, inDetailsPage = false) => {
                 const responseData = await response.json();
                 errorDiv.classList.add('d-none');
 
-                if(!inDetailsPage){
+                if (!inDetailsPage) {
                     const trs = [...document.querySelectorAll('#ingredientsTable tbody tr')];
                     const tr = trs.find(row => {
                         const idColumn = row.querySelector('td');
                         return idColumn.innerText.trim() == id;
                     });
-    
+
                     const columns = tr.querySelectorAll('td');
                     columns[1].innerText = responseData.name;
                     columns[2].src = responseData.image;
-                }else{
+                } else {
                     const ingredientNameDetails = document.getElementById('ingredientNameDetails');
                     const ingredientDescriptionDetails = document.getElementById('ingredientDescriptionDetails');
                     const ingredientImageUrlDetails = document.getElementById('ingredientImageUrlDetails');
@@ -205,7 +207,12 @@ const openDeleteModal = (id, name) => {
 
     confirmDeletion.onclick = async () => {
         try {
-            const response = await fetch(`http://localhost:8081/api/ingredient/${id}`, { method: "DELETE" })
+            const response = await fetch(`http://localhost:8081/api/ingredient/${id}`, {
+                method: "DELETE",
+                headers: {
+                    'x-access-token': localStorage.getItem('auth')
+                }
+            })
             const responseText = await response.text();
 
             if (response.status != 200) {
@@ -237,7 +244,7 @@ const updateSearchBar = () => {
 
     const urlSearchParams = new URLSearchParams(window.location.search);
     const nameParam = urlSearchParams.get('name');
-    
+
     searchInput.value = nameParam || '';
 }
 
@@ -257,15 +264,15 @@ document.addEventListener('DOMContentLoaded', function () {
         filterTable(searchInput.value);
     });
 
-    if(idSort != null)
+    if (idSort != null)
         idSort.onclick = () => {
             filterTable(searchInput.value, "");
         }
 
-    if(nameSort != null)
-    nameSort.onclick = () => {
-        filterTable(searchInput.value, 'name');
-    }
+    if (nameSort != null)
+        nameSort.onclick = () => {
+            filterTable(searchInput.value, 'name');
+        }
 
     const filterTable = async (stringSearch, order = "") => {
 
@@ -288,7 +295,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         try {
             const url = !order ? `http://localhost:8081/api/ingredient?name=${stringSearch}` :
-            `http://localhost:8081/api/ingredient?name=${stringSearch}&order=${order}`;
+                `http://localhost:8081/api/ingredient?name=${stringSearch}&order=${order}`;
 
             const response = await fetch(url);
 

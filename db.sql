@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS recipe_ingredient(
     ingredient_id int,
     quantity VARCHAR(50),
     PRIMARY KEY (recipe_id, ingredient_id),
-    FOREIGN KEY (recipe_id) references recipe(id),
+    FOREIGN KEY (recipe_id) references recipe(id) ON DELETE CASCADE,
     FOREIGN KEY (ingredient_id) references ingredient(id)
 );
 
@@ -165,10 +165,10 @@ SELECT
     r.name AS name,
     r.image AS image,
     r.external_id AS idProvider,
-    r.id AS category_id,
-    r.id AS area_id,
-    r.id AS author_id,
-    r.id AS difficulty_id
+    category_id,
+    area_id,
+    author_id,
+    difficulty_id
     FROM recipe r;
 
 DROP VIEW IF EXISTS partial_named_search_recipes;
@@ -193,7 +193,9 @@ SELECT
     JSON_OBJECT(
         'id', a.id,
         'name', a.name
-    ) AS area
+    ) AS area,
+    c.id AS category_id,
+    a.id AS area_id
     FROM recipe r
     JOIN area a ON r.area_id = a.id
     LEFT JOIN `user` u ON r.author_id = u.id

@@ -4,12 +4,11 @@
  */
 const express = require('express');
 
-const { recipeActions, ingredientActions } = require('../../api/actions');
+const { recipeActions, ingredientActions, categoryActions, difficultyActions, areaActions } = require('../../api/actions');
 
 const router = express.Router();
 
 router.get('/recipes', async (req, res) => {
-
     const orderBy = req.query.order ?? null;
 
     const queryOptions = {
@@ -18,7 +17,19 @@ router.get('/recipes', async (req, res) => {
         isNamed: true,
     };
     const recipes = (await recipeActions.getRecipes(queryOptions)).responseMessage;
-    res.render('backRecipes', { recipes: recipes, title: 'Recipes' });
+
+    const categories = await categoryActions.getCategories();
+    const areas = await areaActions.getAreas();
+    const difficulties = await difficultyActions.getDifficulties();
+
+    const renderOptions = {
+        categories: categories.responseMessage,
+        areas: areas.responseMessage,
+        difficulties: difficulties.responseMessage,
+        recipes: recipes
+    }
+
+    res.render('backRecipes', renderOptions);
 });
 
 router.get('/ingredients', async (req, res) => {

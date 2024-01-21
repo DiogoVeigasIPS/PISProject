@@ -19,6 +19,7 @@ const handlePromise = (promise, res) => {
             res.status(statusCode).send(responseMessage);
         })
         .catch(({ statusCode, responseMessage }) => {
+            console.error({ statusCode, responseMessage })
             res.status(statusCode).send(responseMessage);
         });
 };

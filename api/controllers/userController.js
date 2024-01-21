@@ -24,6 +24,12 @@ const editUser = (req, res) => {
 };
 
 const deleteUser = (req, res) => {
+    const isAdmin = req.isAdmin;
+
+    if (!isAdmin) {
+        return res.status(403).send('Not authorized.');
+    }
+    
     const id = req.params.id;
     handlePromise(userActions.deleteUser(id), res);
 };

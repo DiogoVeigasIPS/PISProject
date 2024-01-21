@@ -18,7 +18,7 @@ router.get('', userController.readUsers);
 router.get('/:id', userController.readUser);
 router.post('', userController.addUser);
 router.put('/:id', userController.editUser);
-router.delete('/:id', userController.deleteUser);
+router.delete('/:id', verifyJWT, userController.deleteUser);
 router.post('/login', userController.loginUser);
 router.post('/signup', userController.signupUser);
 

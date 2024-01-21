@@ -5,9 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/css/backRecipes.css">
+    <script defer src="/js/dynamicIngredientSearch.js"></script>
     <script defer src="/js/auxRecipes.js"></script>
     <script defer src="/js/imagePreview.js"></script>
-    <script src="/js/dynamicIngredientSearch.js" defer></script>
     <script src="/js/redirects/backoffice.js"></script>
     <title>Recipes List</title>
 </head>
@@ -51,7 +52,8 @@
                         {{#recipes}}
                         <tr>
                             <td class="text-center align-middle">{{id}}</td>
-                            <td class="text-center align-middle">{{name}}</td>
+                            <td class="text-center align-middle text-truncate maxNameSize" 
+                                data-toggle="tooltip" title="{{name}}">{{name}}</td>
                             <td class="text-center align-middle">
                                 <img src="{{image}}" alt="Recipe Image" class="img-thumbnail" style="max-width: 100px;">
                             </td>
@@ -143,14 +145,29 @@
                     </div>
                     <div class="modal-body">
                         <div class="row justify-content-center">
-                            <div class="col-3">
-                            </div>
-                            <div class="col-6">
-                                <!-- Card for Login Form -->
-                                <div class="card" id="recipeCard">
-                                    <div class="card-body">
-                                        <form id="recipeForm" action="/recipe/create/" method="post"
-                                            class="needs-validation">
+                            <form id="recipeForm" action="/recipe/create/" method="post" class="needs-validation row">
+                                <div class="col-6">
+                                    <!-- Ingredients -->
+                                    <div class="mb-3 border p-3">
+                                        <label for="ingredients" class="form-label">Ingredients</label>
+                                        <input type="text" class="form-control" id="ingredientInput"
+                                            placeholder="Enter the ingredient name">
+                                        <div class="invalid-feedback">
+                                            Please enter the ingredients.
+                                        </div>
+                                        <div id="ingredientSuggestions" class="list-group mt-2"></div>
+
+                                        <!-- Selected Ingredients Table -->
+                                        <table class="table border" id="selectedIngredients">
+                                            <tbody>
+                                                <!-- Selected ingredients will be added dynamically here -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="card" id="recipeCard">
+                                        <div class="card-body">
                                             <!-- Recipe Name -->
                                             <div class="mb-3">
                                                 <label for="recipeNameForm" class="form-label">Name</label>
@@ -166,10 +183,13 @@
                                                     <label for="recipeCategoryForm" class="form-label">Category</label>
                                                     <select class="form-select" id="recipeCategoryForm"
                                                         name="recipeCategoryForm" required>
-                                                        <option value="" disabled selected>Select category</option>
+                                                        <option value="" disabled selected>Select one</option>
+                                                        {{#categories}}
+                                                            <option value="{{id}}">{{name}}</option>
+                                                        {{/categories}}
                                                     </select>
                                                     <div class="invalid-feedback">
-                                                        Please select an category.
+                                                        Please select a category.
                                                     </div>
                                                 </div>
                                                 <!-- Area -->
@@ -177,7 +197,10 @@
                                                     <label for="recipeAreaForm" class="form-label">Area</label>
                                                     <select class="form-select" id="recipeAreaForm"
                                                         name="recipeAreaForm" required>
-                                                        <option value="" disabled selected>Select area</option>
+                                                        <option value="" disabled selected>Select one</option>
+                                                        {{#areas}}
+                                                            <option value="{{id}}">{{name}}</option>
+                                                        {{/areas}}
                                                     </select>
                                                     <div class="invalid-feedback">
                                                         Please select an area.
@@ -189,10 +212,10 @@
                                                 <!-- Preparation Time -->
                                                 <div class="mb-3 col">
                                                     <label for="recipePreparationTimeForm"
-                                                        class="form-label">Preparation Time (in minutes)</label>
+                                                        class="form-label">Preparation Time</label>
                                                     <input type="number" class="form-control"
                                                         id="recipePreparationTimeForm" name="recipePreparationTimeForm"
-                                                        placeholder="Enter preparation time" min="1" required>
+                                                        placeholder="In minutes" min="1" required>
                                                     <div class="invalid-feedback">
                                                         Please enter the preparation time.
                                                     </div>
@@ -204,7 +227,10 @@
                                                         class="form-label">Difficulty</label>
                                                     <select class="form-select" id="recipeDifficultyForm"
                                                         name="recipeDifficultyForm" required>
-                                                        <option value="" disabled selected>Select difficulty</option>
+                                                        <option value="" disabled selected>Select one</option>
+                                                        {{#difficulties}}
+                                                            <option value="{{id}}">{{name}}</option>
+                                                        {{/difficulties}}
                                                     </select>
                                                     <div class="invalid-feedback">
                                                         Please select a difficulty level.
@@ -226,7 +252,7 @@
                                             <div class="mb-3">
                                                 <label for="recipeImageForm" class="form-label">Recipe Image URL</label>
                                                 <input type="url" class="form-control" id="image" name="image"
-                                                    placeholder="Enter the URL of the recipe image" required>
+                                                    placeholder="Enter the URL of the recipe image">
                                                 <div class="invalid-feedback">
                                                     Please enter a valid image URL.
                                                 </div>
@@ -238,7 +264,7 @@
                                                     class="form-label">Description</label>
                                                 <textarea class="form-control" id="recipeDescriptionForm"
                                                     name="recipeDescriptionForm"
-                                                    placeholder="Enter the recipe description" required></textarea>
+                                                    placeholder="Enter the recipe description"></textarea>
                                                 <div class="invalid-feedback">
                                                     Please enter the recipe description.
                                                 </div>
@@ -255,32 +281,13 @@
                                                     Please enter the preparation description.
                                                 </div>
                                             </div>
-
-                                            <!-- Ingredients -->
-                                            <div class="mb-3 border p-3">
-                                                <label for="ingredients" class="form-label">Ingredients</label>
-                                                <input type="text" class="form-control" id="ingredientInput"
-                                                    placeholder="Enter the ingredient name">
-                                                <div class="invalid-feedback">
-                                                    Please enter the ingredients.
-                                                </div>
-                                                <div id="ingredientSuggestions" class="list-group mt-2"></div>
-
-                                                <!-- Selected Ingredients Table -->
-                                                <table class="table border" id="selectedIngredients">
-                                                    <tbody>
-                                                        <!-- Selected ingredients will be added dynamically here -->
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                            <!-- <button type="submit" class="btn btn-primary">Submit Recipe</button> -->
                                             <div class="mb-3 alert alert-danger d-none" id="recipeError"></div>
                                             <button type="submit" class="btn btn-primary" id="submitRecipeButton">Submit
                                                 Recipe</button>
-                                        </form>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            </form>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
@@ -308,19 +315,7 @@
                 </div>
             </div>
         </div>
-        {{! Notification toast }}
-        <div class="toast-container position-fixed bottom-0 end-0 p-3">
-            <div id="toast" class="toast align-items-end end-0" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="toast-header">
-                    <strong class="me-auto">System</strong>
-                    <small>Just now</small>
-                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
-                <div class="toast-body" id="toastBody">
-                    Hello, world! This is a toast message.
-                </div>
-            </div>
-        </div>
+        {{>toast}}
     </div>
 {{>footer}}
 </body>
