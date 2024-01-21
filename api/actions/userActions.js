@@ -254,9 +254,16 @@ const getFavorites = (queryOptions = null, id) => {
                 : 'partial_search_recipes'
             : 'search_recipes';
 
-        const query = `SELECT * FROM ${view} sr JOIN favorite_recipe fr ON fr.recipe_id = sr.id WHERE user_id = ?`;
+        var query = `SELECT * FROM ${view} sr JOIN favorite_recipe fr ON fr.recipe_id = sr.id 
+                        WHERE user_id = ? ORDER BY timestamp_created DESC`;
 
-        connection.query(query, [id], (err, result) => {
+        const queryValues = [id];
+        if (queryOptions.maxResults) {
+            queryValues.push(queryOptions.maxResults);
+            query += " LIMIT ?";
+        }
+
+        connection.query(query, queryValues, (err, result) => {
             if (err) {
                 console.error(err);
                 reject({ statusCode: 500, responseMessage: err });
@@ -275,10 +282,10 @@ const addFavorite = (id, recipe) => {
         const connection = mysql.createConnection(connectionOptions);
         connection.connect();
 
-        connection.query("INSERT INTO favorite_recipe VALUES (?, ?)", [id, recipe], (err, result) => {
+        connection.query("INSERT INTO favorite_recipe (user_id, recipe_id) VALUES (?, ?)", [id, recipe], (err, result) => {
             if (err) {
                 console.error(err);
-                if(err.sqlMessage.startsWith('Duplicate entry')){
+                if (err.sqlMessage.startsWith('Duplicate entry')) {
                     return reject({ statusCode: 422, responseMessage: 'That recipe is already a favorite.' });
                 }
                 reject({ statusCode: 500, responseMessage: err });

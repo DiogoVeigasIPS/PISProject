@@ -6,20 +6,46 @@ const { userActions } = require('../actions');
 const { handlePromise } = require('../utils');
 
 const readUsers = (req, res) => {
+    const isAdmin = req.isAdmin;
+
+    if (!isAdmin) {
+        return res.status(403).send('Forbidden.');
+    }
+
     handlePromise(userActions.getUsers(), res);
 };
 
 const readUser = (req, res) => {
     const id = req.params.id;
+    const isAdmin = req.isAdmin;
+    const userId = req.userId;
+
+    if (!(isAdmin || userId == id)) {
+        return res.status(403).send('Forbidden.');
+    }
+
     handlePromise(userActions.getUser(id), res);
 };
 
 const addUser = (req, res) => {
+    const isAdmin = req.isAdmin;
+
+    if (!isAdmin) {
+        return res.status(403).send('Forbidden.');
+    }
+
     handlePromise(userActions.addUser(req.body), res);
 };
 
 const editUser = (req, res) => {
     const id = req.params.id;
+    const isAdmin = req.isAdmin;
+    const userId = req.userId;
+
+    if (!isAdmin && !userId || userId != id) {
+        return res.status(403).send('Forbidden.');
+    }
+    
     handlePromise(userActions.editUser(id, req.body), res);
 };
 
@@ -50,6 +76,11 @@ const userIsLoggedIn = (req, res) => {
 
 const getFavorites = (req, res) => {
     const id = req.params.id;
+    const userId = req.userId;
+
+    if (!userId || id != userId) {
+        return res.status(401).send('Not authenticated.');
+    }
 
     const query = req.query;
     const isPartial = query.partial && query.partial.toLowerCase() === 'true';
@@ -67,13 +98,25 @@ const getFavorites = (req, res) => {
 
 const addFavorite = (req, res) => {
     const id = req.params.id;
+    const userId = req.userId;
     const recipe = req.params.recipe_id;
+    
+    if (!userId || id != userId) {
+        return res.status(401).send('Not authenticated.');
+    }
+
     handlePromise(userActions.addFavorite(id, recipe), res);
 }
 
 const removeFavorite = (req, res) => {
     const id = req.params.id;
+    const userId = req.userId;
     const recipe = req.params.recipe_id;
+
+    if (!userId || id != userId) {
+        return res.status(401).send('Not authenticated.');
+    }
+
     handlePromise(userActions.removeFavorite(id, recipe), res);
 }
 
