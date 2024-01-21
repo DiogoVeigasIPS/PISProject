@@ -14,6 +14,7 @@ const { getDifficulty } = require('./difficultyActions');
 const { getUser } = require('./userActions');
 
 const getRecipes = (queryOptions = null) => {
+    console.log(queryOptions)
     return new Promise((resolve, reject) => {
         const baseQueryString = queryOptions?.isPartial ?
             queryOptions?.isNamed ? 'SELECT * FROM partial_named_search_recipes WHERE 1=1' :

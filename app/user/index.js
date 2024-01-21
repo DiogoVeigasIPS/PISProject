@@ -106,14 +106,13 @@ router.get('/', async (req, res) => {
     const queryOptions = {
         maxResults: 8,
         isPartial: true,
-        area: area,
-        category: category
+        area: parseInt(area),
+        category: parseInt(category)
     };
 
     var recipes;
     if (stringSearch == null) {
         queryOptions.isRandom = true;
-        //queryOptions.area = area;
         recipes = await recipeActions.getRecipes(queryOptions);
     } else {
         queryOptions.stringSearch = stringSearch
