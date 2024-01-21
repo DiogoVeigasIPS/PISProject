@@ -241,6 +241,7 @@ const openEditRecipeModal = async (id, inDetailsPage = false) => {
     const imageInputForm = document.getElementById('image');
     const recipeDescriptionForm = document.getElementById('recipeDescriptionForm');
     const recipePreparationDescriptionForm = document.getElementById('recipePreparationDescription');
+    const imagePreview = document.getElementById('imagePreview');
 
     // Additional elements for ingredient manipulation
     const selectedIngredients = document.querySelector('#selectedIngredients');
@@ -269,6 +270,7 @@ const openEditRecipeModal = async (id, inDetailsPage = false) => {
             recipeDescriptionForm.value = responseData.description;
             recipePreparationDescriptionForm.value = responseData.preparationDescription;
             author = responseData.author;
+            imagePreview.src = responseData.image;
 
             // Populate the selected ingredients section
             responseData.ingredients.forEach((element) => {
