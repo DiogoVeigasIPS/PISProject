@@ -9,6 +9,7 @@ const connectionOptions = require('./connectionOptions');
 const { User } = require('../models');
 const { objectIsValid } = require('../utils');
 const { getJWT } = require('../jsonWebToken');
+const { reject } = require('async');
 
 const getUsers = () => {
     return new Promise((resolve, reject) => {
@@ -108,14 +109,14 @@ const editUser = (id, user) => {
         newUser.password = hashedPassword;
 
         connection.query("UPDATE user SET username = ?, email = ?, password = ?, firstName = ?, lastName = ?, image = ?, isAdmin = ? WHERE id = ?",
-            [newUser.username, newUser.email, newUser.password, newUser.firstName, newUser.lastName, newUser.image, id, newUser.isAdmin ? 1 : 0],
+            [newUser.username, newUser.email, newUser.password, newUser.firstName, newUser.lastName, newUser.image, newUser.isAdmin ? 1 : 0, id],
             (err, result) => {
                 if (err) {
                     console.error(err);
                     reject({ statusCode: 400, responseMessage: err });
                     return;
                 }
-
+                
                 if (result.affectedRows > 0) {
                     newUser.id = id;
                     resolve({ statusCode: 200, responseMessage: newUser });
@@ -319,6 +320,12 @@ const removeFavorite = (id, recipe) => {
         });
 
         connection.end();
+    })
+}
+
+const changePassword = (req, res) => {
+    return new Promise((resolve, reject) => {
+
     })
 }
 
