@@ -31,7 +31,7 @@ const openRecipeDetailsModal = async (id) => {
             recipeArea.innerText = responseData.area.name;
             recipeAuthor.innerText = responseData.author.username;
 
-            
+
             // Clear previous ingredients
             recipeIngredientsList.innerHTML = '';
 
@@ -93,7 +93,7 @@ const openRecipeDetailsModal = async (id) => {
             });
             recipeImageURL.innerText = responseData.image;
             recipeImage.src = responseData.image;
-            
+
             const recipeDetailsModal = new bootstrap.Modal(document.getElementById('recipeDetailsModal'));
             recipeDetailsModal.show();
 
@@ -118,37 +118,11 @@ const openAddRecipeModal = async () => {
     const recipeDescriptionForm = document.getElementById('recipeDescriptionForm');
     const recipePreparationDescriptionForm = document.getElementById('recipePreparationDescription');
 
+    const selectedIngredients = document.querySelector('#selectedIngredients');
+    selectedIngredients.innerHTML = "";
+
     recipeNameForm.value = recipePreparationTimeForm.value = recipeCostForm.value = imageInputForm.value = recipeDescriptionForm.value = recipePreparationDescriptionForm.value = "";
     recipeCategoryForm.selectedIndex = recipeAreaForm.selectedIndex = recipeDifficultyForm.selectedIndex = 0;
-
-    // Fetch categories, areas, and difficulty data
-    const categoriesData = await fetch("http://localhost:8081/api/category").then(response => response.json());
-    const areasData = await fetch("http://localhost:8081/api/area").then(response => response.json());
-    const difficultiesData = await fetch("http://localhost:8081/api/difficulty").then(response => response.json());
-
-    // Populate the options for categories select
-    categoriesData.forEach(category => {
-        const option = document.createElement('option');
-        option.value = category.id;
-        option.text = category.name;
-        recipeCategoryForm.appendChild(option);
-    });
-
-    // Populate the options for areas select
-    areasData.forEach(area => {
-        const option = document.createElement('option');
-        option.value = area.id;
-        option.text = area.name;
-        recipeAreaForm.appendChild(option);
-    });
-
-    // Populate the options for difficulty select
-    difficultiesData.forEach(difficulty => {
-        const option = document.createElement('option');
-        option.value = difficulty.id;
-        option.text = difficulty.name;
-        recipeDifficultyForm.appendChild(option);
-    });
 
     const submitRecipeButton = document.getElementById('submitRecipeButton');
     submitRecipeButton.innerText = 'Add Recipe';
@@ -159,20 +133,35 @@ const openAddRecipeModal = async () => {
     recipeForm.onsubmit = async (e) => {
         e.preventDefault();
 
-        const name = recipeNameForm.value;
-        const author = window.userId;
-        const category = recipeCategoryForm.id;
-        const area = recipeAreaForm.id;
-        const preparationTime = recipePreparationTimeForm.value;
-        const difficulty = recipeDifficultyForm.id;
-        const cost = recipeCostForm.value;
-        const image = imageInputForm.value;
-        const description = recipeDescriptionForm.value;
-        const preparationDescription = recipePreparationDescriptionForm.value;
+        // Ingredient manipulation
+        const ingredients = [];
+        const quantities = document.getElementsByName('quantities[]');
+        const ingredientIds = document.getElementsByName('ingredientIds[]');
+
+        for (let i = 0; i < quantities.length; i++) {
+            ingredients.push({
+                ingredient: { id: ingredientIds[i].value },
+                quantity: quantities[i].value
+            });
+        }
+
+        const recipe = {
+            name: recipeNameForm.value,
+            category: { id: recipeCategoryForm.value },
+            description: recipeDescriptionForm.value,
+            preparationDescription: recipePreparationDescriptionForm.value,
+            area: { id: recipeAreaForm.value},
+            author: { id: window.userId },
+            image: imageInputForm.value,
+            preparationTime: recipePreparationTimeForm.value,
+            difficulty: { id: recipeDifficultyForm.value, name: null },
+            cost: recipeCostForm.value,
+            ingredients: ingredients
+        };
 
         const options = {
             method: "POST",
-            body: JSON.stringify({ name, author, description, image, preparationDescription, area, category, preparationTime, difficulty, cost }),
+            body: JSON.stringify(recipe),
             headers: {
                 'Content-Type': 'application/json'
             }
@@ -186,15 +175,22 @@ const openAddRecipeModal = async () => {
             if (response.ok) {
                 const responseData = await response.json();
                 errorDiv.classList.add('d-none');
-
+                console.log(responseData)
                 // Create a new table row using JavaScript
                 const newRecipeRow = document.createElement('tr');
+
                 // Customize this according to your recipe table structure
                 newRecipeRow.innerHTML = `
                     <td class="text-center align-middle">${responseData.id}</td>
-                    <td class="text-center align-middle text-truncate maxNameSize"
-                        data-toggle="tooltip" title="${r.name}">${responseData.name}</td>
+                    <td class="text-center align-middle text-truncate maxNameSize" 
+                        data-toggle="tooltip" title="${responseData.name}">${responseData.name}</td>
+                    <td class="text-center align-middle">
+                        <img src="${responseData.image}" alt="Recipe Image" class="img-thumbnail" style="max-width: 100px;">
+                    </td>
                     <td class="text-center align-middle">${responseData.category.name}</td>
+                    <td class="text-center align-middle">${responseData.area.name}</td>
+                    <td class="text-center align-middle">${responseData.author.username}</td>
+                    <td class="text-center align-middle">${responseData.difficulty.name}</td>
                     <td class="text-center align-middle">
                         <a href="javascript:openRecipeDetailsModal(${responseData.id});" class="mr-2"><i class="bi bi-eye-fill h3"></i></a>
                         <a href="javascript:openEditRecipeModal(${responseData.id})" class="mr-2"><i class="bi bi-pencil-fill text-warning h3"></i></a>
@@ -265,7 +261,7 @@ const updateSearchBar = () => {
 
     const urlSearchParams = new URLSearchParams(window.location.search);
     const nameParam = urlSearchParams.get('name');
-    
+
     searchInput.value = nameParam || '';
 }
 
@@ -291,15 +287,15 @@ const showToast = (message, isError = false) => {
     bootstrapToast.show();
 }
 
-document.addEventListener('DOMContentLoaded', function (){
+document.addEventListener('DOMContentLoaded', function () {
     const searchInput = document.getElementById('searchInput');
     const formSearch = document.getElementById('formSearch');
 
     const idSort = document.getElementById('idSort');
-    const nameSort = document.getElementById('nameSort'); 
+    const nameSort = document.getElementById('nameSort');
     const categorySort = document.getElementById('categorySort');
-    const areaSort = document.getElementById('areaSort'); 
-    const authorSort = document.getElementById('authorSort'); 
+    const areaSort = document.getElementById('areaSort');
+    const authorSort = document.getElementById('authorSort');
     const difficultySort = document.getElementById('difficultySort');
 
     formSearch?.addEventListener('submit', function (e) {
@@ -311,31 +307,31 @@ document.addEventListener('DOMContentLoaded', function (){
         filterTable(searchInput.value);
     });
 
-    if(idSort != null)
+    if (idSort != null)
         idSort.onclick = () => {
             filterTable(searchInput.value, "");
         }
 
-    if(nameSort != null)
-    nameSort.onclick = () => {
-        filterTable(searchInput.value, 'name');
-    }
-    if(categorySort != null)
-    categorySort.onclick = () => {
-        filterTable(searchInput.value, 'category');
-    }
-    if(areaSort != null)
-    areaSort.onclick = () => {
-        filterTable(searchInput.value, 'area');
-    }
-    if(authorSort != null)
-    authorSort.onclick = () => {
-        filterTable(searchInput.value, 'author');
-    }
-    if(difficultySort != null)
-    difficultySort.onclick = () => {
-        filterTable(searchInput.value, 'difficulty')
-    }
+    if (nameSort != null)
+        nameSort.onclick = () => {
+            filterTable(searchInput.value, 'name');
+        }
+    if (categorySort != null)
+        categorySort.onclick = () => {
+            filterTable(searchInput.value, 'category');
+        }
+    if (areaSort != null)
+        areaSort.onclick = () => {
+            filterTable(searchInput.value, 'area');
+        }
+    if (authorSort != null)
+        authorSort.onclick = () => {
+            filterTable(searchInput.value, 'author');
+        }
+    if (difficultySort != null)
+        difficultySort.onclick = () => {
+            filterTable(searchInput.value, 'difficulty')
+        }
     const filterTable = async (stringSearch, order = "") => {
 
         const searchParams = new URLSearchParams(window.location.search);
@@ -356,7 +352,7 @@ document.addEventListener('DOMContentLoaded', function (){
 
         try {
             const url = !order ? `http://localhost:8081/api/recipe?name=${stringSearch}` :
-            `http://localhost:8081/api/recipe?name=${stringSearch}&order=${order}`;
+                `http://localhost:8081/api/recipe?name=${stringSearch}&order=${order}`;
 
             const response = await fetch(url);
 
@@ -386,7 +382,7 @@ document.addEventListener('DOMContentLoaded', function (){
                         </a>
                     </td>
                 `;
-                tbody.appendChild(newRecipeRow);
+                    tbody.appendChild(newRecipeRow);
                 })
             }
         } catch (err) {

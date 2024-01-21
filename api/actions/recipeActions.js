@@ -113,6 +113,7 @@ const addRecipe = async (recipe) => {
             pool.getConnection(async (err, connection) => {
                 if (err) {
                     console.error(err);
+
                     reject({ statusCode: 500, responseMessage: 'Connection Error.' });
                     return;
                 }
@@ -139,6 +140,11 @@ const addRecipe = async (recipe) => {
                                 console.error(err);
                                 connection.rollback(() => {
                                     connection.release();
+                                    
+                                    if(err.sqlMessage.startsWith('Duplicate entry')){
+                                        return reject({ statusCode: 422, responseMessage: 'Name is duplicate.' });
+                                    }
+
                                     reject({ statusCode: 400, responseMessage: err });
                                 });
                                 return;
@@ -169,7 +175,7 @@ const addRecipe = async (recipe) => {
                                     return;
                                 }
 
-                                connection.commit((err) => {
+                                connection.commit(async (err) => {
                                     if (err) {
                                         console.error(err);
                                         connection.rollback(() => {
@@ -180,8 +186,10 @@ const addRecipe = async (recipe) => {
                                     }
 
                                     connection.release();
-                                    newRecipe.id = result.insertId;
-                                    resolve({ statusCode: 200, responseMessage: newRecipe });
+                                    
+                                    //newRecipe.id = result.insertId;
+                                    const addedRecipe = (await getRecipe(result.insertId)).responseMessage;
+                                    resolve({ statusCode: 200, responseMessage: addedRecipe });
                                 });
                             });
                         });
@@ -219,6 +227,11 @@ const editRecipe = (id, recipe) => {
             (err, result) => {
                 if (err) {
                     console.error(err);
+
+                    if(err.sqlMessage.startsWith('Duplicate entry')){
+                        return reject({ statusCode: 422, responseMessage: 'Name is duplicate.' });
+                    }
+
                     reject({ statusCode: 400, responseMessage: err });
                     return;
                 }
