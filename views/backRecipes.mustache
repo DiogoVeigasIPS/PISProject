@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/css/backRecipes.css">
     <script defer src="/js/auxRecipes.js"></script>
     <script defer src="/js/imagePreview.js"></script>
     <script src="/js/dynamicIngredientSearch.js" defer></script>
@@ -51,7 +52,8 @@
                         {{#recipes}}
                         <tr>
                             <td class="text-center align-middle">{{id}}</td>
-                            <td class="text-center align-middle">{{name}}</td>
+                            <td class="text-center align-middle text-truncate maxNameSize" 
+                                data-toggle="tooltip" title="{{name}}">{{name}}</td>
                             <td class="text-center align-middle">
                                 <img src="{{image}}" alt="Recipe Image" class="img-thumbnail" style="max-width: 100px;">
                             </td>

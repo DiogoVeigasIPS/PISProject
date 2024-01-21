@@ -192,7 +192,8 @@ const openAddRecipeModal = async () => {
                 // Customize this according to your recipe table structure
                 newRecipeRow.innerHTML = `
                     <td class="text-center align-middle">${responseData.id}</td>
-                    <td class="text-center align-middle">${responseData.name}</td>
+                    <td class="text-center align-middle text-truncate maxNameSize"
+                        data-toggle="tooltip" title="${r.name}">${responseData.name}</td>
                     <td class="text-center align-middle">${responseData.category.name}</td>
                     <td class="text-center align-middle">
                         <a href="javascript:openRecipeDetailsModal(${responseData.id});" class="mr-2"><i class="bi bi-eye-fill h3"></i></a>
@@ -368,7 +369,8 @@ document.addEventListener('DOMContentLoaded', function (){
                     const newRecipeRow = document.createElement('tr');
                     newRecipeRow.innerHTML = `
                     <td class="text-center align-middle">${r.id}</td>
-                    <td class="text-center align-middle">${r.name}</td>
+                    <td class="text-center align-middle text-truncate maxNameSize"
+                        data-toggle="tooltip" title="${r.name}">${r.name}</td>
                     <td class="text-center align-middle">
                         <img src="${r.image}" alt="Recipe Image" class="img-thumbnail" style="max-width: 100px;">
                     </td>
