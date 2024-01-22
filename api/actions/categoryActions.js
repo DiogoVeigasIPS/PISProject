@@ -86,6 +86,11 @@ const addCategory = (category) => {
             (err, result) => {
                 if (err) {
                     console.error(err);
+
+                    if (err.sqlMessage.startsWith('Duplicate entry')) {
+                        return reject({ statusCode: 422, responseMessage: 'Name is duplicate.' });
+                    }
+
                     reject({ statusCode: 400, responseMessage: err });
                     return;
                 }
@@ -115,6 +120,11 @@ const editCategory = (id, category) => {
             (err, result) => {
                 if (err) {
                     console.error(err);
+                    
+                    if (err.sqlMessage.startsWith('Duplicate entry')) {
+                        return reject({ statusCode: 422, responseMessage: 'Name is duplicate.' });
+                    }
+
                     reject({ statusCode: 400, responseMessage: err });
                     return;
                 }

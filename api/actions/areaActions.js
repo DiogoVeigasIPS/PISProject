@@ -72,6 +72,11 @@ const addArea = (area) => {
         connection.query("INSERT INTO area (name) VALUES (?)", [newArea.name], (err, result) => {
             if (err) {
                 console.error(err);
+
+                if (err.sqlMessage.startsWith('Duplicate entry')) {
+                    return reject({ statusCode: 422, responseMessage: 'Name is duplicate.' });
+                }
+
                 reject({ statusCode: 400, responseMessage: err });
                 return;
             }
@@ -99,6 +104,11 @@ const editArea = (id, area) => {
         connection.query("UPDATE area SET name = ? WHERE id = ?", [newArea.name, id], (err, result) => {
             if (err) {
                 console.error(err);
+                
+                if (err.sqlMessage.startsWith('Duplicate entry')) {
+                    return reject({ statusCode: 422, responseMessage: 'Name is duplicate.' });
+                }
+
                 reject({ statusCode: 400, responseMessage: err });
                 return;
             }

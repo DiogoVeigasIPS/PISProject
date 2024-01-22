@@ -78,7 +78,7 @@ const addUser = (user) => {
             (err, result) => {
                 if (err) {
                     if (err.sqlMessage.startsWith('Duplicate entry')) {
-                        return reject({ statusCode: 400, responseMessage: 'Username or email is duplicate.' });
+                        return reject({ statusCode: 422, responseMessage: 'Username or email is duplicate.' });
                     }
 
                     reject({ statusCode: 400, responseMessage: err });
