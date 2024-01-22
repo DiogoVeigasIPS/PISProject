@@ -4,8 +4,8 @@
  */
 const express = require('express');
 
-const { recipeActions, areaActions, categoryActions, difficultyActions, userActions } = require('../../api/actions');
-const { IngredientInRecipe, Ingredient, Category, Area, Difficulty, Recipe, Author } = require('../../api/models');
+const { recipeActions, areaActions, categoryActions } = require('../../api/actions');
+const { Recipe } = require('../../api/models');
 
 const router = express.Router();
 
@@ -40,7 +40,7 @@ router.get('/recipe/:id', async (req, res) => {
 router.get('/categories', async (req, res) => {
     const categories = await categoryActions.getCategories();
 
-    res.render('categories', { categories: categories.responseMessage, title: "Auth" });
+    res.render('categories', { categories: categories.responseMessage, title: "Categories" });
 });
 
 // Home Page
