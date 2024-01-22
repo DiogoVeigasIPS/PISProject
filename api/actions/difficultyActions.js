@@ -70,6 +70,11 @@ const addDifficulty = (difficulty) => {
         connection.query("INSERT INTO difficulty (name) VALUES (?)", [newDifficulty.name], (err, result) => {
             if (err) {
                 console.error(err);
+
+                if (err.sqlMessage.startsWith('Duplicate entry')) {
+                    return reject({ statusCode: 422, responseMessage: 'Name is duplicate.' });
+                }
+
                 reject({ statusCode: 400, responseMessage: err });
                 return;
             }
@@ -97,6 +102,11 @@ const editDifficulty = (id, difficulty) => {
         connection.query("UPDATE difficulty SET name = ? WHERE id = ?", [newDifficulty.name, id], (err, result) => {
             if (err) {
                 console.error(err);
+
+                if (err.sqlMessage.startsWith('Duplicate entry')) {
+                    return reject({ statusCode: 422, responseMessage: 'Name is duplicate.' });
+                }
+                
                 reject({ statusCode: 400, responseMessage: err });
                 return;
             }

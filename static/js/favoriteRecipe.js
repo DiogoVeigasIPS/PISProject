@@ -12,17 +12,18 @@ window.addEventListener("load", (e) => {
                 const userId = responseData.id;
 
                 const recipeId = document.getElementById('recipeId').textContent;
-                
-                const favoriteResponse = await fetch(`http://localhost:8081/api/user/${userId}/favoriteRecipe/${recipeId}`, 
-                {
-                    method: 'POST'
-                });
+
+                const favoriteResponse = await fetch(`http://localhost:8081/api/user/${userId}/favoriteRecipe/${recipeId}`,
+                    {
+                        method: 'POST',
+                        headers: { 'x-access-token': token }
+                    });
 
                 const textResponse = await favoriteResponse.text();
 
-                if(favoriteResponse.status == 201){
+                if (favoriteResponse.status == 201) {
                     showToast(textResponse, false);
-                }else{
+                } else {
                     showToast(textResponse, true);
                 }
             } else {

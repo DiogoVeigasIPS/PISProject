@@ -2,7 +2,7 @@
  * Filename: categoryController.js
  * Purpose: Aggregates all controllers for the Category entity.
  */
-const { categoryActions, areaActions } = require('../actions');
+const { categoryActions } = require('../actions');
 const { handlePromise } = require('../utils');
 
 const readCategories = (req, res) => {
@@ -28,7 +28,7 @@ const addCategory = (req, res) => {
     const isAdmin = req.isAdmin;
 
     if (!isAdmin) {
-        return res.status(403).send('Not authorized.');
+        return res.status(403).send('Forbidden.');
     }
 
     handlePromise(categoryActions.addCategory(req.body), res);
@@ -38,7 +38,7 @@ const editCategory = (req, res) => {
     const isAdmin = req.isAdmin;
 
     if (!isAdmin) {
-        return res.status(403).send('Not authorized.');
+        return res.status(403).send('Forbidden.');
     }
 
     const id = req.params.id;
@@ -49,7 +49,7 @@ const deleteCategory = (req, res) => {
     const isAdmin = req.isAdmin;
 
     if (!isAdmin) {
-        return res.status(403).send('Not authorized.');
+        return res.status(403).send('Forbidden.');
     }
 
     const id = req.params.id;
@@ -60,7 +60,7 @@ const truncateCategories = (req, res) => {
     const isAdmin = req.isAdmin;
 
     if (!isAdmin) {
-        return res.status(403).send('Not authorized.');
+        return res.status(403).send('Forbidden.');
     }
 
     handlePromise(categoryActions.truncateCategories(), res);
@@ -70,7 +70,7 @@ const addCategories = (req, res) => {
     const isAdmin = req.isAdmin;
 
     if (!isAdmin) {
-        return res.status(403).send('Not authorized.');
+        return res.status(403).send('Forbidden.');
     }
     
     handlePromise(categoryActions.addCategories(req.body), res);

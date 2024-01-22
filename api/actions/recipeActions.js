@@ -6,12 +6,8 @@ const mysql = require('mysql2');
 const async = require('async');
 const connectionOptions = require('./connectionOptions');
 
-const { Recipe, Category, Author, Area, Difficulty, Ingredient, IngredientInRecipe, PartialRecipe } = require('../models');
+const { Recipe } = require('../models');
 const { objectIsValid } = require('../utils');
-const { getCategory } = require('./categoryActions');
-const { getArea } = require('./areaActions');
-const { getDifficulty } = require('./difficultyActions');
-const { getUser } = require('./userActions');
 
 const getRecipes = (queryOptions = null) => {
     return new Promise((resolve, reject) => {
@@ -427,7 +423,7 @@ const addIngredientToRecipe = (recipeId, ingredientId, quantity) => {
             [recipeId, ingredientId, quantity], (err, result) => {
                 if (err) {
                     if (err.sqlMessage.startsWith("Duplicate entry")) {
-                        reject({ statusCode: 400, responseMessage: 'Ingredient already in recipe.' });
+                        reject({ statusCode: 422, responseMessage: 'Ingredient already in recipe.' });
                         return;
                     }
                     console.error(err);
@@ -533,26 +529,6 @@ module.exports.removeIngredientFromRecipe = removeIngredientFromRecipe;
 module.exports.addRecipes = addRecipes;
 module.exports.truncateRecipes = truncateRecipes;
 module.exports.setRecipeIngredients = setRecipeIngredients;
-
-/**
- * [ingredientsAreDuplicate] - Checks for duplicated.
- *
- * @param {Object} ingredientsIds - ids and quantities of a recipe.
- * @returns {boolean} - There are either duplicates or not.
- */
-const ingredientsAreDuplicate = (ingredientsIds) => {
-    const set = new Set();
-
-    for (const ingredient of ingredientsIds) {
-        const id = ingredient.id;
-
-        if (set.has(id)) return true;
-
-        set.add(id);
-    }
-
-    return false;
-};
 
 /**
  * [processRecipeData] - Processes a recipe in order to validate it and insert it.

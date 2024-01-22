@@ -77,7 +77,7 @@ const addUser = (user) => {
             (err, result) => {
                 if (err) {
                     if (err.sqlMessage.startsWith('Duplicate entry')) {
-                        return reject({ statusCode: 400, responseMessage: 'Username or email is duplicate.' });
+                        return reject({ statusCode: 422, responseMessage: 'Username or email is duplicate.' });
                     }
 
                     reject({ statusCode: 400, responseMessage: err });
@@ -108,7 +108,7 @@ const editUser = (id, user) => {
         newUser.password = hashedPassword;
 
         connection.query("UPDATE user SET username = ?, email = ?, password = ?, firstName = ?, lastName = ?, image = ?, isAdmin = ? WHERE id = ?",
-            [newUser.username, newUser.email, newUser.password, newUser.firstName, newUser.lastName, newUser.image, id, newUser.isAdmin ? 1 : 0],
+            [newUser.username, newUser.email, newUser.password, newUser.firstName, newUser.lastName, newUser.image, newUser.isAdmin ? 1 : 0, id],
             (err, result) => {
                 if (err) {
                     console.error(err);
@@ -196,17 +196,17 @@ const signupUser = ({ username, email, password, repeatPassword, firstName, last
         connection.connect();
 
         if (password.length < 4) {
-            reject({ statusCode: 404, responseMessage: 'Password is too small.' });
+            reject({ statusCode: 422, responseMessage: 'Password is too small.' });
             return;
         }
 
         if (password.length > 30) {
-            reject({ statusCode: 404, responseMessage: 'Password is too big.' });
+            reject({ statusCode: 422, responseMessage: 'Password is too big.' });
             return;
         }
 
         if (password !== repeatPassword) {
-            reject({ statusCode: 404, responseMessage: 'Passwords must be equal.' });
+            reject({ statusCode: 422, responseMessage: 'Passwords must be equal.' });
             return;
         }
 
@@ -216,8 +216,7 @@ const signupUser = ({ username, email, password, repeatPassword, firstName, last
                 email: email,
                 password: password,
                 firstName: firstName,
-                lastName: lastName,
-                token: null
+                lastName: lastName
             });
 
             const addedUser = (await addUser(user)).responseMessage;
@@ -254,9 +253,16 @@ const getFavorites = (queryOptions = null, id) => {
                 : 'partial_search_recipes'
             : 'search_recipes';
 
-        const query = `SELECT * FROM ${view} sr JOIN favorite_recipe fr ON fr.recipe_id = sr.id WHERE user_id = ?`;
+        var query = `SELECT * FROM ${view} sr JOIN favorite_recipe fr ON fr.recipe_id = sr.id 
+                        WHERE user_id = ? ORDER BY timestamp_created DESC`;
 
-        connection.query(query, [id], (err, result) => {
+        const queryValues = [id];
+        if (queryOptions.maxResults) {
+            queryValues.push(queryOptions.maxResults);
+            query += " LIMIT ?";
+        }
+
+        connection.query(query, queryValues, (err, result) => {
             if (err) {
                 console.error(err);
                 reject({ statusCode: 500, responseMessage: err });
@@ -275,10 +281,10 @@ const addFavorite = (id, recipe) => {
         const connection = mysql.createConnection(connectionOptions);
         connection.connect();
 
-        connection.query("INSERT INTO favorite_recipe VALUES (?, ?)", [id, recipe], (err, result) => {
+        connection.query("INSERT INTO favorite_recipe (user_id, recipe_id) VALUES (?, ?)", [id, recipe], (err, result) => {
             if (err) {
                 console.error(err);
-                if(err.sqlMessage.startsWith('Duplicate entry')){
+                if (err.sqlMessage.startsWith('Duplicate entry')) {
                     return reject({ statusCode: 422, responseMessage: 'That recipe is already a favorite.' });
                 }
                 reject({ statusCode: 500, responseMessage: err });
@@ -315,6 +321,56 @@ const removeFavorite = (id, recipe) => {
     })
 }
 
+const changePassword = (id, { oldPassword, newPassword, repeatNewPassword }) => {
+    return new Promise(async (resolve, reject) => {
+        const user = new User((await getUser(id)).responseMessage);
+
+        const isPasswordMatch = await bcrypt.compare(oldPassword, user.password);
+
+        if (!isPasswordMatch) {
+            reject({ statusCode: 401, responseMessage: 'Incorrect password.' });
+            return;
+        }
+
+        if (newPassword != repeatNewPassword) {
+            reject({ statusCode: 422, responseMessage: 'Password and repeat password must be the equals.' });
+            return;
+        }
+
+        if(oldPassword == newPassword){
+            reject({ statusCode: 422, responseMessage: 'New password can\'t be old password.' });
+            return;
+        }
+
+        if (newPassword.length < 4) {
+            reject({ statusCode: 422, responseMessage: 'Password is too small.' });
+            return;
+        }
+
+        if (newPassword.length > 30) {
+            reject({ statusCode: 422, responseMessage: 'Password is too big.' });
+            return;
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        
+        const connection = mysql.createConnection(connectionOptions);
+        connection.connect();
+
+        connection.query("UPDATE user SET password = ? WHERE id = ?", [hashedPassword, id], (err, result) => {
+            if (err) {
+                console.error(err);
+                reject({ statusCode: 500, responseMessage: err });
+                return;
+            }
+
+            resolve({ statusCode: 201, responseMessage: 'Password changed successfully.' });
+        });
+
+        connection.end();
+    })
+}
+
 module.exports.getUsers = getUsers;
 module.exports.getUser = getUser;
 module.exports.addUser = addUser;
@@ -326,3 +382,4 @@ module.exports.userIsLoggedIn = userIsLoggedIn;
 module.exports.getFavorites = getFavorites;
 module.exports.addFavorite = addFavorite;
 module.exports.removeFavorite = removeFavorite;
+module.exports.changePassword = changePassword;

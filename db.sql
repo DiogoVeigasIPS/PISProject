@@ -64,15 +64,6 @@ CREATE TABLE IF NOT EXISTS ingredient (
 );
 
 -- Many to Many tables
-DROP TABLE IF EXISTS favorite_recipe;
-CREATE TABLE IF NOT EXISTS favorite_recipe (
-    user_id INT,
-    recipe_id INT,
-    PRIMARY KEY (user_id, recipe_id),  
-    FOREIGN KEY (user_id) REFERENCES `user`(id),
-    FOREIGN KEY (recipe_id) REFERENCES recipe(id)
-);
-
 DROP TABLE IF EXISTS recipe_ingredient;
 CREATE TABLE IF NOT EXISTS recipe_ingredient(
 	recipe_id int,
@@ -81,6 +72,16 @@ CREATE TABLE IF NOT EXISTS recipe_ingredient(
     PRIMARY KEY (recipe_id, ingredient_id),
     FOREIGN KEY (recipe_id) references recipe(id) ON DELETE CASCADE,
     FOREIGN KEY (ingredient_id) references ingredient(id)
+);
+
+DROP TABLE IF EXISTS favorite_recipe;
+CREATE TABLE IF NOT EXISTS favorite_recipe (
+    user_id INT,
+    recipe_id INT,
+    timestamp_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (user_id, recipe_id),  
+    FOREIGN KEY (user_id) REFERENCES `user`(id),
+    FOREIGN KEY (recipe_id) REFERENCES recipe(id)
 );
 
 DROP TABLE IF EXISTS recipe_list;

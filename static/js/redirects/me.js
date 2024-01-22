@@ -11,7 +11,8 @@
         }
 
         const responseData = await response.json();
-        const responseUser = await fetch(`http://localhost:8081/api/user/${responseData.id}`);
+        const responseUser = await fetch(`http://localhost:8081/api/user/${responseData.id}`,
+            { headers: { 'x-access-token': localStorage.getItem('auth') } });
 
         if (responseUser.status == 200) {
             const responseUserData = await responseUser.json();
@@ -39,7 +40,8 @@
 
 const addRecipes = async (userId) => {
     try {
-        const response = await fetch(`http://localhost:8081/api/user/${userId}/favoriteRecipe?partial=true`);
+        const response = await fetch(`http://localhost:8081/api/user/${userId}/favoriteRecipe?partial=true`,
+            { headers: { 'x-access-token': localStorage.getItem('auth') } });
 
         if (response.ok) {
             const responseData = await response.json();

@@ -134,12 +134,15 @@ const openAddRecipeModal = async () => {
     const imageInputForm = document.getElementById('image');
     const recipeDescriptionForm = document.getElementById('recipeDescriptionForm');
     const recipePreparationDescriptionForm = document.getElementById('recipePreparationDescription');
+    const ingredientInput = document.getElementById('ingredientInput');
 
     const selectedIngredients = document.querySelector('#selectedIngredients');
     selectedIngredients.innerHTML = "";
 
     recipeNameForm.value = recipePreparationTimeForm.value = recipeCostForm.value = imageInputForm.value = recipeDescriptionForm.value = recipePreparationDescriptionForm.value = "";
     recipeCategoryForm.selectedIndex = recipeAreaForm.selectedIndex = recipeDifficultyForm.selectedIndex = 0;
+
+    ingredientInput.value = "";
 
     const submitRecipeButton = document.getElementById('submitRecipeButton');
     submitRecipeButton.innerText = 'Add Recipe';
@@ -242,10 +245,11 @@ const openEditRecipeModal = async (id, inDetailsPage = false) => {
     const recipeDescriptionForm = document.getElementById('recipeDescriptionForm');
     const recipePreparationDescriptionForm = document.getElementById('recipePreparationDescription');
     const imagePreview = document.getElementById('imagePreview');
+    const ingredientInput = document.getElementById('ingredientInput');
 
     // Additional elements for ingredient manipulation
     const selectedIngredients = document.querySelector('#selectedIngredients');
-    selectedIngredients.innerHTML = "";
+    selectedIngredients.innerHTML = ingredientInput.value = "";
 
     // Set the activity title
     const activityTitle = document.getElementById('activityTitle');

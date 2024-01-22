@@ -40,7 +40,7 @@ const addRecipe = (req, res) => {
     const isAdmin = req.isAdmin;
 
     if (userId == null || !isAdmin) {
-        return res.status(403).send('Not authorized.');
+        return res.status(403).send('Forbidden.');
     }
 
     handlePromise(recipeActions.addRecipe(req.body, userId), res);
@@ -50,7 +50,7 @@ const editRecipe = (req, res) => {
     const isAdmin = req.isAdmin;
 
     if (!isAdmin) {
-        return res.status(403).send('Not authorized.');
+        return res.status(403).send('Forbidden.');
     }
 
     const id = req.params.id;
@@ -61,7 +61,7 @@ const deleteRecipe = (req, res) => {
     const isAdmin = req.isAdmin;
 
     if (!isAdmin) {
-        return res.status(403).send('Not authorized.');
+        return res.status(403).send('Forbidden.');
     }
 
     const id = req.params.id;
@@ -72,7 +72,7 @@ const addIngredientToRecipe = (req, res) => {
     const isAdmin = req.isAdmin;
 
     if (!isAdmin) {
-        return res.status(403).send('Not authorized.');
+        return res.status(403).send('Forbidden.');
     }
 
     const recipe = req.params.id;
@@ -86,7 +86,7 @@ const editIngredientQuantityInRecipe = (req, res) => {
     const isAdmin = req.isAdmin;
 
     if (!isAdmin) {
-        return res.status(403).send('Not authorized.');
+        return res.status(403).send('Forbidden.');
     }
 
     const recipe = req.params.id;
@@ -100,7 +100,7 @@ const removeIngredientFromRecipe = (req, res) => {
     const isAdmin = req.isAdmin;
 
     if (!isAdmin) {
-        return res.status(403).send('Not authorized.');
+        return res.status(403).send('Forbidden.');
     }
 
     const recipe = req.params.id;
@@ -113,7 +113,7 @@ const addRecipes = (req, res) => {
     const isAdmin = req.isAdmin;
 
     if (!isAdmin) {
-        return res.status(403).send('Not authorized.');
+        return res.status(403).send('Forbidden.');
     }
 
     handlePromise(recipeActions.addRecipes(req.body), res);
@@ -123,7 +123,7 @@ const truncateRecipes = (req, res) => {
     const isAdmin = req.isAdmin;
 
     if (!isAdmin) {
-        return res.status(403).send('Not authorized.');
+        return res.status(403).send('Forbidden.');
     }
 
     handlePromise(recipeActions.truncateRecipes(), res);
@@ -133,7 +133,7 @@ const setRecipeIngredients = (req, res) => {
     const isAdmin = req.isAdmin;
 
     if (!isAdmin) {
-        return res.status(403).send('Not authorized.');
+        return res.status(403).send('Forbidden.');
     }
     
     const recipe = req.params.id;

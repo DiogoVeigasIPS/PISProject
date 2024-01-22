@@ -1,3 +1,7 @@
+/**
+ * Filename: jsonWebToken.js
+ * Purpose: Implements the sign and verify methods for json web token.
+ */
 const jwt = require('jsonwebtoken');
 let dotenv = require('dotenv').config()
 
