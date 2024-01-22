@@ -116,7 +116,7 @@ const editUser = (id, user) => {
                     reject({ statusCode: 400, responseMessage: err });
                     return;
                 }
-                
+
                 if (result.affectedRows > 0) {
                     newUser.id = id;
                     resolve({ statusCode: 200, responseMessage: newUser });
@@ -197,17 +197,17 @@ const signupUser = ({ username, email, password, repeatPassword, firstName, last
         connection.connect();
 
         if (password.length < 4) {
-            reject({ statusCode: 404, responseMessage: 'Password is too small.' });
+            reject({ statusCode: 422, responseMessage: 'Password is too small.' });
             return;
         }
 
         if (password.length > 30) {
-            reject({ statusCode: 404, responseMessage: 'Password is too big.' });
+            reject({ statusCode: 422, responseMessage: 'Password is too big.' });
             return;
         }
 
         if (password !== repeatPassword) {
-            reject({ statusCode: 404, responseMessage: 'Passwords must be equal.' });
+            reject({ statusCode: 422, responseMessage: 'Passwords must be equal.' });
             return;
         }
 
@@ -217,8 +217,7 @@ const signupUser = ({ username, email, password, repeatPassword, firstName, last
                 email: email,
                 password: password,
                 firstName: firstName,
-                lastName: lastName,
-                token: null
+                lastName: lastName
             });
 
             const addedUser = (await addUser(user)).responseMessage;
@@ -323,9 +322,53 @@ const removeFavorite = (id, recipe) => {
     })
 }
 
-const changePassword = (req, res) => {
-    return new Promise((resolve, reject) => {
+const changePassword = (id, { oldPassword, newPassword, repeatNewPassword }) => {
+    return new Promise(async (resolve, reject) => {
+        const user = new User((await getUser(id)).responseMessage);
 
+        const isPasswordMatch = await bcrypt.compare(oldPassword, user.password);
+
+        if (!isPasswordMatch) {
+            reject({ statusCode: 401, responseMessage: 'Incorrect password.' });
+            return;
+        }
+
+        if (newPassword != repeatNewPassword) {
+            reject({ statusCode: 422, responseMessage: 'Password and repeat password must be the equals.' });
+            return;
+        }
+
+        if(oldPassword == newPassword){
+            reject({ statusCode: 422, responseMessage: 'New password can\'t be old password.' });
+            return;
+        }
+
+        if (newPassword.length < 4) {
+            reject({ statusCode: 422, responseMessage: 'Password is too small.' });
+            return;
+        }
+
+        if (newPassword.length > 30) {
+            reject({ statusCode: 422, responseMessage: 'Password is too big.' });
+            return;
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        
+        const connection = mysql.createConnection(connectionOptions);
+        connection.connect();
+
+        connection.query("UPDATE user SET password = ? WHERE id = ?", [hashedPassword, id], (err, result) => {
+            if (err) {
+                console.error(err);
+                reject({ statusCode: 500, responseMessage: err });
+                return;
+            }
+
+            resolve({ statusCode: 201, responseMessage: 'Password changed successfully.' });
+        });
+
+        connection.end();
     })
 }
 
@@ -340,3 +383,4 @@ module.exports.userIsLoggedIn = userIsLoggedIn;
 module.exports.getFavorites = getFavorites;
 module.exports.addFavorite = addFavorite;
 module.exports.removeFavorite = removeFavorite;
+module.exports.changePassword = changePassword;
