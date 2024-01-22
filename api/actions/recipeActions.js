@@ -6,12 +6,8 @@ const mysql = require('mysql2');
 const async = require('async');
 const connectionOptions = require('./connectionOptions');
 
-const { Recipe, Category, Author, Area, Difficulty, Ingredient, IngredientInRecipe, PartialRecipe } = require('../models');
+const { Recipe } = require('../models');
 const { objectIsValid } = require('../utils');
-const { getCategory } = require('./categoryActions');
-const { getArea } = require('./areaActions');
-const { getDifficulty } = require('./difficultyActions');
-const { getUser } = require('./userActions');
 
 const getRecipes = (queryOptions = null) => {
     return new Promise((resolve, reject) => {
