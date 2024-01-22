@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en_US">
+<head>    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script defer src="/js/dynamicIngredientSearch.js"></script>
+    <script defer src="/js/auxRecipes.js"></script>
+    <script defer src="/js/imagePreview.js"></script>
+    <script defer src="/js/showToast.js"></script>
+    <script src="/js/redirects/backoffice.js"></script>
+    <title>Recipe details</title>
+</head>
+<body id="container" class="d-none" onLoad="imagePreview('image', 'imagePreview')">
+    {{>backnavbar}}
+    <div class="container content border p-3">
+        <div class="row">
+            <div class="col-md-6">
+                <img id="recipeImagePreviewDetails" src="{{recipe.image}}" class="img-fluid mb-4" alt="{{recipe.name}} Image">
+            </div>
+        
+        <div class="col-md-6">
+            <h2>{{recipe.name}}</h2>
+            <p><strong>Id:</strong> {{recipe.id}}</p>
+            <p><strong>Name:</strong> <span id="recipeNameDetails"></span>{{recipe.name}}</p>
+            <p><strong>Category:</strong> <span id="recipeCategoryDetails">{{recipe.category.name}}</span></p>
+            <p><strong>Area:</strong> <span id="recipeAreaDetails">{{recipe.area.name}}</span></p>
+            <p><strong>PreparationTime:</strong> <span id="recipePreparationTimeDetails">{{recipe.preparationTime}}</span></p>
+            <p><strong>Difficulty:</strong> <span id="recipeDifficultyDetails">{{recipe.difficulty.name}}</span></p>
+            <p><strong>Author:</strong> <span id="recipeAuthorDetails">{{recipe.author.username}}</span></p>
+            <p><strong>Cost:</strong> <span id="recipeCostDetails">{{recipe.cost}}</span></p>
+            <p><strong>Description:</strong> <span id="recipeDescriptionDetails">{{recipe.description}}</span></p>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col">
+            <h4>Preparation:</h4>
+            <ul id="recipePreparationDescriptionFormDetails">{{recipe.preparationDescription}}</ul>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col">
+            <h3>Ingredients</h3>
+            <div class="row" id="recipeIngredientsList">
+            </div>
+        </div>
+    </div>
+    <div>
+        <div>
+            <p><strong>Image URL:</strong> <span id="ingredientImageUrlDetails">{{recipe.image}}</span></p>
+            <p><a class="btn btn-primary mt-1 mb-3" href="javascript:openEditRecipeModal({{recipe.id}}, true)" role="button">Edit {{recipe.name}}</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recipe Form modal-->
+    <div class="modal fade" id="recipeFormModal" data-bs-backdrop="static" tabindex="-1"
+        aria-labelledby="recipeFormModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5"><span id="activityTitle">Add an Recipe</span></h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row justify-content-center">
+                        <div class="col-3">
+                    </div>
+                    <div class="md-3">
+                        <div class="card" id="recipeCard">
+                            <div class="card-body">
+                                <form id="recipeForm" action="/recipe/create/" method="post" class="needs-validation row">
+                                    <div class="col-6">
+                                    <!-- Ingredients -->
+                                        <div class="mb-3 border p-3">
+                                            <img id="imagePreview" src="" alt="" class="img-fluid img-thumbnail mb-3">
+                                            <label for="ingredients" class="form-label">Ingredients</label>
+                                            <input type="text" class="form-control" id="ingredientInput" placeholder="Enter the ingredient name">
+                                            <div id="ingredientSuggestions" class="list-group mt-2"></div>
+                                            <!-- Selected Ingredients Table -->
+                                            <table class="table border" id="selectedIngredients">
+                                                <tbody>
+                                                    <!-- Selected ingredients will be added dynamically here -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="card" id="recipeCard">
+                                            <div class="card-body">
+                                                <!-- Recipe Name -->
+                                                <div class="mb-3">
+                                                    <label for="recipeNameForm" class="form-label">Name</label>
+                                                    <input type="text" class="form-control" id="recipeNameForm" name="recipeNameForm" placeholder="Enter the recipe name" required>
+                                                </div>
+                                                <div class="row">
+                                                    <!-- Category -->
+                                                    <div class="mb-3 col-md-6">
+                                                        <label for="recipeCategoryForm" class="form-label">Category</label>
+                                                        <select class="form-select" id="recipeCategoryForm"
+                                                            name="recipeCategoryForm" required>
+                                                            <option value="" disabled selected>Select one</option>
+                                                            {{#categories}}
+                                                                <option value="{{id}}">{{name}}</option>
+                                                            {{/categories}}
+                                                        </select>
+                                                    </div>
+                                                    <!-- Area -->
+                                                    <div class="mb-3 col-md-6">
+                                                        <label for="recipeAreaForm" class="form-label">Area</label>
+                                                        <select class="form-select" id="recipeAreaForm"
+                                                            name="recipeAreaForm" required>
+                                                            <option value="" disabled selected>Select one</option>
+                                                            {{#areas}}
+                                                                <option value="{{id}}">{{name}}</option>
+                                                            {{/areas}}
+                                                        </select>
+                                                    </div>
+                                                </div>                                          
+                                               <div class="row">
+                                                <!-- Preparation Time -->
+                                                <div class="mb-3 col">
+                                                    <label for="recipePreparationTimeForm"
+                                                        class="form-label">Preparation Time</label>
+                                                    <input type="number" class="form-control"
+                                                        id="recipePreparationTimeForm" name="recipePreparationTimeForm" placeholder="In minutes" min="1" required>
+                                                </div>
+                                                <!-- Difficulty -->
+                                                <div class="mb-3 col">
+                                                    <label for="recipeDifficultyForm"
+                                                        class="form-label">Difficulty</label>
+                                                    <select class="form-select" id="recipeDifficultyForm"
+                                                        name="recipeDifficultyForm" required>
+                                                        <option value="" disabled selected>Select one</option>
+                                                        {{#difficulties}}
+                                                            <option value="{{id}}">{{name}}</option>
+                                                        {{/difficulties}}
+                                                    </select>
+                                                </div>
+                                                <!-- Cost -->
+                                                <div class="mb-3 col">
+                                                    <label for="recipeCostForm" class="form-label">Cost €</label>
+                                                    <input type="number" class="form-control" id="recipeCostForm"
+                                                        name="recipeCostForm" placeholder="Enter cost" min="1" required>
+                                                </div>
+                                            </div>
+                                            <!-- Recipe Image URL -->
+                                            <div class="mb-3">
+                                                <label for="image" class="form-label">Recipe Image URL</label>
+                                                <input type="url" class="form-control" id="image" name="image"
+                                                    placeholder="Enter the URL of the recipe image">
+                                            </div>
+                                            <!-- Description -->
+                                            <div class="mb-3">
+                                                <label for="recipeDescriptionForm"
+                                                    class="form-label">Description</label>
+                                                <textarea class="form-control" id="recipeDescriptionForm"
+                                                    name="recipeDescriptionForm"
+                                                    placeholder="Enter the recipe description"></textarea>
+                                            </div>
+                                           <!-- Preparation Description -->
+                                            <div class="mb-3">
+                                                <label for="recipePreparationDescription" class="form-label">Preparation
+                                                    Description</label>
+                                                <textarea class="form-control" id="recipePreparationDescription"
+                                                    name="recipePreparationDescription"
+                                                    placeholder="Enter the preparation description" required></textarea>
+                                            </div>
+                                            <div class="mb-3 alert alert-danger d-none" id="recipeError"></div>
+                                                <button type="submit" class="btn btn-primary" id="submitRecipeButton">Submit
+                                                Recipe</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{>toast}}
+    {{>footer}}
+</body>
+</html>
+
+
+                            

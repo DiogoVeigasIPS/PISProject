@@ -56,3 +56,11 @@ router.get('/ingredient/:id', async (req, res) => {
 });
 
 module.exports = router;
+
+router.get('/recipe/:id', async (req, res) => {
+    const id = req.params.id;
+    const recipe = (await recipeActions.getRecipe(id)).responseMessage;
+    
+
+    res.render('backRecipeDetails', { recipe: recipe, title: recipe.name + 'details'});
+});
