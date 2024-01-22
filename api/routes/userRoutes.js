@@ -21,5 +21,6 @@ router.put('/:id', verifyJWT, userController.editUser);
 router.delete('/:id', verifyJWT, userController.deleteUser);
 router.post('/login', userController.loginUser);
 router.post('/signup', userController.signupUser);
+router.patch('/changePassword', verifyJWT, userController.changePassword);
 
 module.exports = router;

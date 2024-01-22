@@ -119,6 +119,16 @@ const removeFavorite = (req, res) => {
     handlePromise(userActions.removeFavorite(id, recipe), res);
 }
 
+const changePassword = (req, res) => {
+    const userId = req.userId;
+
+    if (!userId) {
+        return res.status(401).send('Not authenticated.');
+    }
+
+    handlePromise(userActions.changePassword(userId, req.body), res);
+}
+
 module.exports.readUsers = readUsers;
 module.exports.readUser = readUser;
 module.exports.addUser = addUser;
@@ -130,3 +140,4 @@ module.exports.userIsLoggedIn = userIsLoggedIn;
 module.exports.getFavorites = getFavorites;
 module.exports.addFavorite = addFavorite;
 module.exports.removeFavorite = removeFavorite;
+module.exports.changePassword = changePassword;
