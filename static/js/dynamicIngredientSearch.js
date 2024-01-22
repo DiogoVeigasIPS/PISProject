@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const xhr = new XMLHttpRequest();
 
         // Set up the request
-        xhr.open('GET', `http://localhost:8081/api/ingredient?name=${inputText}&max=8`, true);
+        xhr.open('GET', `http://localhost:8081/api/ingredient?name=${inputText}&max=8&partial=true`, true);
 
         // Set up the callback function
         xhr.onreadystatechange = () => {
@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (inputText == "") return;
 
         try {
-            const response = await fetch(`http://localhost:8081/api/ingredient?name=${inputText}&max=8`);
+            const response = await fetch(`http://localhost:8081/api/ingredient?name=${inputText}&max=8&partial=true`);
 
             if (response.ok) {
                 const responseData = await response.json();
