@@ -9,13 +9,16 @@ const { recipeActions, ingredientActions, categoryActions, difficultyActions, ar
 const router = express.Router();
 
 router.get('/recipes', async (req, res) => {
+    const stringSearch = req.query.name || null;
     const orderBy = req.query.order ?? null;
 
     const queryOptions = {
         orderBy: orderBy,
         isPartial: true,
         isNamed: true,
+        stringSearch
     };
+    
     const recipes = (await recipeActions.getRecipes(queryOptions)).responseMessage;
 
     const categories = await categoryActions.getCategories();
