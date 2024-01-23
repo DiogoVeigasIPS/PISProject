@@ -8,6 +8,7 @@ const connectionOptions = require('./connectionOptions');
 
 const { Recipe } = require('../models');
 const { objectIsValid } = require('../utils');
+const { capitalizeWords } = require('../utils');
 
 const getRecipes = (queryOptions = null) => {
     return new Promise((resolve, reject) => {
@@ -226,6 +227,9 @@ const editRecipe = (id, recipe) => {
 
                     if (err.sqlMessage.startsWith('Duplicate entry')) {
                         return reject({ statusCode: 422, responseMessage: 'Name is duplicate.' });
+                    } else if (err.sqlMessage.startsWith('Data too long for column')) {
+                        const problem = err.sqlMessage.split("'")[1];
+                        return reject({ statusCode: 422, responseMessage: `${capitalizeWords(problem)} is too long.` });
                     }
 
                     reject({ statusCode: 400, responseMessage: err });
@@ -238,7 +242,7 @@ const editRecipe = (id, recipe) => {
 
                 const response = (await setRecipeIngredients(id, newRecipe.ingredients));
 
-                if(response.statusCode != 201){
+                if (response.statusCode != 201) {
                     return reject(response);
                 }
 
@@ -425,7 +429,11 @@ const addIngredientToRecipe = (recipeId, ingredientId, quantity) => {
                     if (err.sqlMessage.startsWith("Duplicate entry")) {
                         reject({ statusCode: 422, responseMessage: 'Ingredient already in recipe.' });
                         return;
+                    } else if (err.sqlMessage.startsWith('Data too long for column')) {
+                        const problem = err.sqlMessage.split("'")[1];
+                        return reject({ statusCode: 422, responseMessage: `${capitalizeWords(problem)} is too long.` });
                     }
+                    
                     console.error(err);
                     reject({ statusCode: 400, responseMessage: err });
                     return;
@@ -500,7 +508,7 @@ const setRecipeIngredients = (recipeId, ingredients) => {
         const insertQuery = "INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity) VALUES ?";
 
 
-        const processedIngredients = ingredients.map(i => {return {ingredientId: i.ingredient.id, quantity: i.quantity}});
+        const processedIngredients = ingredients.map(i => { return { ingredientId: i.ingredient.id, quantity: i.quantity } });
         const values = processedIngredients.map(({ ingredientId, quantity }) => [recipeId, ingredientId, quantity]);
 
         // Combine delete and insert queries using ;
@@ -511,7 +519,7 @@ const setRecipeIngredients = (recipeId, ingredients) => {
                 console.error(err);
                 return reject({ statusCode: 500, responseMessage: 'Query error.' });
             }
-            
+
             resolve({ statusCode: 201, responseMessage: 'Ingredients added successfully.' });
             connection.end();
         });

@@ -5,6 +5,7 @@
 const express = require('express');
 
 const { recipeActions, ingredientActions, categoryActions, difficultyActions, areaActions } = require('../../api/actions');
+const { prepareRecipe } = require('../utils');
 
 const router = express.Router();
 
@@ -18,7 +19,7 @@ router.get('/recipes', async (req, res) => {
         isNamed: true,
         stringSearch
     };
-    
+
     const recipes = (await recipeActions.getRecipes(queryOptions)).responseMessage;
 
     const categories = await categoryActions.getCategories();
@@ -63,10 +64,10 @@ module.exports = router;
 router.get('/recipe/:id', async (req, res) => {
     const id = req.params.id;
     const recipe = (await recipeActions.getRecipe(id)).responseMessage;
-    const categories = await categoryActions.getCategories();
-    const areas = await areaActions.getAreas();
-    const difficulties = await difficultyActions.getDifficulties();
+    const categories = (await categoryActions.getCategories()).responseMessage;
+    const areas = (await areaActions.getAreas()).responseMessage;
+    const difficulties = (await difficultyActions.getDifficulties()).responseMessage;
 
-    res.render('backRecipeDetails', { recipe: recipe, categories: categories, areas: areas, difficulties: difficulties,
+    res.render('backRecipeDetails', { recipe: prepareRecipe(recipe), categories: categories, areas: areas, difficulties: difficulties,
         title: recipe.name + 'details'});
 });
