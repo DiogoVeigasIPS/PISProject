@@ -23,6 +23,8 @@ const getRecipes = (queryOptions = null) => {
         if (queryOptions) {
             queryString += queryOptions.category ? " AND category_id = ?" : "";
             queryString += queryOptions.area ? " AND area_id = ?" : "";
+            queryString += queryOptions.author ? " AND author_id = ?" : "";
+            queryString += queryOptions.difficulty ? " AND difficulty_id = ?" : "";
             queryString += queryOptions.stringSearch ? " AND name LIKE ?" : "";
             queryString += queryOptions.isRandom ? " ORDER BY RAND()" : "";
             queryString += queryOptions.maxResults ? " LIMIT ?" : "";
@@ -37,6 +39,12 @@ const getRecipes = (queryOptions = null) => {
             }
             if (queryOptions.area) {
                 queryParams.push(queryOptions.area);
+            }
+            if (queryOptions.author) {
+                queryParams.push(queryOptions.author);
+            }
+            if (queryOptions.difficulty) {
+                queryParams.push(queryOptions.difficulty);
             }
             if (queryOptions.stringSearch) {
                 queryParams.push(`%${queryOptions.stringSearch}%`);
