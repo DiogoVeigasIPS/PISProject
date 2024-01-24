@@ -4,9 +4,9 @@
  */
 const objectIsValid = (obj) => {
     for (const prop in obj) {
-        if (obj[prop] === undefined) { 
+        if (obj[prop] === undefined) {
             console.log(prop);
-            return false; 
+            return false;
         }
     }
 
@@ -42,7 +42,23 @@ const shuffleArray = (array) => {
     return shuffled;
 }
 
+function handleDatabaseError(err) {
+    if (err.sqlMessage.startsWith('Duplicate entry')) {
+        return { statusCode: 422, responseMessage: 'Name is duplicate.' };
+    } else if (err.sqlMessage.startsWith('Data too long for column')) {
+        const problem = err.sqlMessage.split("'")[1];
+        return { statusCode: 422, responseMessage: `${capitalizeWords(problem)} is too long.` };
+    } else if (err.sqlMessage.startsWith('Cannot add or update a child row: a foreign key constraint fails')) {
+        const referencedTable = err.sqlMessage.split('REFERENCES `')[1].split('`')[0];
+        return { statusCode: 422, responseMessage: `The ${referencedTable} provided does not exist.` };
+    }
+
+    // Default case for generic errors
+    return { statusCode: 500, responseMessage: 'Internal Server Error. Please try again later.' };
+}
+
 module.exports.handlePromise = handlePromise;
 module.exports.objectIsValid = objectIsValid;
 module.exports.capitalizeWords = capitalizeWords;
 module.exports.shuffleArray = shuffleArray;
+module.exports.handleDatabaseError = handleDatabaseError;
