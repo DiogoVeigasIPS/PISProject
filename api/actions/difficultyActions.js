@@ -6,7 +6,7 @@ const mysql = require('mysql2');
 const connectionOptions = require('./connectionOptions');
 
 const { Difficulty } = require('../models');
-const { objectIsValid } = require('../utils');
+const { objectIsValid, handleDatabaseError } = require('../utils');
 
 const getDifficulties = () => {
     return new Promise((resolve, reject) => {
@@ -71,11 +71,8 @@ const addDifficulty = (difficulty) => {
             if (err) {
                 console.error(err);
 
-                if (err.sqlMessage.startsWith('Duplicate entry')) {
-                    return reject({ statusCode: 422, responseMessage: 'Name is duplicate.' });
-                }
-
-                reject({ statusCode: 400, responseMessage: err });
+                const errorResponse = handleDatabaseError(err);
+                reject(errorResponse);
                 return;
             }
 
@@ -103,11 +100,8 @@ const editDifficulty = (id, difficulty) => {
             if (err) {
                 console.error(err);
 
-                if (err.sqlMessage.startsWith('Duplicate entry')) {
-                    return reject({ statusCode: 422, responseMessage: 'Name is duplicate.' });
-                }
-                
-                reject({ statusCode: 400, responseMessage: err });
+                const errorResponse = handleDatabaseError(err);
+                reject(errorResponse);
                 return;
             }
 

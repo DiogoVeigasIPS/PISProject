@@ -86,18 +86,19 @@ CREATE TABLE IF NOT EXISTS favorite_recipe (
 
 DROP TABLE IF EXISTS recipe_list;
 CREATE TABLE IF NOT EXISTS recipe_list (
-	id INT PRIMARY KEY AUTO_INCREMENT,
+    id INT PRIMARY KEY AUTO_INCREMENT,
     `name` VARCHAR(155) NOT NULL,
     user_id INT,
-    FOREIGN KEY (user_id) REFERENCES `user`(id)
+    UNIQUE(`name`, user_id),
+    FOREIGN KEY (user_id) REFERENCES `user`(id) ON DELETE CASCADE
 );
 
 DROP TABLE IF EXISTS recipe_list_item;
 CREATE TABLE IF NOT EXISTS recipe_list_item (
-	list_id INT,
+    list_id INT,
     recipe_id INT,
     PRIMARY KEY (list_id, recipe_id),  
-    FOREIGN KEY (list_id) REFERENCES recipe_list(id),
+    FOREIGN KEY (list_id) REFERENCES recipe_list(id) ON DELETE CASCADE,
     FOREIGN KEY (recipe_id) REFERENCES recipe(id)
 );
 

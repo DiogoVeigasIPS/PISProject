@@ -6,7 +6,7 @@ const mysql = require('mysql2');
 const connectionOptions = require('./connectionOptions');
 
 const { Category } = require('../models');
-const { objectIsValid } = require('../utils');
+const { objectIsValid, handleDatabaseError } = require('../utils');
 
 const getCategories = (queryOptions = null) => {
     return new Promise((resolve, reject) => {
@@ -87,11 +87,8 @@ const addCategory = (category) => {
                 if (err) {
                     console.error(err);
 
-                    if (err.sqlMessage.startsWith('Duplicate entry')) {
-                        return reject({ statusCode: 422, responseMessage: 'Name is duplicate.' });
-                    }
-
-                    reject({ statusCode: 400, responseMessage: err });
+                    const errorResponse = handleDatabaseError(err);
+                    reject(errorResponse);
                     return;
                 }
 
@@ -121,11 +118,8 @@ const editCategory = (id, category) => {
                 if (err) {
                     console.error(err);
                     
-                    if (err.sqlMessage.startsWith('Duplicate entry')) {
-                        return reject({ statusCode: 422, responseMessage: 'Name is duplicate.' });
-                    }
-
-                    reject({ statusCode: 400, responseMessage: err });
+                    const errorResponse = handleDatabaseError(err);
+                    reject(errorResponse);
                     return;
                 }
 

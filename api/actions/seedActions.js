@@ -11,8 +11,6 @@ const { Category, Area, Ingredient, Recipe, IngredientInRecipe } = require('../m
 const { getAreas, truncateAreas, addAreas } = require('./areaActions');
 const { getCategories, truncateCategories, addCategories } = require('./categoryActions');
 const { getIngredients, truncateIngredients, addIngredients } = require('./ingredientActions');
-const { addIngredient } = require('./ingredientActions');
-const { capitalizeWords } = require('../utils');
 const { addRecipes, getRecipes, truncateRecipes } = require('./recipeActions');
 
 const commonErrorMessage = 'Something went wrong, please try again later.';

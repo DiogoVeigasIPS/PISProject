@@ -2,7 +2,7 @@
  * Filename: ingredientController.js
  * Purpose: Aggregates all controllers for the Ingredient entity.
  */
-const { ingredientActions, categoryActions } = require('../actions');
+const { ingredientActions } = require('../actions');
 const { handlePromise } = require('../utils');
 
 const readIngredients = (req, res) => {
