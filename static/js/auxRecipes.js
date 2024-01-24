@@ -38,7 +38,7 @@ const openRecipeDetailsModal = async (id) => {
             recipeIngredientsList.innerHTML = '';
 
             // Populate ingredients list
-            responseData.ingredients.forEach((ingredient) => {
+            responseData.ingredients?.forEach((ingredient) => {
                 // Create a column for each ingredient
                 const ingredientColumn = document.createElement('div');
                 ingredientColumn.className = 'col-md-4 mb-3';
@@ -277,7 +277,7 @@ const openEditRecipeModal = async (id, inDetailsPage = false) => {
             imagePreview.src = responseData.image;
 
             // Populate the selected ingredients section
-            responseData.ingredients.forEach((element) => {
+            responseData.ingredients?.forEach((element) => {
                 addSelectedIngredient(element.ingredient, element.quantity);
             });
         }
@@ -344,9 +344,29 @@ const openEditRecipeModal = async (id, inDetailsPage = false) => {
                     columns[4].innerText = responseData.area.name;
                     columns[5].innerText = responseData.author.username;
                     columns[6].innerText = responseData.difficulty.name;
-                    // Update other columns as needed
                 } else {
-                    // Get the ids and change the DOM from the details page
+                    const recipeNameDetails = document.getElementById('recipeNameDetails');
+                    const recipeCategoryDetails = document.getElementById('recipeCategoryDetails');
+                    const recipeAreaDetails = document.getElementById('recipeAreaDetails');
+                    const recipePreparationTimeDetails = document.getElementById('recipePreparationTimeDetails');
+                    const recipeDifficultyDetails = document.getElementById('recipeDifficultyDetails');
+                    const recipeAuthorDetails = document.getElementById('recipeAuthorDetails');
+                    const recipeCostDetails = document.getElementById('recipeCostDetails');
+                    const recipeDescriptionDetails = document.getElementById('recipeDescriptionDetails');
+                    const recipeImagePreviewDetails = document.getElementById('recipeImagePreviewDetails');
+
+                    recipeNameDetails.innerText = responseData.name;
+                    recipeCategoryDetails.innerText = responseData.category.name;
+                    recipeAreaDetails.innerText = responseData.area.name;
+                    recipePreparationTimeDetails.innerText = responseData.preparationTime;
+                    recipeDifficultyDetails.innerText = responseData.difficulty.name;
+                    recipeAuthorDetails.innerText = responseData.author.username;
+                    recipeCostDetails.innerText = responseData.cost;
+                    recipeDescriptionDetails.innerText = responseData.description;
+                    recipeImagePreviewDetails.src = responseData.image;
+
+                    addIngredientsToRecipe(responseData.ingredients);
+                    showToast(`${responseData.name} edited successfully!`);
                 }
 
                 recipeDetails.hide();
@@ -363,6 +383,34 @@ const openEditRecipeModal = async (id, inDetailsPage = false) => {
 
     // Show the recipe edit modal
     recipeDetails.show();
+}
+
+const addIngredientsToRecipe = (ingredients) => {
+    const ingredientsRow = document.getElementById('ingredientsRow');
+    ingredientsRow.innerHTML = "";
+
+    ingredients.forEach(i => {
+        const col = document.createElement('div');
+        col.classList.add('col-md-4', 'mb-3');
+
+        col.innerHTML =
+            `
+            <div class="list-group-item">
+                <div class="row align-items-center border">
+                    <div class="col-md-4">
+                        <img src="${i.ingredient.image}" class="img-fluid" alt="${i.ingredient.name} Image">
+                    </div>
+                    <div class="col-md-8">
+                        <strong>${i.ingredient.name}</strong>
+                        <p>${i.quantity}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        ingredientsRow.appendChild(col);
+    })
+
 }
 
 const openDeleteModal = (id, name) => {
@@ -414,28 +462,6 @@ const updateSearchBar = () => {
     searchInput.value = nameParam || '';
 }
 
-const showToast = (message, isError = false) => {
-    const toast = document.getElementById('toast');
-    const bootstrapToast = bootstrap.Toast.getOrCreateInstance(toast);
-
-    const toastBody = document.getElementById('toastBody');
-    toastBody.innerText = message;
-
-    if (!isError) {
-        if (toastBody.classList.contains('text-danger')) {
-            toastBody.classList.remove('text-danger')
-        }
-        toastBody.classList.add('text-success');
-    } else {
-        if (toastBody.classList.contains('text-success')) {
-            toastBody.classList.remove('text-success')
-        }
-        toastBody.classList.add('text-danger');
-    }
-
-    bootstrapToast.show();
-}
-
 document.addEventListener('DOMContentLoaded', function () {
     const searchInput = document.getElementById('searchInput');
     const formSearch = document.getElementById('formSearch');
@@ -481,8 +507,8 @@ document.addEventListener('DOMContentLoaded', function () {
         difficultySort.onclick = () => {
             filterTable(searchInput.value, 'difficulty')
         }
-    const filterTable = async (stringSearch, order = "") => {
 
+    const filterTable = async (stringSearch = "", order = "") => {
         const searchParams = new URLSearchParams(window.location.search);
 
         if (stringSearch.trim() !== "") {
@@ -559,4 +585,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
         showToast('Link copied to clipboard!');
     });
+
+    const populateButton = document.getElementById('populateButton');
+    populateButton.addEventListener('click', async () => {
+        // Loading
+        populateButton.innerHTML = 
+        `<span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+        <span role="status">Populating...</span>`;
+        
+        try {
+            const response = await fetch('http://localhost:8081/api/seed/all?force=true',
+                { headers: { 'x-access-token': localStorage.getItem('auth') } });
+
+            if (response.ok) {
+                showToast('Database populated')
+                filterTable();
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    })
 });

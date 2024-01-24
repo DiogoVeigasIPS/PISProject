@@ -6,6 +6,7 @@ const express = require('express');
 
 const { recipeActions, areaActions, categoryActions } = require('../../api/actions');
 const { Recipe } = require('../../api/models');
+const { prepareRecipe } = require('../utils');
 
 const router = express.Router();
 
@@ -96,27 +97,3 @@ router.get('*', (req, res) => {
 });
 
 module.exports = router;
-
-/**
- * [prepareRecipe] - Receives a recipe from our API and returns it without null values, but default values.
- *
- * @param {Recipe} recipe - Recipe from the API.
- * @returns {Recipe} - The processed recipe with no null values.
- */
-const prepareRecipe = (recipe) => {
-    const defaultValue = "Not Provided";
-
-    if (recipe.author?.username == null) {
-        recipe.author = { username: defaultValue }
-    }
-    if (recipe.difficulty?.name == null) {
-        recipe.difficulty = { name: defaultValue }
-    }
-
-    for (const prop in recipe) {
-        if (recipe[prop] == null) {
-            recipe[prop] = defaultValue;
-        }
-    }
-    return recipe;
-}

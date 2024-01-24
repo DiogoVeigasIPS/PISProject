@@ -89,7 +89,8 @@ const removeFavoriteRecipe = async (userId, recipeId, recipeName) => {
     confirmDeletion.onclick = async () => {
         try {
             const response = await fetch(`http://localhost:8081/api/user/${userId}/favoriteRecipe/${recipeId}`, {
-                method: "DELETE"
+                method: "DELETE",
+                headers: { 'x-access-token': localStorage.getItem('auth') }
             });
 
             const responseData = await response.text();

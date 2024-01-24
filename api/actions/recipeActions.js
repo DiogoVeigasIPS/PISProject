@@ -7,7 +7,7 @@ const async = require('async');
 const connectionOptions = require('./connectionOptions');
 
 const { Recipe } = require('../models');
-const { objectIsValid } = require('../utils');
+const { objectIsValid, handleDatabaseError } = require('../utils');
 
 const getRecipes = (queryOptions = null) => {
     return new Promise((resolve, reject) => {
@@ -22,6 +22,8 @@ const getRecipes = (queryOptions = null) => {
         if (queryOptions) {
             queryString += queryOptions.category ? " AND category_id = ?" : "";
             queryString += queryOptions.area ? " AND area_id = ?" : "";
+            queryString += queryOptions.author ? " AND author_id = ?" : "";
+            queryString += queryOptions.difficulty ? " AND difficulty_id = ?" : "";
             queryString += queryOptions.stringSearch ? " AND name LIKE ?" : "";
             queryString += queryOptions.isRandom ? " ORDER BY RAND()" : "";
             queryString += queryOptions.maxResults ? " LIMIT ?" : "";
@@ -36,6 +38,12 @@ const getRecipes = (queryOptions = null) => {
             }
             if (queryOptions.area) {
                 queryParams.push(queryOptions.area);
+            }
+            if (queryOptions.author) {
+                queryParams.push(queryOptions.author);
+            }
+            if (queryOptions.difficulty) {
+                queryParams.push(queryOptions.difficulty);
             }
             if (queryOptions.stringSearch) {
                 queryParams.push(`%${queryOptions.stringSearch}%`);
@@ -137,11 +145,9 @@ const addRecipe = async (recipe, authorId) => {
                                 connection.rollback(() => {
                                     connection.release();
 
-                                    if (err.sqlMessage.startsWith('Duplicate entry')) {
-                                        return reject({ statusCode: 422, responseMessage: 'Name is duplicate.' });
-                                    }
-
-                                    reject({ statusCode: 400, responseMessage: err });
+                                    const errorResponse = handleDatabaseError(err);
+                                    reject(errorResponse);
+                                    return;
                                 });
                                 return;
                             }
@@ -224,11 +230,8 @@ const editRecipe = (id, recipe) => {
                 if (err) {
                     console.error(err);
 
-                    if (err.sqlMessage.startsWith('Duplicate entry')) {
-                        return reject({ statusCode: 422, responseMessage: 'Name is duplicate.' });
-                    }
-
-                    reject({ statusCode: 400, responseMessage: err });
+                    const errorResponse = handleDatabaseError(err);
+                    reject(errorResponse);
                     return;
                 }
 
@@ -236,15 +239,19 @@ const editRecipe = (id, recipe) => {
                     return reject({ statusCode: 404, responseMessage: 'Recipe not found.' });
                 }
 
-                const response = (await setRecipeIngredients(id, newRecipe.ingredients));
-
-                if(response.statusCode != 201){
-                    return reject(response);
+                try{
+                    const response = (await setRecipeIngredients(id, newRecipe.ingredients));
+    
+                    if (response.statusCode != 201) {
+                        return reject(response);
+                    }
+    
+                    //newRecipe.id = id;
+                    const edittedRecipe = (await getRecipe(id)).responseMessage;
+                    resolve({ statusCode: 200, responseMessage: edittedRecipe });
+                }catch(err){
+                    reject(err);
                 }
-
-                //newRecipe.id = id;
-                const edittedRecipe = (await getRecipe(id)).responseMessage;
-                resolve({ statusCode: 200, responseMessage: edittedRecipe });
             });
 
         connection.end();
@@ -422,12 +429,10 @@ const addIngredientToRecipe = (recipeId, ingredientId, quantity) => {
         connection.query("INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity) VALUES (?, ?, ?)",
             [recipeId, ingredientId, quantity], (err, result) => {
                 if (err) {
-                    if (err.sqlMessage.startsWith("Duplicate entry")) {
-                        reject({ statusCode: 422, responseMessage: 'Ingredient already in recipe.' });
-                        return;
-                    }
                     console.error(err);
-                    reject({ statusCode: 400, responseMessage: err });
+
+                    const errorResponse = handleDatabaseError(err);
+                    reject(errorResponse);
                     return;
                 }
 
@@ -447,7 +452,8 @@ const editIngredientQuantityInRecipe = (recipeId, ingredientId, newQuantity) => 
             [newQuantity, recipeId, ingredientId], (err, result) => {
                 if (err) {
                     console.error(err);
-                    reject({ statusCode: 400, responseMessage: err });
+                    const errorResponse = handleDatabaseError(err);
+                    reject(errorResponse);
                     return;
                 }
 
@@ -472,7 +478,8 @@ const removeIngredientFromRecipe = (recipeId, ingredientId) => {
             [recipeId, ingredientId], (err, result) => {
                 if (err) {
                     console.error(err);
-                    reject({ statusCode: 400, responseMessage: err });
+                    const errorResponse = handleDatabaseError(err);
+                    reject(errorResponse);
                     return;
                 }
 
@@ -500,7 +507,7 @@ const setRecipeIngredients = (recipeId, ingredients) => {
         const insertQuery = "INSERT INTO recipe_ingredient (recipe_id, ingredient_id, quantity) VALUES ?";
 
 
-        const processedIngredients = ingredients.map(i => {return {ingredientId: i.ingredient.id, quantity: i.quantity}});
+        const processedIngredients = ingredients.map(i => { return { ingredientId: i.ingredient.id, quantity: i.quantity } });
         const values = processedIngredients.map(({ ingredientId, quantity }) => [recipeId, ingredientId, quantity]);
 
         // Combine delete and insert queries using ;
@@ -509,9 +516,11 @@ const setRecipeIngredients = (recipeId, ingredients) => {
         connection.query(combinedQuery, [recipeId, values], (err, result) => {
             if (err) {
                 console.error(err);
-                return reject({ statusCode: 500, responseMessage: 'Query error.' });
+                const errorResponse = handleDatabaseError(err);
+                reject(errorResponse);
+                return;
             }
-            
+
             resolve({ statusCode: 201, responseMessage: 'Ingredients added successfully.' });
             connection.end();
         });

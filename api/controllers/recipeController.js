@@ -15,6 +15,8 @@ const readRecipes = (req, res) => {
     const isNamed = query.named && query.named.toLowerCase() === 'true';
     const area = query.area && !isNaN(query.area) ? parseInt(query.area) : null;
     const category = query.category && !isNaN(query.category) ? parseInt(query.category) : null;
+    const author = query.author && !isNaN(query.author) ? parseInt(query.author) : null;
+    const difficulty = query.difficulty && !isNaN(query.difficulty) ? parseInt(query.difficulty) : null;
 
     const queryOptions = {
         maxResults: maxResults,
@@ -24,7 +26,9 @@ const readRecipes = (req, res) => {
         isNamed: isNamed,
         area: area,
         category: category,
-        orderBy: orderBy
+        orderBy: orderBy,
+        author,
+        difficulty
     }
 
     handlePromise(recipeActions.getRecipes(queryOptions), res);

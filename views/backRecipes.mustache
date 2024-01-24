@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="/css/backRecipes.css">
+    <script defer src="/js/showToast.js"></script>
     <script defer src="/js/dynamicIngredientSearch.js"></script>
     <script defer src="/js/auxRecipes.js"></script>
     <script defer src="/js/imagePreview.js"></script>
@@ -74,7 +75,12 @@
                         {{/recipes}}
                         {{^recipes}}
                         <tr>
-                            <td colspan="4">No recipes available at the moment.</td>
+                            <td colspan="2" class="align-middle">No recipes available at the moment.</td>
+                            <td colspan="1" class="align-middle text-center">
+                                <button id="populateButton" class="btn btn-success" type="button">
+                                    Populate Database
+                                </button>
+                            </td>
                         </tr>
                         {{/recipes}}
                     </tbody>
