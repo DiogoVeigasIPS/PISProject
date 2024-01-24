@@ -507,8 +507,8 @@ document.addEventListener('DOMContentLoaded', function () {
         difficultySort.onclick = () => {
             filterTable(searchInput.value, 'difficulty')
         }
-    const filterTable = async (stringSearch, order = "") => {
 
+    const filterTable = async (stringSearch = "", order = "") => {
         const searchParams = new URLSearchParams(window.location.search);
 
         if (stringSearch.trim() !== "") {
@@ -585,4 +585,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
         showToast('Link copied to clipboard!');
     });
+
+    const populateButton = document.getElementById('populateButton');
+    populateButton.addEventListener('click', async () => {
+        // Loading
+        populateButton.innerHTML = 
+        `<span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+        <span role="status">Populating...</span>`;
+        
+        try {
+            const response = await fetch('http://localhost:8081/api/seed/all?force=true',
+                { headers: { 'x-access-token': localStorage.getItem('auth') } });
+
+            if (response.ok) {
+                showToast('Database populated')
+                filterTable();
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    })
 });
