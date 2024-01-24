@@ -7,7 +7,7 @@ const async = require('async');
 const connectionOptions = require('./connectionOptions');
 
 const { Recipe } = require('../models');
-const { objectIsValid, capitalizeWords, handleDatabaseError } = require('../utils');
+const { objectIsValid, handleDatabaseError } = require('../utils');
 
 const getRecipes = (queryOptions = null) => {
     return new Promise((resolve, reject) => {

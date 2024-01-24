@@ -7,7 +7,7 @@ const mysql = require('mysql2');
 const connectionOptions = require('./connectionOptions');
 
 const { User } = require('../models');
-const { objectIsValid } = require('../utils');
+const { objectIsValid, handleDatabaseError } = require('../utils');
 const { getJWT } = require('../jsonWebToken');
 
 const getUsers = () => {
@@ -76,11 +76,8 @@ const addUser = (user) => {
             [newUser.username, newUser.email, newUser.password, newUser.firstName, newUser.lastName, newUser.image],
             (err, result) => {
                 if (err) {
-                    if (err.sqlMessage.startsWith('Duplicate entry')) {
-                        return reject({ statusCode: 422, responseMessage: 'Username or email is duplicate.' });
-                    }
-
-                    reject({ statusCode: 400, responseMessage: err });
+                    const errorResponse = handleDatabaseError(err);
+                    reject(errorResponse);
                     return;
                 }
 
@@ -112,7 +109,8 @@ const editUser = (id, user) => {
             (err, result) => {
                 if (err) {
                     console.error(err);
-                    reject({ statusCode: 400, responseMessage: err });
+                    const errorResponse = handleDatabaseError(err);
+                    reject(errorResponse);
                     return;
                 }
 

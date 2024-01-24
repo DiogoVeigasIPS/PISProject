@@ -44,7 +44,9 @@ const shuffleArray = (array) => {
 
 function handleDatabaseError(err) {
     if (err.sqlMessage.startsWith('Duplicate entry')) {
-        return { statusCode: 422, responseMessage: 'Name is duplicate.' };
+        const match = err.sqlMessage.match(/for key '.*?\.(\w+)'/);
+        const columnName = match ? match[1] : 'column';
+        return { statusCode: 422, responseMessage: `${capitalizeWords(columnName)} is duplicate.` };
     } else if (err.sqlMessage.startsWith('Data too long for column')) {
         const problem = err.sqlMessage.split("'")[1];
         return { statusCode: 422, responseMessage: `${capitalizeWords(problem)} is too long.` };
