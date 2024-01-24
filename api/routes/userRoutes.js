@@ -14,9 +14,9 @@ router.post('/:id/recipeList', verifyJWT, userController.createRecipeList);
 router.patch('/:id/recipeList/:list_id', verifyJWT, userController.updateRecipeList);
 router.delete('/:id/recipeList/:list_id', verifyJWT, userController.deleteRecipeList);
 
-// router.get('/:id/recipeList/:list_id', verifyJWT, userController.getRecipesInList);
-// router.post('/:id/recipeList/:list_id/recipe/:recipe_id', verifyJWT, userController.addRecipeToList);
-// router.delete('/:id/recipeList/:list_id/recipe/:recipe_id', verifyJWT, userController.deleteRecipeFromList);
+router.get('/:id/recipeList/:list_id', verifyJWT, userController.getRecipesInList);
+router.post('/:id/recipeList/:list_id/recipe/:recipe_id', verifyJWT, userController.addRecipeToList);
+router.delete('/:id/recipeList/:list_id/recipe/:recipe_id', verifyJWT, userController.deleteRecipeFromList);
 
 router.get('/:id/favoriteRecipe', verifyJWT, userController.getFavorites);
 router.post('/:id/favoriteRecipe/:recipe_id', verifyJWT, userController.addFavorite);

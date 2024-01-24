@@ -176,8 +176,9 @@ const deleteRecipeList = (req, res) => {
     handlePromise(userActions.deleteRecipeList(list_id), res);
 }
 
-/* const getRecipeLists = (req, res) => {
+const getRecipesInList = (req, res) => {
     const id = req.params.id;
+    const listId = req.params.list_id;
     const userId = req.userId;
 
     if (!userId || id != userId) {
@@ -195,8 +196,34 @@ const deleteRecipeList = (req, res) => {
         maxResults
     }
 
-    handlePromise(userActions.getRecipeLists(queryOptions, userId), res);
-} */
+    handlePromise(userActions.getRecipesInList(queryOptions, listId, userId), res);
+}
+
+const addRecipeToList = (req, res) => {
+    const id = req.params.id;
+    const userId = req.userId;
+    const listId = req.params.list_id;
+    const recipeId = req.params.recipe_id;
+
+    if (!userId || id != userId) {
+        return res.status(401).send('Not authenticated.');
+    }
+
+    handlePromise(userActions.addRecipeToList(userId, listId, recipeId), res);
+}
+
+const deleteRecipeFromList = (req, res) => {
+    const id = req.params.id;
+    const userId = req.userId;
+    const listId = req.params.list_id;
+    const recipeId = req.params.recipe_id;
+
+    if (!userId || id != userId) {
+        return res.status(401).send('Not authenticated.');
+    }
+
+    handlePromise(userActions.deleteRecipeFromList(userId, listId, recipeId), res);
+}
 
 module.exports.readUsers = readUsers;
 module.exports.readUser = readUser;
@@ -214,3 +241,6 @@ module.exports.getRecipeLists = getRecipeLists;
 module.exports.createRecipeList = createRecipeList;
 module.exports.updateRecipeList = updateRecipeList;
 module.exports.deleteRecipeList = deleteRecipeList;
+module.exports.getRecipesInList = getRecipesInList;
+module.exports.addRecipeToList = addRecipeToList;
+module.exports.deleteRecipeFromList = deleteRecipeFromList;
