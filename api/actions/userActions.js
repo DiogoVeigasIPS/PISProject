@@ -335,7 +335,7 @@ const changePassword = (id, { oldPassword, newPassword, repeatNewPassword }) => 
             return;
         }
 
-        if(oldPassword == newPassword){
+        if (oldPassword == newPassword) {
             reject({ statusCode: 422, responseMessage: 'New password can\'t be old password.' });
             return;
         }
@@ -351,7 +351,7 @@ const changePassword = (id, { oldPassword, newPassword, repeatNewPassword }) => 
         }
 
         const hashedPassword = await bcrypt.hash(newPassword, 10);
-        
+
         const connection = mysql.createConnection(connectionOptions);
         connection.connect();
 
@@ -362,12 +362,136 @@ const changePassword = (id, { oldPassword, newPassword, repeatNewPassword }) => 
                 return;
             }
 
-            resolve({ statusCode: 201, responseMessage: 'Password changed successfully.' });
+            resolve({ statusCode: 200, responseMessage: 'Password changed successfully.' });
         });
 
         connection.end();
     })
 }
+
+const getRecipeLists = (id) => {
+    return new Promise((resolve, reject) => {
+        const connection = mysql.createConnection(connectionOptions);
+        connection.connect();
+
+        connection.query(`SELECT id, name FROM recipe_list WHERE user_id = ?`, [id], (err, result) => {
+            if (err) {
+                console.error(err);
+                reject({ statusCode: 500, responseMessage: err });
+                return;
+            }
+
+            resolve({ statusCode: 200, responseMessage: result });
+        });
+
+        connection.end();
+    })
+};
+
+const createRecipeList = (id, { name }) => {
+    return new Promise((resolve, reject) => {
+        if (!name) {
+            reject({ statusCode: 400, responseMessage: "Invalid body." });
+        }
+        const connection = mysql.createConnection(connectionOptions);
+        connection.connect();
+
+        connection.query("INSERT INTO recipe_list (`name`, user_id) VALUES (?, ?)", [name, id], (err, result) => {
+            if (err) {
+                console.error(err);
+                const errorResponse = handleDatabaseError(err);
+                reject(errorResponse);
+                return;
+            }
+
+            resolve({ statusCode: 201, responseMessage: `${name} created successfully.` });
+        });
+
+        connection.end();
+    })
+};
+
+const updateRecipeList = (listId, { name }) => {
+    return new Promise((resolve, reject) => {
+        if (!name) {
+            reject({ statusCode: 400, responseMessage: "Invalid body." });
+        }
+        const connection = mysql.createConnection(connectionOptions);
+        connection.connect();
+
+        connection.query("UPDATE recipe_list SET `name` = ? WHERE id = ? ", [name, listId], (err, result) => {
+            if (err) {
+                console.error(err);
+                const errorResponse = handleDatabaseError(err);
+                reject(errorResponse);
+                return;
+            }
+
+            resolve({ statusCode: 200, responseMessage: `${name} updated successfully.` });
+        });
+
+        connection.end();
+    })
+};
+
+const deleteRecipeList = (listId) => {
+    return new Promise((resolve, reject) => {
+        const connection = mysql.createConnection(connectionOptions);
+        connection.connect();
+
+        connection.query("DELETE FROM recipe_list WHERE id = ?", [listId], (err, result) => {
+            if (err) {
+                console.error(err);
+                reject({ statusCode: 500, responseMessage: err });
+                return;
+            }
+
+            if (result.affectedRows > 0) {
+                resolve({ statusCode: 200, responseMessage: 'Recipe list deleted.' });
+            } else {
+                reject({ statusCode: 404, responseMessage: 'List not found.' });
+            }
+        });
+
+        connection.end();
+    })
+};
+
+/* const getRecipeLists = (queryOptions, id) => {
+    return new Promise((resolve, reject) => {
+        const connection = mysql.createConnection(connectionOptions);
+        connection.connect();
+
+        const view = queryOptions?.isPartial
+            ? queryOptions?.isNamed
+                ? 'partial_named_search_recipes'
+                : 'partial_search_recipes'
+            : 'search_recipes';
+
+        var query = `SELECT rl.name, sr.* FROM ${view} sr 
+                    JOIN recipe_list_item rli ON rli.recipe_id = sr.id 
+                    JOIN recipe_list rl ON rl.id = rli.list_id
+                    WHERE rl.user_id = ?`;
+
+        const queryValues = [id];
+        if (queryOptions.maxResults) {
+            queryValues.push(queryOptions.maxResults);
+            query += " LIMIT ?";
+        }
+
+        connection.query(query, queryValues, (err, result) => {
+            if (err) {
+                console.error(err);
+                reject({ statusCode: 500, responseMessage: err });
+                return;
+            }
+
+            resolve({ statusCode: 200, responseMessage: result });
+        });
+
+        connection.end();
+    })
+}; */
 
 module.exports.getUsers = getUsers;
 module.exports.getUser = getUser;
@@ -381,3 +505,7 @@ module.exports.getFavorites = getFavorites;
 module.exports.addFavorite = addFavorite;
 module.exports.removeFavorite = removeFavorite;
 module.exports.changePassword = changePassword;
+module.exports.getRecipeLists = getRecipeLists;
+module.exports.createRecipeList = createRecipeList;
+module.exports.updateRecipeList = updateRecipeList;
+module.exports.deleteRecipeList = deleteRecipeList;

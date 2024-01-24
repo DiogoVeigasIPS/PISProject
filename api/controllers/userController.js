@@ -121,6 +121,7 @@ const removeFavorite = (req, res) => {
 
 const changePassword = (req, res) => {
     const userId = req.userId;
+    const id = req.params.id;
 
     if (!userId) {
         return res.status(401).send('Not authenticated.');
@@ -128,6 +129,74 @@ const changePassword = (req, res) => {
 
     handlePromise(userActions.changePassword(userId, req.body), res);
 }
+
+const getRecipeLists = (req, res) => {
+    const id = req.params.id;
+    const userId = req.userId;
+
+    if (!userId || id != userId) {
+        return res.status(401).send('Not authenticated.');
+    }
+
+    handlePromise(userActions.getRecipeLists(userId), res);
+}
+
+const createRecipeList = (req, res) => {
+    const id = req.params.id;
+    const userId = req.userId;
+
+    if (!userId || id != userId) {
+        return res.status(401).send('Not authenticated.');
+    }
+
+    handlePromise(userActions.createRecipeList(userId, req.body), res);
+}
+
+const updateRecipeList = (req, res) => {
+    const id = req.params.id;
+    const list_id = req.params.list_id;
+    const userId = req.userId;
+
+    if (!userId || id != userId) {
+        return res.status(401).send('Not authenticated.');
+    }
+
+    handlePromise(userActions.updateRecipeList(list_id, req.body), res);
+}
+
+const deleteRecipeList = (req, res) => {
+    const id = req.params.id;
+    const list_id = req.params.list_id;
+    const userId = req.userId;
+
+    if (!userId || id != userId) {
+        return res.status(401).send('Not authenticated.');
+    }
+
+    handlePromise(userActions.deleteRecipeList(list_id), res);
+}
+
+/* const getRecipeLists = (req, res) => {
+    const id = req.params.id;
+    const userId = req.userId;
+
+    if (!userId || id != userId) {
+        return res.status(401).send('Not authenticated.');
+    }
+
+    const query = req.query;
+    const isPartial = query.partial && query.partial.toLowerCase() === 'true';
+    const isNamed = query.named && query.named.toLowerCase() === 'true';
+    const maxResults = query.max && !isNaN(query.max) ? parseInt(query.max) : null;
+
+    const queryOptions = {
+        isPartial,
+        isNamed,
+        maxResults
+    }
+
+    handlePromise(userActions.getRecipeLists(queryOptions, userId), res);
+} */
 
 module.exports.readUsers = readUsers;
 module.exports.readUser = readUser;
@@ -141,3 +210,7 @@ module.exports.getFavorites = getFavorites;
 module.exports.addFavorite = addFavorite;
 module.exports.removeFavorite = removeFavorite;
 module.exports.changePassword = changePassword;
+module.exports.getRecipeLists = getRecipeLists;
+module.exports.createRecipeList = createRecipeList;
+module.exports.updateRecipeList = updateRecipeList;
+module.exports.deleteRecipeList = deleteRecipeList;
