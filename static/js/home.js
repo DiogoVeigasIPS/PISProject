@@ -24,9 +24,11 @@
                 createRecipeCard(element, userId)
             });
 
-            title.classList.remove('d-none');
-            container.classList.remove('d-none');
-            line.classList.remove('d-none');
+            if(responseData.length != 0){
+                title.classList.remove('d-none');
+                container.classList.remove('d-none');
+                line.classList.remove('d-none');
+            }
         }
 
     } catch (err) {

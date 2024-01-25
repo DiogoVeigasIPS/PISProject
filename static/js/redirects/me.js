@@ -45,9 +45,15 @@ const addRecipes = async (userId) => {
 
         if (response.ok) {
             const responseData = await response.json();
-            responseData.forEach(element => {
-                createRecipeCard(element, userId)
-            });
+            if(responseData.length != 0){
+                responseData.forEach(element => {
+                    createRecipeCard(element, userId)
+                });
+            }else{
+                const p = document.createElement('p');
+                p.textContent = "There are no favorite recipes.";
+                document.getElementById('favorite-recipes-container').appendChild(p);
+            }
         }
 
     } catch (err) {
