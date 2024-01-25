@@ -30,11 +30,11 @@ Com base nos documentos fornecidos, a arquitetura da aplicação pode ser descri
 Para instalar a aplicação (API e frontend), siga os passos abaixo:
 
 1. **Node.js e NPM:**
-   - Instale o Node.js em [nodejs.org](https://nodejs.org/en) (escolha a versão LTS).
+   - Instale o [Node.js](https://nodejs.org/en) (escolha a versão LTS).
    - Inclua a instalação do NPM (Node Package Manager).
 
 2. **MySQL:**
-   - Instale o MySQL Workbench em [dev.mysql.com](https://dev.mysql.com/downloads/workbench/).
+   - Instale o [MySQL Workbench](https://dev.mysql.com/downloads/workbench/).
 
 3. **Configuração e Inicialização:**
    - Abra o terminal na pasta raiz e execute: `npm i` para instalar as dependências.

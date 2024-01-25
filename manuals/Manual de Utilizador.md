@@ -1,5 +1,20 @@
 # Manual de Utilizador
 
+<div>
+    <img src="https://www.ips.pt/ips_si/imagens/_ips-logotipo-site-2023" alt="Logo IPS" align="right">
+    <p><strong>Programação e Integração de Serviços</strong></p>
+    <p>CTeSP – TPSI</p>
+    <p>Projeto de Época Normal – 2023/2024</p>
+    <p>Docente Bruno Pereira</p>
+    <p>Alunos:</p>
+    <ul>
+        <li>André Carvalho 202200878</li>
+        <li>Diogo Veigas 202200879</li>
+    </ul>
+</div>
+
+<hr>
+
 ## Introdução
 
 Breve descrição do propósito do manual.
