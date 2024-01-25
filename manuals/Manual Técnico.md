@@ -12,23 +12,40 @@ Com base nos documentos fornecidos, a arquitetura da aplicação pode ser descri
 
 ## Instalação da Aplicação
 
+Para instalar a aplicação (API e frontend), siga os passos abaixo:
+
+1. **Node.js e NPM:**
+   - Instale o Node.js em [nodejs.org](https://nodejs.org/en) (escolha a versão LTS).
+   - Inclua a instalação do NPM (Node Package Manager).
+
+2. **MySQL:**
+   - Instale o MySQL Workbench em [dev.mysql.com](https://dev.mysql.com/downloads/workbench/).
+
+3. **Configuração e Inicialização:**
+   - Abra o terminal na pasta raiz e execute: `npm i` para instalar as dependências.
+   - Execute o servidor de banco de dados.
+   - Configure o arquivo `.env` com variáveis de ambiente.
+
+4. **Inicialização do Servidor:**
+   - Execute `npm start` no terminal.
+
 ## Arquitetura da Aplicação
 
 A aplicação segue uma estrutura modular, organizada em camadas distintas para melhor manutenção e escalabilidade. As principais componentes incluem:
 
 ### **Estrutura de Diretórios:**
 
-  - **static:** Contém recursos estáticos, como imagens e folhas de estilo.
-  - **views:** Armazena os ficheiros de visualização (usando o motor de templates Mustache).
-  - **api:** Responsável por manipular as requisições relacionadas à API.
-  - **api/controllers:** Contém os controladores que gerem a lógica de negócios.
-  - **api/models:** Define os modelos de dados da aplicação.
-  - **api/actions:** Contém a lógica específica para realizar ações em diferentes partes da aplicação.
-  - **api/routes:** Agrega todas as rotas da API.
-  - **app:** Responsável por gerir as rotas do frontend.
-  - **app/user:** Responsável pela parte do utilizador (backoffice).
-  - **app/admin:** Responsável pela parte de gestão de dados, (backoffice).
-  - **.env:** Ficheiro responsável por armazenas as variáveis de ambiente, isto é, dados sensíveis sobre o servidor e base de dados.
+   - **static:** Recursos estáticos.
+   - **views:** Arquivos de visualização (Mustache).
+   - **api:** Manipulação de requisições relacionadas à API.
+     - **api/controllers:** Controladores para a lógica de negócios.
+     - **api/models:** Modelos de dados.
+     - **api/actions:** Lógica específica para ações.
+     - **api/routes:** Agregação de rotas da API.
+   - **app:** Gerenciamento de rotas do frontend.
+     - **app/user:** Parte do utilizador (backoffice).
+     - **app/admin:** Gestão de dados (backoffice).
+   - **.env:** Variáveis de ambiente sensíveis.
 
 ### **Express App:**
 
@@ -64,7 +81,6 @@ A aplicação segue uma estrutura modular, organizada em camadas distintas para 
 
   - **Controladores:**
     Agregam a lógica de manipulação de dados para utilizadores, áreas, categorias, dificuldades, ingredientes, receitas e sementes.
-    
 
   - **Modelos:**
     Representam as entidades de dados da aplicação.
@@ -145,7 +161,7 @@ A descrição do uso dos serviços será organizada em várias secções para ga
     - recipe;
     - user.
     
-    Portanto, para poder consultar as categorias disponíveis na base de dados, poderá utilizar:
+    Portanto, para puder consultar as categorias disponíveis na base de dados, poderá utilizar:
     ```http://localhost:8081/api/category```
 
   - **Enviar Parâmetros**
@@ -219,12 +235,14 @@ Nesta parte serão dados alguns exemplos de como utilizar a API. Estarão presen
       {
         "username": "newUsername",
         "email": "new@email.com",
+        "password": "myNewPassword",
         "firstName": "newName",
         "lastName": "newLast",
         "image": "newImageURL",
         "isAdmin": 1
       }
       ```
+      - Notas: A palavra passe será codificada antes de inserida na base de dados.
       - Cabeçalho:
       ```bash
       { x-access-token: token }
@@ -256,12 +274,76 @@ Nesta parte serão dados alguns exemplos de como utilizar a API. Estarão presen
 
 ## Integração de Serviços Externos
 
-    Explicação sobre a integração de serviços externos, como login através do Google e utilização da API relacionada com receitas.
-    Detalhes sobre como esses serviços são utilizados na aplicação.
+Esta API, como mencionado anteriormente, é capaz de utilizar uma API externa para popular a base de dados. Sendo ela a API [TheMealDB](https://www.themealdb.com/api.php).
+Existem quatro rotas que convertem as respostas provenientes desta API nos modelos utilizados pela base de dados desta aplicação, para depois ser inserida na mesma. Sendo as rotas as seguintes:
+  - ```http://localhost:8081/api/seed/categories```
+  - ```http://localhost:8081/api/seed/ingredients```
+  - ```http://localhost:8081/api/seed/areas```
+  - ```http://localhost:8081/api/seed/recipes```
+Deve manter em mente que para criar as receitas, é necessário ter criado as regiões, ingredientes e categorias primeiro.
+Mas para facilitar a população de dados, foi também criada a seguinte rota:
+```bash
+http://localhost:8081/api/seed/all
+```
+Esta está responsável por executar todas as rotas da ordem correta sem chatices nem dificuldades. Recomenda-se utilizar apenas esta para evitar qualquer tipo de transtorno.
+Mas ainda há mais, com o uso de um parâmetro de pesquisa, é capaz de forçar essas quatro tabelas a reiniciar, podendo inserir os dados a qualquer momento. Ainda assim, é recomendado que a população seja efetuada antes que utilizadores comecem a utilizar a aplicação e comecem a criar listas com receitas temporárias. Abaixo está a rota de populaçao geral com o parâmetro adicional:
+```bash
+http://localhost:8081/api/seed/all?force=true
+```
 
 ## Funcionalidades Implementadas
 
-  Descrição das funcionalidades principais, incluindo autenticação de utilizadores, marcação de receitas como favoritas, criação de coleções, gestão de conteúdos, entre outras.
+Algumas das funcionalidades presentes consistem na gestão das respetivas entidades referidas anteriormente, bem como na realização de relacionamentos entre elas e a gestão destes, como também na população da base de dados referida anteriormente, e, autenticação e detalhes sober autorização, e por fim, o uso de parâmetros de pesquisa adicionais para as mais importantes entidades.
+
+  - **Gestão de Entidades**
+  Para evitar que a mesma coisa seja repetida vezes sem conta, é aconselhado que seja verificada a rota de pesquisa de uma dada entidade (GET), e verifique como é que o corpo é organizado, pois este é valido para inserção e atualização de recursos também.
+
+  - **Relacionamentos**
+  Novamente, como referido anteriormente, é possível relacionar entidades, tal como, ingredientes a receitas, receitas favoritas de um utilizador, listas de receitas a um utilizador, bem como, receitas a uma dada lista.
+  No entanto, diferentes rotas podem precisar de corpos diferentes, como é o caso do ingrediente que deve receber a sua quantidade no corpo. No entanto, caso siga o URL abaixo, será capaz de realizar a maioria das ações de associação, ou, pelo menos, ser guiado a como corriji-las:
+  ```bash
+  http://localhost:8081/api/entidade/id_entidade/sub_entidade/id_sub_entidade
+  ```
+  Vale acrescentar que existem rotas, como no caso das listas personalizadas de receitas de utilizadores pode ainda existir uma terceira entidade a referir, mas novamente, ao consultar o ficheiro de rotas individual da entidade, será capaz de encontrar esses detalhes.
+
+  - **Autenticação**
+  A autenticação nesta aplicação é realizada através de (JSW) Json Web Tokens, que permitem assinar e verificar um dado token, a sua validade, bem como dados inseridos na mesma através do uso de uma palavra secreta. Coincidentemente, esta palavra secreta pode ser encontrada no ficheiro ```.env```.
+  Pode consultar a base de dados e verificar que o único utilizador por definição é o "admin", cuja palavra passe é também admin. É aconselhado atualizar a palavra passe do administrador o quanto antes através de uma de duas rotas:
+    - ```http://localhost:8081/api/user/changePassword``` (recomendada)
+      - Esta rota deve receber três elementos no corpo, ```oldPassword```, ```newPassword```, ```repeatNewPassword```
+    - Ou então utilizar a edição de utilizador disponível na gestão básica de entidades 
+      - ```http://localhost:8081/api/user/1```
+    - Deve ter em atenção que é necessário enviar o token de autenticação para ambas as rotas, logo, deverá realizar login primeiro para obter o token de administrador.
+
+  - **Parâmetros de Pesquisa**
+  Nesta API existem também diversos parâmetros de pesquisa para as seguintes entidades:
+    - Category, Ingredient, Recipe;
+    - Como mencionado acima, o *seeder* também possui o um parâmetro de *force*, ainda que não deva ser considerada uma entidade.
+  
+  Ainda assim, as entidades acima possuem diversos parâmetros de pesquisa, tais como nome, tamanho máximo, aleatoriadade, e muitos outros. Estes foram implementados para que pudesse ser realizada uma pesquisa mais personalizada às entidades mais relevantes. Dado o tempo disponibilizado para o desenvolvimento da API, os desenvolvedores tiveram de se concentrar em acrescentar funcionalidades, ao invés de replicar as mesmas funcionalidades para todas as entidades.
+
+  - *Lista extensiva de parâmetros de pesquisa*
+  Os parâmetros podem ser observados com mais detalhe na rota de consulta global de cada uma das entidades mencionadas acima, ainda assim, para fins de demonstração, a consulta de receitas possui os seguintes parâmetros:
+    - order
+      - Define por que atributo deve ser realizada a ordenação.
+    - max
+      - Define o limite de registos a receber.
+    - random
+      - Define que a ordenação deve ser aleatória.
+    - name
+      - Pesquisa apenas receitas que incluem o nome enviado por parâmetro.
+    - partial
+      - Dá a saber à API que a pesqusia é parcial, ou seja, mais adequada para ser apresentada em cartões (apenas a imagem, nome, id e chaves estrangeiras são enviados).
+    - named
+      - Caso a pesquisa seja parcial, quando a pesquisa também é nomeada, enviará os nomes respetivos às chaves estrangeiras (id da categoria e o seu nome), normalmente usado em tabelas de backoffice.
+    - area
+      - Pesquisa receitas de uma dada região (por id).
+    - category
+      - Pesquisa receitas de uma dada categoria (por id).
+    - author
+      - O mesmo para o autor.
+    - difficulty
+      - O mesmo para a dificuldade.
 
 ## Tecnologias Utilizadas
 

@@ -104,8 +104,8 @@ const editUser = (id, user) => {
         const hashedPassword = await bcrypt.hash(newUser.password, 10);
         newUser.password = hashedPassword;
 
-        connection.query("UPDATE user SET username = ?, email = ?, firstName = ?, lastName = ?, image = ?, isAdmin = ? WHERE id = ?",
-            [newUser.username, newUser.email, newUser.firstName, newUser.lastName, newUser.image, newUser.isAdmin ? 1 : 0, id],
+        connection.query("UPDATE user SET username = ?, email = ?, password = ?, firstName = ?, lastName = ?, image = ?, isAdmin = ? WHERE id = ?",
+            [newUser.username, newUser.email, newUser.password, newUser.firstName, newUser.lastName, newUser.image, newUser.isAdmin ? 1 : 0, id],
             (err, result) => {
                 if (err) {
                     console.error(err);
