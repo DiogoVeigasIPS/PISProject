@@ -26,4 +26,3 @@ Explicação sobre como utilizar as funcionalidades de backoffice para gerir con
 
     Informações adicionais, se necessário.
     Incentivo ao feedback e sugestões.
-    

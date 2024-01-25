@@ -11,9 +11,9 @@ const router = express.Router();
 
 router.post('/:id/setIngredients', verifyJWT, recipeController.setRecipeIngredients);
 
-router.post('/:id/addIngredient/:ingredient_id', verifyJWT, recipeController.addIngredientToRecipe);
-router.put('/:id/updateQuantity/:ingredient_id', verifyJWT, recipeController.editIngredientQuantityInRecipe);
-router.delete('/:id/removeIngredient/:ingredient_id', verifyJWT, recipeController.removeIngredientFromRecipe);
+router.post('/:id/ingredient/:ingredient_id', verifyJWT, recipeController.addIngredientToRecipe);
+router.put('/:id/ingredient/:ingredient_id', verifyJWT, recipeController.editIngredientQuantityInRecipe);
+router.delete('/:id/ingredient/:ingredient_id', verifyJWT, recipeController.removeIngredientFromRecipe);
 
 router.get('', recipeController.readRecipes);
 router.get('/:id', recipeController.readRecipe);

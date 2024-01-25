@@ -219,5 +219,7 @@ INSERT INTO `difficulty` (`name`) VALUES ('Beginner'), ('Cook'), ('Chef');
 -- user
 
 INSERT INTO `user` (username, `password`, email, firstName, lastName, image, isAdmin) 
-VALUES ('diogoveigas', '$2b$10$l6uOhFiBJu0METRSPseae.IgXRJbrCxeL6MOkydpM9Dom.kn2dCuC', 'diogo@admin.com', 'Diogo', 'Veigas', 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fimage.myanimelist.net%2Fui%2F_3fYL8i6Q-n-155t3dn_4lSUHsq7btWTlmgH6uHajdH5TTQ7Kt5AmXxYAAHY3pSv&f=1&nofb=1&ipt=96f562e13e7959d030f7e93415b7827f1dc348b4230345758b0e9ba25801e869&ipo=images', 1),
+VALUES 
+('admin', '$2b$10$teSJPCts7Of/GYXr7EIgvOhrtzetM4lyvmF62XSZrlp0gfm5vwPzK', 'admin@example.com', 'The', 'Admin', NULL, 1),
+('diogoveigas', '$2b$10$l6uOhFiBJu0METRSPseae.IgXRJbrCxeL6MOkydpM9Dom.kn2dCuC', 'diogo@admin.com', 'Diogo', 'Veigas', 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fimage.myanimelist.net%2Fui%2F_3fYL8i6Q-n-155t3dn_4lSUHsq7btWTlmgH6uHajdH5TTQ7Kt5AmXxYAAHY3pSv&f=1&nofb=1&ipt=96f562e13e7959d030f7e93415b7827f1dc348b4230345758b0e9ba25801e869&ipo=images', 1),
 ('alc', '$2b$10$/mkWNJp5.TxK3hOc4WXMr.j2uJMSvRmbBQgTfLH3FX2dyyVCc401a', 'andre@admin.com', 'andre', 'carvalho', NULL, 1);
