@@ -19,10 +19,14 @@ A aplicação segue uma estrutura modular, organizada em camadas distintas para 
    - **static:** Contém recursos estáticos, como imagens e folhas de estilo.
    - **views:** Armazena os ficheiros de visualização (usando o motor de templates Mustache).
    - **api:** Responsável por manipular as requisições relacionadas à API.
-   - **controllers:** Contém os controladores que gerem a lógica de negócios.
-   - **models:** Define os modelos de dados da aplicação.
-   - **actions:** Contém a lógica específica para realizar ações em diferentes partes da aplicação.
-   - **routes:** Agrega todas as rotas da API.
+   - **api/controllers:** Contém os controladores que gerem a lógica de negócios.
+   - **api/models:** Define os modelos de dados da aplicação.
+   - **api/actions:** Contém a lógica específica para realizar ações em diferentes partes da aplicação.
+   - **api/routes:** Agrega todas as rotas da API.
+   - **app:** Responsável por gerir as rotas do frontend.
+   - **app/user:** Responsável pela parte do utilizador (backoffice).
+   - **app/admin:** Responsável pela parte de gestão de dados, (backoffice).
+   - **.env:** Ficheiro responsável por armazenas as variáveis de ambiente, isto é, dados sensíveis sobre o servidor e base de dados.
 
 ### 2. **Express App:**
 
@@ -84,6 +88,7 @@ A aplicação segue uma estrutura modular, organizada em camadas distintas para 
 
    - **Receita:**
     - A receita, composta por diversos atributos. É a entidade mais importante e mais dependente da API.
+    - 
 ### 6. **Base de Dados:**
 
    - **Tabelas Simples:**
