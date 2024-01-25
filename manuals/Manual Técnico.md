@@ -1,5 +1,20 @@
 # Manual Técnico
 
+<div>
+    <img src="https://www.ips.pt/ips_si/imagens/_ips-logotipo-site-2023" alt="Logo IPS" align="right">
+    <p><strong>Programação e Integração de Serviços</strong></p>
+    <p>CTeSP – TPSI</p>
+    <p>Projeto de Época Normal – 2023/2024</p>
+    <p>Docente Bruno Pereira</p>
+    <p>Alunos:</p>
+    <ul>
+        <li>André Carvalho 202200878</li>
+        <li>Diogo Veigas 202200879</li>
+    </ul>
+</div>
+
+<hr>
+
 ## Introdução
 
 Este manual tem como objetivo fornecer uma compreensão abrangente da API desenvolvida para o projeto de Gestão de Receitas. Aqui, encontrará informações detalhadas sobre a arquitetura da aplicação, os web services implementados, a integração de serviços externos, as funcionalidades disponíveis e as tecnologias utilizadas.
@@ -31,7 +46,8 @@ Para instalar a aplicação (API e frontend), siga os passos abaixo:
 
 ## Arquitetura da Aplicação
 
-A aplicação segue uma estrutura modular, organizada em camadas distintas para melhor manutenção e escalabilidade. As principais componentes incluem:
+A aplicação segue uma arquitetura RESTful, baseada no padrão MVC, em que a aplicação está dividida em modelos, vistas e controladores, que no caso desta aplicação estão sub divididos em rotas e ações.
+De seguida, poderá encontrar a estrutura de pastas, as configurações da framework Express, bem como outros detalhes importantes para a aplicação como um todo:
 
 ### **Estrutura de Diretórios:**
 
@@ -64,7 +80,7 @@ A aplicação segue uma estrutura modular, organizada em camadas distintas para 
     Utiliza os roteadores `apiRouter` e `appRouter` para direcionar requisições para as rotas correspondentes.
 
   - **Tratamento de Erros:**
-    Implementa uma rota para lidar com requisições não correspondentes (`404 Not Found`).
+    Para os erros mais comuns de falha em encontrar a rota pedida, foi utilizada a resposta (`404 Not Found`).
 
   - **Inicialização do Servidor:**
     Inicia o servidor na porta especificada no arquivo `.env`.
@@ -285,7 +301,7 @@ Mas para facilitar a população de dados, foi também criada a seguinte rota:
 ```bash
 http://localhost:8081/api/seed/all
 ```
-Esta está responsável por executar todas as rotas da ordem correta sem chatices nem dificuldades. Recomenda-se utilizar apenas esta para evitar qualquer tipo de transtorno.
+Esta está responsável por executar todas as rotas da ordem correta sem dificuldades ou transtornos. Recomenda-se utilizar apenas esta para evitar qualquer tipo de transtorno.
 Mas ainda há mais, com o uso de um parâmetro de pesquisa, é capaz de forçar essas quatro tabelas a reiniciar, podendo inserir os dados a qualquer momento. Ainda assim, é recomendado que a população seja efetuada antes que utilizadores comecem a utilizar a aplicação e comecem a criar listas com receitas temporárias. Abaixo está a rota de populaçao geral com o parâmetro adicional:
 ```bash
 http://localhost:8081/api/seed/all?force=true
@@ -347,6 +363,19 @@ Algumas das funcionalidades presentes consistem na gestão das respetivas entida
 
 ## Tecnologias Utilizadas
 
-    Detalhes sobre a escolha do Node.js e Express.js.
-    Justificativa para a escolha do MySQL como base de dados.
-    Uso de JSON para troca de mensagens.
+Conforme aprendido em aulas da unidade curricular, foi escolhido utilizar o Node.js com o Express.js para desenvolver o backend da aplicação, não apenas a API, bem como também as rotas da frontend.
+Foi também decidido utilizar o MySQL devido à sua facilidade de uso e aprendizado da mesma em cadeiras anteriores.
+Como também foram utilizadas outras ferramentas ainda não mencionadas, sendo elas:
+  - [Mustache](https://github.com/janl/mustache.js/)
+    - Motor de templates que permite a inicialização de páginas HTML de forma mais dinâmica e simplificada.
+  - [Bootstrap 5](https://getbootstrap.com/)
+    - Framework que embeleza uma aplicação web (frontend).
+  - [JSON](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/JSON)
+    - Notação moderna usada para comunicar entre o backend e frontend.
+    - Esta API utilizará JSON para enviar qualquer tipo de recurso. Só enviará texto em caso de erro ou não fazer sentido enviar um objeto.
+  - Ainda que seja óbvio, foi também utilizado HTML e CSS para o desenvolvmento das páginas web, bem como JavaScript para programar estas páginas e programar o backend com Node.js.
+
+
+## Mais Informações
+
+Para mais informações, pode consultar o manual de utilizador, que dará uma melhor perspectiva numa ótica de utilizador.
