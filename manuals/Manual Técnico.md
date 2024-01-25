@@ -136,7 +136,7 @@ De seguida, poderá encontrar a estrutura de pastas, as configurações da frame
     Ainda que todas as tabelas de uma base de dados relacional sejam relacionais, este nome foi escolhido para aquelas tabelas que servem para realizar os relacionamentos de N-N, isto é, relacionar receitas e ingredientes (recipe_ingredients), como também o relacionamento de receitas favoritas (favorite_recipes).
 
   - **Views:**
-    A base de dados possui também algumas views para que seja mais fácil selecionar as receitas dos ingredients, e realizar pesquisas mais rápidas com menos campos de forma mais eficiente (por exemplo, detalhes da receita, tabelas ou cartões).
+    A base de dados possui também algumas views para que seja mais fácil selecionar as receitas dos ingredientes, e realizar pesquisas mais rápidas com menos campos de forma mais eficiente (por exemplo, detalhes da receita, tabelas ou cartões).
 
 Esta arquitetura modular tenta seguir as boas práticas de desenvolvimento, separando claramente as responsabilidades entre diferentes componentes da aplicação.
 
@@ -199,7 +199,7 @@ A descrição do uso dos serviços será organizada em várias secções para ga
       "password": "thepassword"
     }
     ```
-    Após iniciar sessão, poderá copiar um token que será recebido, e utilizá-lo para autenticar as suas próximas ações. Para o fazer, deve enviar um cabeçalho com os seguinte nome
+    Após iniciar sessão, poderá copiar um token que será recebido, e utilizá-lo para autenticar as suas próximas ações. Para o fazer, deve enviar um cabeçalho com o seguinte nome
     ```x-access-token``` em conjunto do seu token.
 
   - **Enviar um Corpo**
@@ -213,7 +213,7 @@ A descrição do uso dos serviços será organizada em várias secções para ga
     ```http://localhost:8081/api/recipe/recipe_id/addIngredient/ingredient_id```
     Acima, poderá ver o URL que deve ser utilizado para adicionar um ingrediente a uma receita, podendo também reparar que o parent, ou a receita, deverá estar sempre em primeiro lugar, enquanto que o filho, ou ingredient, deve ser provido por último.
 
-  - **Decrição das Rotas**
+  - **Descrição das Rotas**
     Para que possa consultar de forma mais clara as rotas disponíveis nesta API deve aceder ao seguinte ficheiro a partir da raiz do projeto:
     ```/api/routes/index.js```
     No ficheiro acima estão descritas as rotas das entidades disponíveis desta API, como também pode encontrar os ficheiros designados a cada uma das rotas específicas.
@@ -375,6 +375,13 @@ Como também foram utilizadas outras ferramentas ainda não mencionadas, sendo e
     - Esta API utilizará JSON para enviar qualquer tipo de recurso. Só enviará texto em caso de erro ou não fazer sentido enviar um objeto.
   - Ainda que seja óbvio, foi também utilizado HTML e CSS para o desenvolvmento das páginas web, bem como JavaScript para programar estas páginas e programar o backend com Node.js.
 
+Existem também alguns módulos do NPM que podem e devem ser considerados nesta lista, sendo estes:
+  - Axios
+    - Utilizado para realizar pedidos no backend, também funciona no frontend.
+  - Json Web Token
+    - Bastante útil para realizar a autenticação e verificação de autorização.
+  - Bcrypt
+    - Permite codificar palavras passe e verificar a igualdade das mesmas. 
 
 ## Mais Informações
 
