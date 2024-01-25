@@ -587,7 +587,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     const populateButton = document.getElementById('populateButton');
-    populateButton.addEventListener('click', async () => {
+    populateButton?.addEventListener('click', async () => {
         // Loading
         populateButton.innerHTML = 
         `<span class="spinner-border spinner-border-sm" aria-hidden="true"></span>

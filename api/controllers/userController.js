@@ -161,7 +161,7 @@ const updateRecipeList = (req, res) => {
         return res.status(401).send('Not authenticated.');
     }
 
-    handlePromise(userActions.updateRecipeList(list_id, req.body), res);
+    handlePromise(userActions.updateRecipeList(list_id, req.body, userId), res);
 }
 
 const deleteRecipeList = (req, res) => {
@@ -173,7 +173,7 @@ const deleteRecipeList = (req, res) => {
         return res.status(401).send('Not authenticated.');
     }
 
-    handlePromise(userActions.deleteRecipeList(list_id), res);
+    handlePromise(userActions.deleteRecipeList(list_id, userId), res);
 }
 
 const getRecipesInList = (req, res) => {

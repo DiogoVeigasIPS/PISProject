@@ -26,12 +26,13 @@ const getRecipes = (queryOptions = null) => {
             queryString += queryOptions.difficulty ? " AND difficulty_id = ?" : "";
             queryString += queryOptions.stringSearch ? " AND name LIKE ?" : "";
             queryString += queryOptions.isRandom ? " ORDER BY RAND()" : "";
-            queryString += queryOptions.maxResults ? " LIMIT ?" : "";
             queryString += queryOptions.orderBy ? " ORDER BY ?? asc" : "";
 
             if (!queryOptions.orderBy && !queryOptions.isRandom) {
                 queryString += " ORDER BY id";
             }
+
+            queryString += queryOptions.maxResults ? " LIMIT ?" : "";
 
             if (queryOptions.category) {
                 queryParams.push(queryOptions.category);
