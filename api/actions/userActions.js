@@ -411,8 +411,15 @@ const createRecipeList = (id, { name }) => {
     })
 };
 
-const updateRecipeList = (listId, { name }) => {
-    return new Promise((resolve, reject) => {
+const updateRecipeList = (listId, { name }, userId) => {
+    return new Promise(async (resolve, reject) => {
+        const recipesLists = (await getRecipeLists(userId)).responseMessage;
+        const foundList = recipesLists.find(r => r.id == listId);
+
+        if (!foundList) {
+            return reject({ statusCode: 401, responseMessage: "That recipe list isn't yours." });
+        }
+
         if (!name) {
             reject({ statusCode: 400, responseMessage: "Invalid body." });
         }
@@ -434,8 +441,14 @@ const updateRecipeList = (listId, { name }) => {
     })
 };
 
-const deleteRecipeList = (listId) => {
-    return new Promise((resolve, reject) => {
+const deleteRecipeList = (listId, userId) => {
+    return new Promise(async (resolve, reject) => {
+        const recipesLists = (await getRecipeLists(userId)).responseMessage;
+        const foundList = recipesLists.find(r => r.id == listId);
+
+        if (!foundList) {
+            return reject({ statusCode: 401, responseMessage: "That recipe list isn't yours." });
+        }
         const connection = mysql.createConnection(connectionOptions);
         connection.connect();
 
@@ -463,7 +476,7 @@ const getRecipesInList = (queryOptions, listId, userId) => {
         const foundList = recipesLists.find(r => r.id == listId);
 
         if (!foundList) {
-            return resolve({ statusCode: 401, responseMessage: "That recipe list isn't yours." });
+            return reject({ statusCode: 401, responseMessage: "That recipe list isn't yours." });
         }
 
         const connection = mysql.createConnection(connectionOptions);
@@ -505,7 +518,7 @@ const addRecipeToList = (userId, listId, recipeId) => {
         const foundList = recipesLists.find(r => r.id == listId);
 
         if (!foundList) {
-            return resolve({ statusCode: 401, responseMessage: "That recipe list isn't yours." });
+            return reject({ statusCode: 401, responseMessage: "That recipe list isn't yours." });
         }
 
         const connection = mysql.createConnection(connectionOptions);
@@ -516,7 +529,7 @@ const addRecipeToList = (userId, listId, recipeId) => {
                 console.error(err);
 
                 if (err.sqlMessage.startsWith('Duplicate entry')) {
-                    resolve(({ statusCode: 422, responseMessage: `Recipe already in list.` }));
+                    reject(({ statusCode: 422, responseMessage: `Recipe already in list.` }));
                 }
 
                 const errorResponse = handleDatabaseError(err);
@@ -537,7 +550,7 @@ const deleteRecipeFromList = (userId, listId, recipeId) => {
         const foundList = recipesLists.find(r => r.id == listId);
 
         if (!foundList) {
-            return resolve({ statusCode: 401, responseMessage: "That recipe list isn't yours." });
+            return reject({ statusCode: 401, responseMessage: "That recipe list isn't yours." });
         }
 
         const connection = mysql.createConnection(connectionOptions);
