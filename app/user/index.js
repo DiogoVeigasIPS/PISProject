@@ -91,6 +91,10 @@ router.get('/', async (req, res) => {
 
 });
 
+router.get('/aboutUs', (req, res) => {
+    res.render('aboutUs');
+});
+
 
 router.get('*', (req, res) => {
     res.status(404).render('notFound', { title: 'Page Not Found' });
