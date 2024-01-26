@@ -155,7 +155,7 @@ Nesta secção serão apresentados, de forma breve, os serviços web que esta AP
       - Gestão de utilizadores.
 
   - **Compostos:**
-    Esta API possui também alguns serviços compostos, que utilizam um ou mais serviços elementares para efetuar operções mais complexas, como por exemplo, as ações de *seeding*, que consistem na remoção e criação de dados em massa provenientes de uma outra API externa.
+    Esta API possui também alguns serviços compostos, que utilizam um ou mais serviços elementares para efetuar operações mais complexas, como por exemplo, as ações de *seeding*, que consistem na remoção e criação de dados em massa provenientes de uma outra API externa.
     - Outros serviços que podem ser considerados compostos são:
       - Gestão de receitas, quando criada ou editada podem ser incluídos os seus ingredientes; 
       - Inserção em massa de novas categorias, regiões, dificuldades, receitas à base de dados;
@@ -285,7 +285,7 @@ Nesta parte serão dados alguns exemplos de como utilizar a API. Estarão presen
       ```
 
   - **Especificações**
-  Para um uso correto das rotas, as mesmas estão preparadas com mensagens costumizadas com códigos HTTP intuitivos para que o utilizador da API seja guiado a corrigir o seu pedido.
+  Para um uso correto das rotas, as mesmas estão preparadas com mensagens customizadas com códigos HTTP intuitivos para que o utilizador da API seja guiado a corrigir o seu pedido.
   Vale referir que ainda existem outras nuances que serão descritas em secções futuras sobre a população da API com dados provenientes de uma outra API, como também detalhes sobre parâmetros de pesquisa sobre as entidades.
 
 ## Integração de Serviços Externos
@@ -302,21 +302,21 @@ Mas para facilitar a população de dados, foi também criada a seguinte rota:
 http://localhost:8081/api/seed/all
 ```
 Esta está responsável por executar todas as rotas da ordem correta sem dificuldades ou transtornos. Recomenda-se utilizar apenas esta para evitar qualquer tipo de transtorno.
-Mas ainda há mais, com o uso de um parâmetro de pesquisa, é capaz de forçar essas quatro tabelas a reiniciar, podendo inserir os dados a qualquer momento. Ainda assim, é recomendado que a população seja efetuada antes que utilizadores comecem a utilizar a aplicação e comecem a criar listas com receitas temporárias. Abaixo está a rota de populaçao geral com o parâmetro adicional:
+Mas ainda há mais, com o uso de um parâmetro de pesquisa, é capaz de forçar essas quatro tabelas a reiniciar, podendo inserir os dados a qualquer momento. Ainda assim, é recomendado que a população seja efetuada antes que utilizadores comecem a utilizar a aplicação e comecem a criar listas com receitas temporárias. Abaixo está a rota de população geral com o parâmetro adicional:
 ```bash
 http://localhost:8081/api/seed/all?force=true
 ```
 
 ## Funcionalidades Implementadas
 
-Algumas das funcionalidades presentes consistem na gestão das respetivas entidades referidas anteriormente, bem como na realização de relacionamentos entre elas e a gestão destes, como também na população da base de dados referida anteriormente, e, autenticação e detalhes sober autorização, e por fim, o uso de parâmetros de pesquisa adicionais para as mais importantes entidades.
+Algumas das funcionalidades presentes consistem na gestão das respetivas entidades referidas anteriormente, bem como na realização de relacionamentos entre elas e a gestão destes, como também na população da base de dados referida anteriormente, e, autenticação e detalhes sobre autorização, e por fim, o uso de parâmetros de pesquisa adicionais para as mais importantes entidades.
 
   - **Gestão de Entidades**
   Para evitar que a mesma coisa seja repetida vezes sem conta, é aconselhado que seja verificada a rota de pesquisa de uma dada entidade (GET), e verifique como é que o corpo é organizado, pois este é valido para inserção e atualização de recursos também.
 
   - **Relacionamentos**
   Novamente, como referido anteriormente, é possível relacionar entidades, tal como, ingredientes a receitas, receitas favoritas de um utilizador, listas de receitas a um utilizador, bem como, receitas a uma dada lista.
-  No entanto, diferentes rotas podem precisar de corpos diferentes, como é o caso do ingrediente que deve receber a sua quantidade no corpo. No entanto, caso siga o URL abaixo, será capaz de realizar a maioria das ações de associação, ou, pelo menos, ser guiado a como corriji-las:
+  No entanto, diferentes rotas podem precisar de corpos diferentes, como é o caso do ingrediente que deve receber a sua quantidade no corpo. No entanto, caso siga o URL abaixo, será capaz de realizar a maioria das ações de associação, ou, pelo menos, ser guiado a como corrigi-las:
   ```bash
   http://localhost:8081/api/entidade/id_entidade/sub_entidade/id_sub_entidade
   ```
@@ -336,7 +336,7 @@ Algumas das funcionalidades presentes consistem na gestão das respetivas entida
     - Category, Ingredient, Recipe;
     - Como mencionado acima, o *seeder* também possui o um parâmetro de *force*, ainda que não deva ser considerada uma entidade.
   
-  Ainda assim, as entidades acima possuem diversos parâmetros de pesquisa, tais como nome, tamanho máximo, aleatoriadade, e muitos outros. Estes foram implementados para que pudesse ser realizada uma pesquisa mais personalizada às entidades mais relevantes. Dado o tempo disponibilizado para o desenvolvimento da API, os desenvolvedores tiveram de se concentrar em acrescentar funcionalidades, ao invés de replicar as mesmas funcionalidades para todas as entidades.
+  Ainda assim, as entidades acima possuem diversos parâmetros de pesquisa, tais como nome, tamanho máximo, aleatoriedade, e muitos outros. Estes foram implementados para que pudesse ser realizada uma pesquisa mais personalizada às entidades mais relevantes. Dado o tempo disponibilizado para o desenvolvimento da API, os desenvolvedores tiveram de se concentrar em acrescentar funcionalidades, ao invés de replicar as mesmas funcionalidades para todas as entidades.
 
   - *Lista extensiva de parâmetros de pesquisa*
   Os parâmetros podem ser observados com mais detalhe na rota de consulta global de cada uma das entidades mencionadas acima, ainda assim, para fins de demonstração, a consulta de receitas possui os seguintes parâmetros:
@@ -385,4 +385,4 @@ Existem também alguns módulos do NPM que podem e devem ser considerados nesta 
 
 ## Mais Informações
 
-Para mais informações, pode consultar o manual de utilizador, que dará uma melhor perspectiva numa ótica de utilizador.
+Para mais informações, pode consultar o manual de utilizador, que dará uma melhor perspetiva numa ótica de utilizador.

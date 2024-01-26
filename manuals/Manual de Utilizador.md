@@ -49,7 +49,7 @@ E deverá de enviar um corpo JSON no seguinte formato:
     "password": "thepassword"
 }
 ```
-Mas tenha em atenção o seguinte, para utilizar a aplicação web, é recomendado que a autenticação seja realizada na mesma, caso pretenta realizar testes com API, é que deve utilizar a API para se autenticar. Isto deve-se ao facto de que o frontend guardará o token em armazenamento local para o utilizar para todos os pedidos que terá de fazer à API através da aplicação web automáticamente, sem que tenha de se preocupar.
+Mas tenha em atenção o seguinte, para utilizar a aplicação web, é recomendado que a autenticação seja realizada na mesma, apenas no caso de desejar realizar testes com a API, é que deverá autenticar-se com a mesa. Isto deve-se ao facto de que o frontend guardará o token em armazenamento local para o utilizar para todos os pedidos que terá de fazer à API através da aplicação web automaticamente, sem que tenha de se preocupar.
 
 ### É um Desenvolvedor?
 
@@ -80,7 +80,7 @@ Antes das páginas em si, existem 2 meios de navegação na aplicação web, atr
 Para além da barra de navegação e rodapé, esta página está dividida em quatro secções, caixa de pesquisa de receitas, receitas (aleatórias ou categorizadas), categorias e regiões das receitas.
 
   - **Pesquisa por nome:**
-  Ao escrever o nome de uma receita na pesquisa de receitas e submeter o seu pedido, verificará que as receitas abaixo serão  alteradas consoante a sua pesquisa.
+  Ao escrever o nome de uma receita na pesquisa de receitas e submeter o seu pedido, verificará que as receitas abaixo serão alteradas consoante a sua pesquisa.
 
   - **Ver detalhes de uma receita:**
   Quando carrega em ver mais detalhes sobre uma receita, é aberta uma página com todos os detalhes da receita.
@@ -120,7 +120,7 @@ Sendo que estas páginas são bastante intuitivas, foi determinado que é desnec
 
 Existem algumas funcionalidades adicionais para os utilizadores que se autenticam, sendo elas:
 
-  - **Receitas favorias**
+  - **Receitas favoritas**
     - Adicionar e remover receitas aos seus favoritos;
     - Pode adicionar uma receita como favorito através da página de detalhes da mesma;
     - Pode consultar todas as suas receitas favoritas através da sua página pessoal, e filtrá-las por nome através da barra de pesquisa acima.
@@ -146,7 +146,7 @@ http://localhost:8081/api/user/user_id/favoriteRecipe/recipe_id
 A explicação das listas de receitas será ligeiramente mais breve, focando-se mais nas suas possibilidades, e não tanto numa descrição teórica.
 
 **Gestão de listas**
-Abaixo estão os métodos e URL para a consutla de todas as listas, criação, edição e remoção de uma lista.
+Abaixo estão os métodos e URL para a consulta de todas as listas, criação, edição e remoção de uma lista.
 Pode ter de enviar um corpo com o atributo ```name``` para criação e edição de listas.
 Cada utilizador só pode aceder às suas listas, ou seja, tentar aceder a listas de outros utilizadores será impossível.
 ```bash
@@ -162,7 +162,7 @@ PATCH: http://localhost:8081/api/user/user_id/recipeList/list_id
 DELETE: http://localhost:8081/api/user/user_id/recipeList/list_id
 ```
 
-**Gestão de de uma lista**
+**Gestão de uma lista**
 Cada uma das listas pode ter a ela associadas várias receitas, para tal:
 ```bash
 GET: http://localhost:8081/api/user/user_id/recipeList/list_id
@@ -179,7 +179,7 @@ A gestão de receitas de uma lista possui o URL mais longo da API, sendo necess�
 
 Esta aplicação web também possui um backoffice, ou seja, permite uma gestão eficiente dos dois recursos mais importantes da aplicação, os ingredientes e as receitas.
 
-Para entrar na área de administração, o utilizador deve carregar na hiperligação cinzenta de *copyright* no rodapé da página, e será redirecionado para a página de gestão de recursos. No caso do utilizador não ter permissões para lá entrar, o mesmo será reencaminado para uma página explicativa.
+Para entrar na área de administração, o utilizador deve carregar na hiperligação cinzenta de *copyright* no rodapé da página, e será redirecionado para a página de gestão de recursos. No caso do utilizador não ter permissões para lá entrar, o mesmo será reencaminhado para uma página explicativa.
 
 A gestão destas consiste nas operações básicas de um CRUD, portanto, consulta, criação, edição e remoção. Todas estes são realizados com modals, uma técnica que apresenta um menu que está sob o resto da página, e utiliza a função fetch do JavaScript do lado do cliente para realizar estes pedidos à base de dados.
 
