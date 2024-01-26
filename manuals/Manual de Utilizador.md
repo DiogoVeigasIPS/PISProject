@@ -177,9 +177,18 @@ A gestão de receitas de uma lista possui o URL mais longo da API, sendo necess�
 
 ## Gestão de Conteúdos
 
-Explicação sobre como utilizar as funcionalidades de backoffice para gerir conteúdos na base de dados.
+Esta aplicação web também possui um backoffice, ou seja, permite uma gestão eficiente dos dois recursos mais importantes da aplicação, os ingredientes e as receitas.
+
+Para entrar na área de administração, o utilizador deve carregar na hiperligação cinzenta de *copyright* no rodapé da página, e será redirecionado para a página de gestão de recursos. No caso do utilizador não ter permissões para lá entrar, o mesmo será reencaminado para uma página explicativa.
+
+A gestão destas consiste nas operações básicas de um CRUD, portanto, consulta, criação, edição e remoção. Todas estes são realizados com modals, uma técnica que apresenta um menu que está sob o resto da página, e utiliza a função fetch do JavaScript do lado do cliente para realizar estes pedidos à base de dados.
+
+O backoffice da aplicação foi realizado de maneira a possibilitar a realização de alterações na base de dados através da API, com alterações realizadas automaticamente sem reiniciar a página, com mensagens de feedback, para sempre que uma criação, alteração ou remoção de um recurso for realizada.
+
+Existe também a funcionalidade de pesquisa por nome do recurso, bem como cada item do cabeçalho dos atributos do recurso a azul podem ser selecionados, e uma ordenação ascendente sobre esse recurso será executada. 
+
+Para maior partilha de informação entre utilizadores, neste caso, administradores, também pode ser partilhada a pesquisa com os parâmetos de nome e ordenação para que outros utilizadores possuam a mesma pesquisa efetuada. Também é possível partilhar um recurso através do link no fim do modal dos detalhes do mesmo. Esta página permite a rápida e fácil partilha de um dado recurso e a edição do mesmo nessa mesma página.
 
 ## Notas Finais
 
-    Informações adicionais, se necessário.
-    Incentivo ao feedback e sugestões.
+Esta aplicação, tal como pode ser verificado na página *About Us* é um projeto realizado por alunos do Instituto Politécnico de Setúbal. Caso deseje utilizar esta aplicação ou alterá-la deve contactar a mesma.
