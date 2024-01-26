@@ -1,3 +1,4 @@
+<!-- title: Manual Técnico --> 
 # Manual Técnico
 
 <div>
@@ -13,7 +14,27 @@
     </ul>
 </div>
 
-<hr>
+## Índice
+
+- [Manual Técnico](#manual-técnico)
+  - [Índice](#índice)
+  - [Introdução](#introdução)
+  - [Instalação da Aplicação](#instalação-da-aplicação)
+  - [Arquitetura da Aplicação](#arquitetura-da-aplicação)
+    - [Estrutura de Diretórios:](#estrutura-de-diretórios)
+    - [Express App:](#express-app)
+    - [Rotas:](#rotas)
+    - [Controladores, Modelos e Ações:](#controladores-modelos-e-ações)
+    - [Entidades principais:](#entidades-principais)
+    - [Base de Dados:](#base-de-dados)
+  - [Web Services](#web-services)
+    - [Tipos de Serviço:](#tipos-de-serviço)
+    - [Uso dos Serviços:](#uso-dos-serviços)
+    - [Exemplos Práticos:](#exemplos-práticos)
+  - [Integração de Serviços Externos](#integração-de-serviços-externos)
+  - [Funcionalidades Implementadas](#funcionalidades-implementadas)
+  - [Tecnologias Utilizadas](#tecnologias-utilizadas)
+  - [Mais Informações](#mais-informações)
 
 ## Introdução
 
@@ -49,7 +70,7 @@ Para instalar a aplicação (API e frontend), siga os passos abaixo:
 A aplicação segue uma arquitetura RESTful, baseada no padrão MVC, em que a aplicação está dividida em modelos, vistas e controladores, que no caso desta aplicação estão sub divididos em rotas e ações.
 De seguida, poderá encontrar a estrutura de pastas, as configurações da framework Express, bem como outros detalhes importantes para a aplicação como um todo:
 
-### **Estrutura de Diretórios:**
+### Estrutura de Diretórios:
 
    - **static:** Recursos estáticos.
    - **views:** Arquivos de visualização (Mustache).
@@ -63,7 +84,7 @@ De seguida, poderá encontrar a estrutura de pastas, as configurações da frame
      - **app/admin:** Gestão de dados (backoffice).
    - **.env:** Variáveis de ambiente sensíveis.
 
-### **Express App:**
+### Express App:
 
   - **Inicialização:**
     Carrega as dependências necessárias como `express`, `body-parser`, `mustache-express`, e `dotenv`.
@@ -85,7 +106,7 @@ De seguida, poderá encontrar a estrutura de pastas, as configurações da frame
   - **Inicialização do Servidor:**
     Inicia o servidor na porta especificada no arquivo `.env`.
 
-### **Rotas:**
+### Rotas:
 
   - **API Roteador:**
     Agrega todas as rotas da API, utilizando roteadores específicos para utilizadores, áreas, categorias, dificuldades, ingredientes, receitas e sementes.
@@ -93,7 +114,7 @@ De seguida, poderá encontrar a estrutura de pastas, as configurações da frame
   - **Roteador da Aplicação:**
     Roteia as requisições da aplicação principal.
 
-### **Controladores, Modelos e Ações:**
+### Controladores, Modelos e Ações:
 
   - **Controladores:**
     Agregam a lógica de manipulação de dados para utilizadores, áreas, categorias, dificuldades, ingredientes, receitas e sementes.
@@ -104,7 +125,7 @@ De seguida, poderá encontrar a estrutura de pastas, as configurações da frame
   - **Ações:**
     Contém a lógica específica para realizar ações relacionadas a utilizadores, áreas, categorias, dificuldades, ingredientes, receitas e sementes.
 
-### **Entidades principais:**
+### Entidades principais:
 
   - **Utilizador:**
     Consiste nos utilizadores da aplicação, para além de determinar a sua autorização.
@@ -124,7 +145,7 @@ De seguida, poderá encontrar a estrutura de pastas, as configurações da frame
   - **Receita:**
     A receita, composta por diversos atributos. É a entidade mais importante e mais dependente da API.
 
-### **Base de Dados:**
+### Base de Dados:
 
   - **Tabelas Simples:**
     A base de dados é composta por múltiplas tabelas simples, sendo estas essenciais para um bom funcionamento e relacionamento dinâmico entre entidades. Um exemplo destas são os ingredientes, categorias e dificuldade.
@@ -144,7 +165,7 @@ Esta arquitetura modular tenta seguir as boas práticas de desenvolvimento, sepa
 
 Nesta secção serão apresentados, de forma breve, os serviços web que esta API disponibiliza, uma descrição para cada serviço, bem como alguns exemplos práticos para facilitar a compreensão.
 
-### **Tipos de Serviço:**
+### Tipos de Serviço:
 
   - **Elementares:**
     Esta API é composta por múltiplos serviços, sendo a maioria deles elementares. Estes dizem-se elementares por ser de natureza simples, tal como a criação ou visualização de um dado recurso numa base de dados. De seguida, podem ser vistos todos os serviços disponíveis nesta API:
@@ -162,7 +183,7 @@ Nesta secção serão apresentados, de forma breve, os serviços web que esta AP
       - Gestão de listas de receitas favoritas de um utilizador;
       - Etc. 
 
-### **Uso dos Serviços:**
+### Uso dos Serviços:
 
 A descrição do uso dos serviços será organizada em várias secções para garantir abrangência sem repetição excessiva. A primeira parte abordará o uso de serviços elementares, destacando a gestão de ingredientes, receitas e categorias. Em seguida, serão exploradas práticas de autenticação e autorização. Posteriormente, serão apresentados serviços mais complexos, exemplificados pela orquestração na gestão de ingredientes. Por fim, serão indicados os ficheiros a que deve recorrer em caso de dúvida. Esta estrutura procura dar a entender o método de usa da API da forma mais simplificada possível.
 
@@ -218,7 +239,7 @@ A descrição do uso dos serviços será organizada em várias secções para ga
     ```/api/routes/index.js```
     No ficheiro acima estão descritas as rotas das entidades disponíveis desta API, como também pode encontrar os ficheiros designados a cada uma das rotas específicas.
    
-### **Exemplos Práticos:**
+### Exemplos Práticos:
 
 Nesta parte serão dados alguns exemplos de como utilizar a API. Estarão presentes exemplos desde como realizar pedidos mais técnicos que não foram abordados previamente, como também como corrigir problemas no caso dos mesmo surgirem.
 
@@ -322,7 +343,7 @@ Algumas das funcionalidades presentes consistem na gestão das respetivas entida
   ```
   Vale acrescentar que existem rotas, como no caso das listas personalizadas de receitas de utilizadores pode ainda existir uma terceira entidade a referir, mas novamente, ao consultar o ficheiro de rotas individual da entidade, será capaz de encontrar esses detalhes.
 
-  - **Autenticação**
+  - **Autenticação:**
   A autenticação nesta aplicação é realizada através de (JSW) Json Web Tokens, que permitem assinar e verificar um dado token, a sua validade, bem como dados inseridos na mesma através do uso de uma palavra secreta. Coincidentemente, esta palavra secreta pode ser encontrada no ficheiro ```.env```.
   Pode consultar a base de dados e verificar que o único utilizador por definição é o "admin", cuja palavra passe é também admin. É aconselhado atualizar a palavra passe do administrador o quanto antes através de uma de duas rotas:
     - ```http://localhost:8081/api/user/changePassword``` (recomendada)
@@ -331,7 +352,7 @@ Algumas das funcionalidades presentes consistem na gestão das respetivas entida
       - ```http://localhost:8081/api/user/1```
     - Deve ter em atenção que é necessário enviar o token de autenticação para ambas as rotas, logo, deverá realizar login primeiro para obter o token de administrador.
 
-  - **Parâmetros de Pesquisa**
+  - **Parâmetros de Pesquisa:**
   Nesta API existem também diversos parâmetros de pesquisa para as seguintes entidades:
     - Category, Ingredient, Recipe;
     - Como mencionado acima, o *seeder* também possui o um parâmetro de *force*, ainda que não deva ser considerada uma entidade.

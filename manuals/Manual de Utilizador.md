@@ -1,3 +1,4 @@
+<!-- title: Manual de Utilizador --> 
 # Manual de Utilizador
 
 <div>
@@ -13,7 +14,23 @@
     </ul>
 </div>
 
-<hr>
+## Índice
+
+- [Manual de Utilizador](#manual-de-utilizador)
+  - [Índice](#índice)
+  - [Introdução](#introdução)
+  - [Autenticação](#autenticação)
+    - [É um Desenvolvedor?](#é-um-desenvolvedor)
+  - [Exploração do Frontoffice](#exploração-do-frontoffice)
+    - [Navegação](#navegação)
+    - [Página Inicial](#página-inicial)
+    - [Página Pessoal](#página-pessoal)
+    - [Página de Receitas, Categorias e Sobre Nós](#página-de-receitas-categorias-e-sobre-nós)
+  - [Funcionalidades Adicionais](#funcionalidades-adicionais)
+    - [Receitas Favoritas (API)](#receitas-favoritas-api)
+    - [Listas de Receitas (API)](#listas-de-receitas-api)
+  - [Gestão de Conteúdos](#gestão-de-conteúdos)
+  - [Notas Finais](#notas-finais)
 
 ## Introdução
 
@@ -120,12 +137,12 @@ Sendo que estas páginas são bastante intuitivas, foi determinado que é desnec
 
 Existem algumas funcionalidades adicionais para os utilizadores que se autenticam, sendo elas:
 
-  - **Receitas favoritas**
+  - **Receitas favoritas:**
     - Adicionar e remover receitas aos seus favoritos;
     - Pode adicionar uma receita como favorito através da página de detalhes da mesma;
     - Pode consultar todas as suas receitas favoritas através da sua página pessoal, e filtrá-las por nome através da barra de pesquisa acima.
-    - 
-  - **Listas de receitas**
+
+  - **Listas de receitas:**
     - Infelizmente, as listas de receitas são uma funcionalidade muito difícil de implementar no frontend, portanto, devido a limitações temporais, foi apenas realizada através da API.
 
 ### Receitas Favoritas (API)
@@ -145,7 +162,7 @@ http://localhost:8081/api/user/user_id/favoriteRecipe/recipe_id
 
 A explicação das listas de receitas será ligeiramente mais breve, focando-se mais nas suas possibilidades, e não tanto numa descrição teórica.
 
-**Gestão de listas**
+**Gestão de listas:**
 Abaixo estão os métodos e URL para a consulta de todas as listas, criação, edição e remoção de uma lista.
 Pode ter de enviar um corpo com o atributo ```name``` para criação e edição de listas.
 Cada utilizador só pode aceder às suas listas, ou seja, tentar aceder a listas de outros utilizadores será impossível.
@@ -162,7 +179,7 @@ PATCH: http://localhost:8081/api/user/user_id/recipeList/list_id
 DELETE: http://localhost:8081/api/user/user_id/recipeList/list_id
 ```
 
-**Gestão de uma lista**
+**Gestão de uma lista:**
 Cada uma das listas pode ter a ela associadas várias receitas, para tal:
 ```bash
 GET: http://localhost:8081/api/user/user_id/recipeList/list_id
