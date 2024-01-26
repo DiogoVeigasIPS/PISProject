@@ -1,3 +1,9 @@
+/**
+ * Filename: dynamicIngredientSearch.js
+ * Purpose: Responsible to fetch recipes based on input, 
+ * and creation of the DOM elements to add an ingredient and its quantity to a recipe.
+ */
+
 document.addEventListener('DOMContentLoaded', function () {
     const ingredientsInput = document.getElementById('ingredientInput');
     const ingredientSuggestions = document.getElementById('ingredientSuggestions');

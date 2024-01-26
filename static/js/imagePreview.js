@@ -1,3 +1,8 @@
+/**
+ * Filename: imagePreview.js
+ * Purpose: Loads an image based on the url being input.
+ */
+
 const imagePreview = (input, image) => {
     const imageInput = document.getElementById(input);
     const imagePreview = document.getElementById(image);
