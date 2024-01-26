@@ -1,3 +1,8 @@
+/**
+ * Filename: showToast.js
+ * Purpose: Shows a toast with a message (and personalized color).
+ */
+
 const showToast = (message, isError = false) => {
     const toast = document.getElementById('toast');
     const bootstrapToast = bootstrap.Toast.getOrCreateInstance(toast);

@@ -1,3 +1,8 @@
+/**
+ * Filename: favoriteRecipe.js
+ * Purpose: To verify if the user is authenticated, and favorite a recipe (per user)
+ */
+
 window.addEventListener("load", (e) => {
     const favoriteRecipe = document.getElementById('favoriteRecipe');
     favoriteRecipe.onclick = async () => {

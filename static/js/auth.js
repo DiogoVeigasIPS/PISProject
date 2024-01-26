@@ -1,3 +1,8 @@
+/**
+ * Filename: auth.js
+ * Purpose: Used to change the display bewtween forms and perform the login and signup.
+ */
+
 const showRegistrationForm = () => {
     document.querySelector('#loginCard').classList.add('d-none');
     document.querySelector('#registrationCard').classList.remove('d-none');

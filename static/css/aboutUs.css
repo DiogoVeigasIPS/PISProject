@@ -1,10 +1,3 @@
-.custom-jumbotron {
-    padding: 0;
-    margin: 0;
-    height: 50vh;
-    background: url('/img/vegetables.jpg') center / cover no-repeat;
-}
-
 .jumbotron {
     background-color: #f0f0f0;
 }
@@ -17,13 +10,13 @@
     display: flex;
     flex-direction: column;
     font-size: 1.2em;
-  }
+}
 
-  .student {
+.student {
     display: flex;
     margin-bottom: 10px;
-  }
+}
 
-  .student span:first-child {
+.student span:first-child {
     min-width: 150px;
-  }
+}

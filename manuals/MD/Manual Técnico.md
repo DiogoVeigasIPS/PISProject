@@ -1,3 +1,4 @@
+<!-- title: Manual Técnico --> 
 # Manual Técnico
 
 <div>
@@ -13,7 +14,27 @@
     </ul>
 </div>
 
-<hr>
+## Índice
+
+- [Manual Técnico](#manual-técnico)
+  - [Índice](#índice)
+  - [Introdução](#introdução)
+  - [Instalação da Aplicação](#instalação-da-aplicação)
+  - [Arquitetura da Aplicação](#arquitetura-da-aplicação)
+    - [Estrutura de Diretórios:](#estrutura-de-diretórios)
+    - [Express App:](#express-app)
+    - [Rotas:](#rotas)
+    - [Controladores, Modelos e Ações:](#controladores-modelos-e-ações)
+    - [Entidades principais:](#entidades-principais)
+    - [Base de Dados:](#base-de-dados)
+  - [Web Services](#web-services)
+    - [Tipos de Serviço:](#tipos-de-serviço)
+    - [Uso dos Serviços:](#uso-dos-serviços)
+    - [Exemplos Práticos:](#exemplos-práticos)
+  - [Integração de Serviços Externos](#integração-de-serviços-externos)
+  - [Funcionalidades Implementadas](#funcionalidades-implementadas)
+  - [Tecnologias Utilizadas](#tecnologias-utilizadas)
+  - [Mais Informações](#mais-informações)
 
 ## Introdução
 
@@ -49,7 +70,7 @@ Para instalar a aplicação (API e frontend), siga os passos abaixo:
 A aplicação segue uma arquitetura RESTful, baseada no padrão MVC, em que a aplicação está dividida em modelos, vistas e controladores, que no caso desta aplicação estão sub divididos em rotas e ações.
 De seguida, poderá encontrar a estrutura de pastas, as configurações da framework Express, bem como outros detalhes importantes para a aplicação como um todo:
 
-### **Estrutura de Diretórios:**
+### Estrutura de Diretórios:
 
    - **static:** Recursos estáticos.
    - **views:** Arquivos de visualização (Mustache).
@@ -63,7 +84,7 @@ De seguida, poderá encontrar a estrutura de pastas, as configurações da frame
      - **app/admin:** Gestão de dados (backoffice).
    - **.env:** Variáveis de ambiente sensíveis.
 
-### **Express App:**
+### Express App:
 
   - **Inicialização:**
     Carrega as dependências necessárias como `express`, `body-parser`, `mustache-express`, e `dotenv`.
@@ -85,7 +106,7 @@ De seguida, poderá encontrar a estrutura de pastas, as configurações da frame
   - **Inicialização do Servidor:**
     Inicia o servidor na porta especificada no arquivo `.env`.
 
-### **Rotas:**
+### Rotas:
 
   - **API Roteador:**
     Agrega todas as rotas da API, utilizando roteadores específicos para utilizadores, áreas, categorias, dificuldades, ingredientes, receitas e sementes.
@@ -93,7 +114,7 @@ De seguida, poderá encontrar a estrutura de pastas, as configurações da frame
   - **Roteador da Aplicação:**
     Roteia as requisições da aplicação principal.
 
-### **Controladores, Modelos e Ações:**
+### Controladores, Modelos e Ações:
 
   - **Controladores:**
     Agregam a lógica de manipulação de dados para utilizadores, áreas, categorias, dificuldades, ingredientes, receitas e sementes.
@@ -104,7 +125,7 @@ De seguida, poderá encontrar a estrutura de pastas, as configurações da frame
   - **Ações:**
     Contém a lógica específica para realizar ações relacionadas a utilizadores, áreas, categorias, dificuldades, ingredientes, receitas e sementes.
 
-### **Entidades principais:**
+### Entidades principais:
 
   - **Utilizador:**
     Consiste nos utilizadores da aplicação, para além de determinar a sua autorização.
@@ -124,7 +145,7 @@ De seguida, poderá encontrar a estrutura de pastas, as configurações da frame
   - **Receita:**
     A receita, composta por diversos atributos. É a entidade mais importante e mais dependente da API.
 
-### **Base de Dados:**
+### Base de Dados:
 
   - **Tabelas Simples:**
     A base de dados é composta por múltiplas tabelas simples, sendo estas essenciais para um bom funcionamento e relacionamento dinâmico entre entidades. Um exemplo destas são os ingredientes, categorias e dificuldade.
@@ -144,7 +165,7 @@ Esta arquitetura modular tenta seguir as boas práticas de desenvolvimento, sepa
 
 Nesta secção serão apresentados, de forma breve, os serviços web que esta API disponibiliza, uma descrição para cada serviço, bem como alguns exemplos práticos para facilitar a compreensão.
 
-### **Tipos de Serviço:**
+### Tipos de Serviço:
 
   - **Elementares:**
     Esta API é composta por múltiplos serviços, sendo a maioria deles elementares. Estes dizem-se elementares por ser de natureza simples, tal como a criação ou visualização de um dado recurso numa base de dados. De seguida, podem ser vistos todos os serviços disponíveis nesta API:
@@ -155,14 +176,14 @@ Nesta secção serão apresentados, de forma breve, os serviços web que esta AP
       - Gestão de utilizadores.
 
   - **Compostos:**
-    Esta API possui também alguns serviços compostos, que utilizam um ou mais serviços elementares para efetuar operções mais complexas, como por exemplo, as ações de *seeding*, que consistem na remoção e criação de dados em massa provenientes de uma outra API externa.
+    Esta API possui também alguns serviços compostos, que utilizam um ou mais serviços elementares para efetuar operações mais complexas, como por exemplo, as ações de *seeding*, que consistem na remoção e criação de dados em massa provenientes de uma outra API externa.
     - Outros serviços que podem ser considerados compostos são:
       - Gestão de receitas, quando criada ou editada podem ser incluídos os seus ingredientes; 
       - Inserção em massa de novas categorias, regiões, dificuldades, receitas à base de dados;
       - Gestão de listas de receitas favoritas de um utilizador;
       - Etc. 
 
-### **Uso dos Serviços:**
+### Uso dos Serviços:
 
 A descrição do uso dos serviços será organizada em várias secções para garantir abrangência sem repetição excessiva. A primeira parte abordará o uso de serviços elementares, destacando a gestão de ingredientes, receitas e categorias. Em seguida, serão exploradas práticas de autenticação e autorização. Posteriormente, serão apresentados serviços mais complexos, exemplificados pela orquestração na gestão de ingredientes. Por fim, serão indicados os ficheiros a que deve recorrer em caso de dúvida. Esta estrutura procura dar a entender o método de usa da API da forma mais simplificada possível.
 
@@ -218,7 +239,7 @@ A descrição do uso dos serviços será organizada em várias secções para ga
     ```/api/routes/index.js```
     No ficheiro acima estão descritas as rotas das entidades disponíveis desta API, como também pode encontrar os ficheiros designados a cada uma das rotas específicas.
    
-### **Exemplos Práticos:**
+### Exemplos Práticos:
 
 Nesta parte serão dados alguns exemplos de como utilizar a API. Estarão presentes exemplos desde como realizar pedidos mais técnicos que não foram abordados previamente, como também como corrigir problemas no caso dos mesmo surgirem.
 
@@ -285,7 +306,7 @@ Nesta parte serão dados alguns exemplos de como utilizar a API. Estarão presen
       ```
 
   - **Especificações**
-  Para um uso correto das rotas, as mesmas estão preparadas com mensagens costumizadas com códigos HTTP intuitivos para que o utilizador da API seja guiado a corrigir o seu pedido.
+  Para um uso correto das rotas, as mesmas estão preparadas com mensagens customizadas com códigos HTTP intuitivos para que o utilizador da API seja guiado a corrigir o seu pedido.
   Vale referir que ainda existem outras nuances que serão descritas em secções futuras sobre a população da API com dados provenientes de uma outra API, como também detalhes sobre parâmetros de pesquisa sobre as entidades.
 
 ## Integração de Serviços Externos
@@ -302,27 +323,27 @@ Mas para facilitar a população de dados, foi também criada a seguinte rota:
 http://localhost:8081/api/seed/all
 ```
 Esta está responsável por executar todas as rotas da ordem correta sem dificuldades ou transtornos. Recomenda-se utilizar apenas esta para evitar qualquer tipo de transtorno.
-Mas ainda há mais, com o uso de um parâmetro de pesquisa, é capaz de forçar essas quatro tabelas a reiniciar, podendo inserir os dados a qualquer momento. Ainda assim, é recomendado que a população seja efetuada antes que utilizadores comecem a utilizar a aplicação e comecem a criar listas com receitas temporárias. Abaixo está a rota de populaçao geral com o parâmetro adicional:
+Mas ainda há mais, com o uso de um parâmetro de pesquisa, é capaz de forçar essas quatro tabelas a reiniciar, podendo inserir os dados a qualquer momento. Ainda assim, é recomendado que a população seja efetuada antes que utilizadores comecem a utilizar a aplicação e comecem a criar listas com receitas temporárias. Abaixo está a rota de população geral com o parâmetro adicional:
 ```bash
 http://localhost:8081/api/seed/all?force=true
 ```
 
 ## Funcionalidades Implementadas
 
-Algumas das funcionalidades presentes consistem na gestão das respetivas entidades referidas anteriormente, bem como na realização de relacionamentos entre elas e a gestão destes, como também na população da base de dados referida anteriormente, e, autenticação e detalhes sober autorização, e por fim, o uso de parâmetros de pesquisa adicionais para as mais importantes entidades.
+Algumas das funcionalidades presentes consistem na gestão das respetivas entidades referidas anteriormente, bem como na realização de relacionamentos entre elas e a gestão destes, como também na população da base de dados referida anteriormente, e, autenticação e detalhes sobre autorização, e por fim, o uso de parâmetros de pesquisa adicionais para as mais importantes entidades.
 
   - **Gestão de Entidades**
   Para evitar que a mesma coisa seja repetida vezes sem conta, é aconselhado que seja verificada a rota de pesquisa de uma dada entidade (GET), e verifique como é que o corpo é organizado, pois este é valido para inserção e atualização de recursos também.
 
   - **Relacionamentos**
   Novamente, como referido anteriormente, é possível relacionar entidades, tal como, ingredientes a receitas, receitas favoritas de um utilizador, listas de receitas a um utilizador, bem como, receitas a uma dada lista.
-  No entanto, diferentes rotas podem precisar de corpos diferentes, como é o caso do ingrediente que deve receber a sua quantidade no corpo. No entanto, caso siga o URL abaixo, será capaz de realizar a maioria das ações de associação, ou, pelo menos, ser guiado a como corriji-las:
+  No entanto, diferentes rotas podem precisar de corpos diferentes, como é o caso do ingrediente que deve receber a sua quantidade no corpo. No entanto, caso siga o URL abaixo, será capaz de realizar a maioria das ações de associação, ou, pelo menos, ser guiado a como corrigi-las:
   ```bash
   http://localhost:8081/api/entidade/id_entidade/sub_entidade/id_sub_entidade
   ```
   Vale acrescentar que existem rotas, como no caso das listas personalizadas de receitas de utilizadores pode ainda existir uma terceira entidade a referir, mas novamente, ao consultar o ficheiro de rotas individual da entidade, será capaz de encontrar esses detalhes.
 
-  - **Autenticação**
+  - **Autenticação:**
   A autenticação nesta aplicação é realizada através de (JSW) Json Web Tokens, que permitem assinar e verificar um dado token, a sua validade, bem como dados inseridos na mesma através do uso de uma palavra secreta. Coincidentemente, esta palavra secreta pode ser encontrada no ficheiro ```.env```.
   Pode consultar a base de dados e verificar que o único utilizador por definição é o "admin", cuja palavra passe é também admin. É aconselhado atualizar a palavra passe do administrador o quanto antes através de uma de duas rotas:
     - ```http://localhost:8081/api/user/changePassword``` (recomendada)
@@ -331,12 +352,12 @@ Algumas das funcionalidades presentes consistem na gestão das respetivas entida
       - ```http://localhost:8081/api/user/1```
     - Deve ter em atenção que é necessário enviar o token de autenticação para ambas as rotas, logo, deverá realizar login primeiro para obter o token de administrador.
 
-  - **Parâmetros de Pesquisa**
+  - **Parâmetros de Pesquisa:**
   Nesta API existem também diversos parâmetros de pesquisa para as seguintes entidades:
     - Category, Ingredient, Recipe;
     - Como mencionado acima, o *seeder* também possui o um parâmetro de *force*, ainda que não deva ser considerada uma entidade.
   
-  Ainda assim, as entidades acima possuem diversos parâmetros de pesquisa, tais como nome, tamanho máximo, aleatoriadade, e muitos outros. Estes foram implementados para que pudesse ser realizada uma pesquisa mais personalizada às entidades mais relevantes. Dado o tempo disponibilizado para o desenvolvimento da API, os desenvolvedores tiveram de se concentrar em acrescentar funcionalidades, ao invés de replicar as mesmas funcionalidades para todas as entidades.
+  Ainda assim, as entidades acima possuem diversos parâmetros de pesquisa, tais como nome, tamanho máximo, aleatoriedade, e muitos outros. Estes foram implementados para que pudesse ser realizada uma pesquisa mais personalizada às entidades mais relevantes. Dado o tempo disponibilizado para o desenvolvimento da API, os desenvolvedores tiveram de se concentrar em acrescentar funcionalidades, ao invés de replicar as mesmas funcionalidades para todas as entidades.
 
   - *Lista extensiva de parâmetros de pesquisa*
   Os parâmetros podem ser observados com mais detalhe na rota de consulta global de cada uma das entidades mencionadas acima, ainda assim, para fins de demonstração, a consulta de receitas possui os seguintes parâmetros:
@@ -385,4 +406,4 @@ Existem também alguns módulos do NPM que podem e devem ser considerados nesta 
 
 ## Mais Informações
 
-Para mais informações, pode consultar o manual de utilizador, que dará uma melhor perspectiva numa ótica de utilizador.
+Para mais informações, pode consultar o manual de utilizador, que dará uma melhor perspetiva numa ótica de utilizador.

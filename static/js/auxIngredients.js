@@ -1,5 +1,5 @@
 /**
- * Filename: auxIngredients
+ * Filename: auxIngredients.js
  * Purpose: To fetch the add, edit and delete from the ingredientActions and ask if the user is sure about the deletion
  */
 

@@ -1,3 +1,8 @@
+/**
+ * Filename: home.js
+ * Purpose: Show last favorite recipes when user is logged in.
+ */
+
 (async () => {
     try {
         const token = localStorage.getItem('auth');
