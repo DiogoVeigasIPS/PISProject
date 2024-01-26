@@ -9,6 +9,7 @@ const connectionOptions = require('./connectionOptions');
 const { User } = require('../models');
 const { objectIsValid, handleDatabaseError } = require('../utils');
 const { getJWT } = require('../jsonWebToken');
+const { reject } = require('async');
 
 const getUsers = () => {
     return new Promise((resolve, reject) => {

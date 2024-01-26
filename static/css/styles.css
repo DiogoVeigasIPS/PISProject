@@ -1,0 +1,29 @@
+.custom-jumbotron {
+    padding: 0;
+    margin: 0;
+    height: 50vh;
+    background: url('/img/vegetables.jpg') center / cover no-repeat;
+}
+
+.jumbotron {
+    background-color: #f0f0f0;
+}
+
+.jumbotron .lead {
+    font-size: 1.5em;
+}
+
+.student-info {
+    display: flex;
+    flex-direction: column;
+    font-size: 1.2em;
+  }
+
+  .student {
+    display: flex;
+    margin-bottom: 10px;
+  }
+
+  .student span:first-child {
+    min-width: 150px;
+  }
