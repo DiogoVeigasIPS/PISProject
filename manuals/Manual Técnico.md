@@ -190,7 +190,7 @@ A descrição do uso dos serviços será organizada em várias secções para ga
   - **Autenticar identidade**
     Para que um utilizador autentique a sua identidade, o mesmo deverá realizar um *login*, e no caso de não possuir conta, um *signup*.
     Com uma conta, um utilizador será capaz de utilizar rotas adicionais, pois as únicas rotas que os utilizadores sem conta poderão executar serão as de visualização, com a exceção de visualização de utilizadores e *seeding*.
-    Para iniciar sessão, o mesmo poderá fazê-lo através de:
+    Para iniciar sessão, o mesmo poderá fazê-lo com o método POST no seguinte URL:
     ```http://localhost:8081/api/user/login``` 
     E deverá de enviar um corpo JSON no seguinte formato:
     ```bash 
@@ -210,7 +210,7 @@ A descrição do uso dos serviços será organizada em várias secções para ga
   - **Serviços Baseados em Relacionamentos**
     Existem diversos serviços baseados em relacionamentos, tais como as listas de receitas, os favoritos, bem como a gestão de ingredientes de uma receita, e estes devem ser consultados diretamente ao respetivo ficheiro de rotas que será mencionado mais tarde.
     No entanto, sempre que se quiser adicionar um ingrediente a uma receita, poderá utilizar uma rota que segue a arquitetura RESTful, por exemplo:
-    ```http://localhost:8081/api/recipe/recipe_id/addIngredient/ingredient_id```
+    ```http://localhost:8081/api/recipe/recipe_id/ingredient/ingredient_id```
     Acima, poderá ver o URL que deve ser utilizado para adicionar um ingrediente a uma receita, podendo também reparar que o parent, ou a receita, deverá estar sempre em primeiro lugar, enquanto que o filho, ou ingredient, deve ser provido por último.
 
   - **Descrição das Rotas**
