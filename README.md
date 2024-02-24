@@ -47,4 +47,4 @@ http://localhost:8081/api/seed/all?force=true
 ```
 
 ## Project Status
-*Currently under active development.*
+*Finished.*
